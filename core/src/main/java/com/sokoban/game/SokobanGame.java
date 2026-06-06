@@ -1,0 +1,17 @@
+package com.sokoban.game;
+
+import com.badlogic.gdx.Game;
+import com.sokoban.game.screens.PantallaInicio;
+
+public class SokobanGame extends Game {
+
+    public static final int ANCHO_UI   = 650;
+    public static final int ALTO_UI    = 550;
+    public static final int ANCHO_GAME = 1000;
+    public static final int ALTO_GAME  = 628;
+
+    @Override
+    public void create() {
+        setScreen(new PantallaInicio(this));
+    }
+}

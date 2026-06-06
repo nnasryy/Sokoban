@@ -8,7 +8,7 @@ package sokoban;
  *
  * @author nasry
  */
-public class Sokoban {
+public class SokobanMain {
 
     /**
      * @param args the command line arguments
