@@ -111,7 +111,7 @@ public class PantallaLogin extends PantallaBase {
         // Botón Volumen
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
-        btnVolumen.setBounds(589, 510, 40, 30);
+      btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
@@ -127,23 +127,27 @@ public class PantallaLogin extends PantallaBase {
         stage.addActor(btnVolumen);
     }
 
-    private void iniciarSesion() {
-        String username = campoUsername.getText().trim();
-        String password = campoPassword.getText();
+private void iniciarSesion() {
+    String username = campoUsername.getText().trim();
+    String password = campoPassword.getText();
 
-        if (username.isEmpty() || password.isEmpty()) {
-            mensajeError = "Completa todos los campos";
-            return;
-        }
-
-        Usuario u = GestorUsuarios.login(username, password);
-        if (u != null) {
-            juego.setUsuarioActual(u);
-            juego.setScreen(new PantallaMenu(juego));
-        } else {
-            mensajeError = "Usuario o contraseña incorrectos";
-        }
+    if (username.isEmpty() || password.isEmpty()) {
+        juego.setScreen(new PantallaAdvertencia(juego,
+            "Completa todos los campos",
+            new PantallaLogin(juego)));
+        return;
     }
+
+    Usuario u = GestorUsuarios.login(username, password);
+    if (u != null) {
+        juego.setUsuarioActual(u);
+        juego.setScreen(new PantallaMenu(juego));
+    } else {
+        juego.setScreen(new PantallaAdvertencia(juego,
+            "Usuario o contrasena incorrectos",
+            new PantallaLogin(juego)));
+    }
+}
 
     private TextField.TextFieldStyle crearEstiloTextField() {
         TextField.TextFieldStyle estilo = new TextField.TextFieldStyle();
@@ -167,33 +171,34 @@ public class PantallaLogin extends PantallaBase {
         estilo.cursor = new TextureRegionDrawable(new Texture(cursorMap));
         cursorMap.dispose();
 
-        return estilo;
+        return estilo;  
+    }   
+    
+@Override
+public void render(float delta) {
+    if (texFondo == null || fuentePixel == null) return; // ← agrega esto
+
+    viewport.apply();
+    batch.setProjectionMatrix(viewport.getCamera().combined);
+
+    batch.begin();
+    batch.draw(texFondo, 0, 0, 650, 550);
+    if (!mensajeError.isEmpty()) {
+        fuentePixel.setColor(Color.RED);
+        fuentePixel.draw(batch, mensajeError, 148, 550 - 430);
     }
+    batch.end();
 
-    @Override
-    public void render(float delta) {
-        viewport.apply();
-        batch.setProjectionMatrix(viewport.getCamera().combined);
+    stage.act(delta);
+    stage.draw();
+}
 
-        batch.begin();
-        batch.draw(texFondo, 0, 0, 650, 550);
 
-        // Mensaje de error si hay
-        if (!mensajeError.isEmpty()) {
-            fuentePixel.setColor(Color.RED);
-            fuentePixel.draw(batch, mensajeError, 148, 550 - 430);
-        }
-        batch.end();
-
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int w, int h) {
-        viewport.update(w, h, true);
-        stage.getViewport().update(w, h, true);
-    }
+   @Override
+public void resize(int w, int h) {
+    viewport.update(w, h, true);
+    if (stage != null) stage.getViewport().update(w, h, true);
+}
 
     @Override
     public void dispose() {

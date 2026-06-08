@@ -37,6 +37,7 @@ public class PantallaRegistro extends PantallaBase {
     // Estado
     private boolean mostrarPassword = false;
     private boolean musicaActiva = true;
+    private String mensajeError = "";
 
     // Colores requisitos
     private Color colorEspecial = Color.RED;
@@ -93,8 +94,10 @@ public class PantallaRegistro extends PantallaBase {
                     .tieneCaracterEspecial(pass) ? Color.GREEN : Color.RED;
             colorNumero = ValidadorContrasena
                     .tieneNumero(pass) ? Color.GREEN : Color.RED;
-            colorCaract = ValidadorContrasena
-                    .tieneMinCaracteres(pass) ? Color.GREEN : Color.RED;
+            // Verde solo si tiene 5 Y no pasa de 5
+            colorCaract = (ValidadorContrasena.tieneMinCaracteres(pass)
+                    && ValidadorContrasena.passwordLongitudValida(pass))
+                    ? Color.GREEN : Color.RED;
         });
 
         // Botón ojo contraseña
@@ -115,7 +118,7 @@ public class PantallaRegistro extends PantallaBase {
         // Botón Sign Up
         ImageButton btnSignUp = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBotonSignUp)));
-       btnSignUp.setBounds(325, 102, 150, 44);
+        btnSignUp.setBounds(325, 102, 150, 44);
         btnSignUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
@@ -137,7 +140,7 @@ public class PantallaRegistro extends PantallaBase {
         // Botón Volumen
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
-        btnVolumen.setBounds(589, 510, 40, 30);
+        btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
@@ -159,23 +162,48 @@ public class PantallaRegistro extends PantallaBase {
         String username = campoUsername.getText().trim();
         String password = campoPassword.getText();
 
-        // Validaciones
         if (nombre.isEmpty() || username.isEmpty() || password.isEmpty()) {
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    "Completa todos los campos",
+                    new PantallaRegistro(juego)));
+            return;
+        }
+        if (!ValidadorContrasena.nombreLongitudValida(nombre)) {
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    "El nombre debe tener entre 3 y 5 caracteres",
+                    new PantallaRegistro(juego)));
+            return;
+        }
+        if (!ValidadorContrasena.usernameLongitudValida(username)) {
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    "El username debe tener entre 3 y 5 caracteres",
+                    new PantallaRegistro(juego)));
             return;
         }
         if (!ValidadorContrasena.esValida(password)) {
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    "La contrasena no cumple los requisitos",
+                    new PantallaRegistro(juego)));
             return;
         }
         if (GestorUsuarios.existeUsuario(username)) {
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    "Este usuario ya existe",
+                    new PantallaRegistro(juego)));
             return;
         }
 
-        // Crear usuario y guardar
         Usuario nuevo = new Usuario(username, password, nombre);
-        GestorUsuarios.registrarUsuario(nuevo);
+        boolean guardado = GestorUsuarios.registrarUsuario(nuevo);
 
-        // Ir a selección de avatar
-        juego.setScreen(new PantallaSeleccionAvatar(juego, nuevo));
+        if (guardado) {
+            juego.setUsuarioActual(nuevo);
+            juego.setScreen(new PantallaSeleccionAvatar(juego, nuevo));
+        } else {
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    "Error al guardar usuario",
+                    new PantallaRegistro(juego)));
+        }
     }
 
     private TextField.TextFieldStyle crearEstiloTextField() {
@@ -208,6 +236,9 @@ public class PantallaRegistro extends PantallaBase {
 
     @Override
     public void render(float delta) {
+        if (texFondo == null || fuentePixel == null) {
+            return; // ← agrega esto
+        }
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
 
@@ -215,19 +246,15 @@ public class PantallaRegistro extends PantallaBase {
         batch.draw(texFondo, 0, 0, 650, 550);
         batch.end();
 
-        // Dibujar texto de requisitos con colores dinámicos
         batch.begin();
         fuentePixel.setColor(colorEspecial);
-        fuentePixel.draw(batch, "CARACTERES ESPECIALES",
-                148, 550 - 363);
+        fuentePixel.draw(batch, "CARACTERES ESPECIALES", 148, 550 - 363);
 
         fuentePixel.setColor(colorNumero);
-        fuentePixel.draw(batch, "NUMERO",
-                336, 550 - 363);
+        fuentePixel.draw(batch, "NUMERO", 336, 550 - 363);
 
         fuentePixel.setColor(colorCaract);
-        fuentePixel.draw(batch, "5 CARACTERES",
-                429, 550 - 363);
+        fuentePixel.draw(batch, "5 CARACTERES", 429, 550 - 363);
         batch.end();
 
         stage.act(delta);
@@ -237,7 +264,9 @@ public class PantallaRegistro extends PantallaBase {
     @Override
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        stage.getViewport().update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
     }
 
     @Override
