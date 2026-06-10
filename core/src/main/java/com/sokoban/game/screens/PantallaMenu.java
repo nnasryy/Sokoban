@@ -47,7 +47,8 @@ public class PantallaMenu extends PantallaBase {
         btnPlay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                juego.setScreen(new PantallaJuego(juego));
+                juego.setScreen(new PantallaJuego(juego,
+                        juego.getUsuarioActual().getNivelActual() - 1));
             }
         });
 

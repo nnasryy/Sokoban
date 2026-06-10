@@ -5,5 +5,11 @@
 package com.sokoban.game.logica;
 
 public class Constantes {
-
+    public static final int PARED      = 1;
+    public static final int SUELO      = 2;
+    public static final int CAJA       = 3;
+    public static final int META       = 4;
+    public static final int JUGADOR    = 5;
+    public static final int VACIO      = 0;
+    public static final int CAJA_EN_META = 6;
 }
