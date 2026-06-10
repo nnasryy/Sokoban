@@ -17,9 +17,25 @@ public abstract class PantallaBase implements Screen {
         this.viewport = new FitViewport(ancho, alto);
     }
 
-    @Override public void resize(int w, int h) { viewport.update(w, h, true); }
-    @Override public void pause()   {}
-    @Override public void resume()  {}
-    @Override public void hide()    {}
-    @Override public void dispose() { batch.dispose(); }
+    @Override
+    public void resize(int w, int h) {
+        viewport.update(w, h, true);
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void hide() {
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+    }
 }

@@ -13,18 +13,11 @@ import com.sokoban.game.SokobanGame;
 
 public class PantallaInicio extends PantallaBase {
 
-    // Texturas
     private Texture texFondo;
     private Texture texNube1, texNube2;
     private Texture texSignUp, texLogin, texExit, texVolumen;
-
-    // Stage para los botones
     private Stage stage;
-
-    // Animación nubes
     private float tiempo = 0f;
-
-    // Estado volumen
     private boolean musicaActiva = true;
 
     public PantallaInicio(SokobanGame juego) {
@@ -33,28 +26,23 @@ public class PantallaInicio extends PantallaBase {
 
     @Override
     public void show() {
-        // Ajustar tamaño ventana
-       Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+        Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // Cargar imágenes
-        texFondo    = new Texture("imagenes/fondos/Menuinicio.png");
-        texSignUp   = new Texture("imagenes/botones/signup_button.png");
-        texLogin    = new Texture("imagenes/botones/login_button.png");
-        texExit     = new Texture("imagenes/botones/exit_button.png");
-        texVolumen  = new Texture("imagenes/botones/volume_button.png");
+        texFondo = new Texture("imagenes/fondos/Menuinicio.png");
+        texSignUp = new Texture("imagenes/botones/signup_button.png");
+        texLogin = new Texture("imagenes/botones/login_button.png");
+        texExit = new Texture("imagenes/botones/exit_button.png");
+        texVolumen = new Texture("imagenes/botones/volume_button.png");
 
-        // Stage
         stage = new Stage(new FitViewport(
-            SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
+                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // Crear botones con sus posiciones
-        ImageButton btnSignUp  = crearBoton(texSignUp,  126, 210);
-        ImageButton btnLogin   = crearBoton(texLogin,   339, 210);
-        ImageButton btnExit    = crearBoton(texExit,    265, 135);
+        ImageButton btnSignUp = crearBoton(texSignUp, 126, 210);
+        ImageButton btnLogin = crearBoton(texLogin, 339, 210);
+        ImageButton btnExit = crearBoton(texExit, 265, 135);
         ImageButton btnVolumen = crearBoton(texVolumen, 589, 490);
 
-        // Acciones
         btnSignUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
@@ -92,7 +80,7 @@ public class PantallaInicio extends PantallaBase {
 
     private ImageButton crearBoton(Texture tex, float x, float y) {
         ImageButton btn = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(tex))
+                new TextureRegionDrawable(new TextureRegion(tex))
         );
         btn.setPosition(x, y);
         return btn;
@@ -102,19 +90,14 @@ public class PantallaInicio extends PantallaBase {
     public void render(float delta) {
         tiempo += delta;
 
-        // Animación nubes — movimiento suave
         float offsetNube1 = (float) Math.sin(tiempo * 1.2f) * 6f;
         float offsetNube2 = (float) Math.sin(tiempo * 1.2f + 1.5f) * 6f;
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
-
         batch.begin();
-            // Fondo completo
-            batch.draw(texFondo, 0, 0, 650, 550);
+        batch.draw(texFondo, 0, 0, 650, 550);
         batch.end();
-
-        // Botones encima
         stage.act(delta);
         stage.draw();
     }

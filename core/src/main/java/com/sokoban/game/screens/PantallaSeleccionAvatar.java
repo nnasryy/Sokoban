@@ -25,8 +25,6 @@ public class PantallaSeleccionAvatar extends PantallaBase {
     private Stage stage;
     private BitmapFont fuente;
     private Usuario usuario;
-
-    // Ruta de foto seleccionada
     private String rutaFotoElegida = null;
 
     public PantallaSeleccionAvatar(SokobanGame juego, Usuario u) {
@@ -37,9 +35,9 @@ public class PantallaSeleccionAvatar extends PantallaBase {
     @Override
     public void show() {
         Gdx.graphics.setWindowedMode(
-            SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        texFondo   = new Texture("imagenes/fondos/SeleccionFondo.png");
+        texFondo = new Texture("imagenes/fondos/SeleccionFondo.png");
         texBtnFoto = new Texture("imagenes/botones/pfp_button.png");
         texBtnListo = new Texture("imagenes/botones/listo_button.png");
         texVolumen = new Texture("imagenes/botones/volume_button.png");
@@ -48,12 +46,11 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         fuente.getData().setScale(1f);
 
         stage = new Stage(new FitViewport(
-            SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
+                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // Botón foto de perfil
         ImageButton btnFoto = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texBtnFoto)));
+                new TextureRegionDrawable(new TextureRegion(texBtnFoto)));
         btnFoto.setBounds(62.5f, 550 - 232.7f - 181f, 157f, 181f);
         btnFoto.addListener(new ClickListener() {
             @Override
@@ -62,9 +59,8 @@ public class PantallaSeleccionAvatar extends PantallaBase {
             }
         });
 
-        // Botón listo
         ImageButton btnListo = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texBtnListo)));
+                new TextureRegionDrawable(new TextureRegion(texBtnListo)));
         btnListo.setBounds(252.2f, 550 - 463.9f - 62f, 180f, 62f);
         btnListo.addListener(new ClickListener() {
             @Override
@@ -73,14 +69,12 @@ public class PantallaSeleccionAvatar extends PantallaBase {
             }
         });
 
-        // Botón volumen
         ImageButton btnVolumen = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texVolumen)));
+                new TextureRegionDrawable(new TextureRegion(texVolumen)));
         btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                // música después
             }
         });
 
@@ -90,12 +84,11 @@ public class PantallaSeleccionAvatar extends PantallaBase {
     }
 
     private void abrirSelectorFoto() {
-        // Abre el explorador de archivos del sistema
         javax.swing.SwingUtilities.invokeLater(() -> {
             javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
             chooser.setDialogTitle("Selecciona tu foto de perfil");
             chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(
-                "Imagenes", "png", "jpg", "jpeg"));
+                    "Imagenes", "png", "jpg", "jpeg"));
 
             int resultado = chooser.showOpenDialog(null);
             if (resultado == javax.swing.JFileChooser.APPROVE_OPTION) {
@@ -107,39 +100,36 @@ public class PantallaSeleccionAvatar extends PantallaBase {
     private void confirmar() {
         if (rutaFotoElegida == null) {
             juego.setScreen(new PantallaAdvertencia(juego,
-                "Debes seleccionar una foto de perfil",
-                new PantallaSeleccionAvatar(juego, usuario)));
+                    "Debes seleccionar una foto de perfil",
+                    new PantallaSeleccionAvatar(juego, usuario)));
             return;
         }
 
-        // Guardar en el usuario
         usuario.setRutaFotoPerfil(rutaFotoElegida);
         usuario.setTipoAvatar(0); // 0 = foto propia
         GestorUsuarios.guardarUsuario(usuario);
         juego.setUsuarioActual(usuario);
-
-        // Ir al menú principal
         juego.setScreen(new PantallaMenu(juego));
     }
 
     @Override
     public void render(float delta) {
-        if (texFondo == null) return;
+        if (texFondo == null) {
+            return;
+        }
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
 
         batch.begin();
-            batch.draw(texFondo, 0, 0, 650, 550);
+        batch.draw(texFondo, 0, 0, 650, 550);
 
-            // Mostrar ruta de foto elegida como confirmación visual
-            if (rutaFotoElegida != null) {
-                fuente.setColor(Color.GREEN);
-                fuente.draw(batch, "FOTO SELECCIONADA!", 
+        if (rutaFotoElegida != null) {
+            fuente.setColor(Color.GREEN);
+            fuente.draw(batch, "FOTO SELECCIONADA!",
                     62.5f, 550 - 232.7f - 181f - 10f);
-            }
+        }
         batch.end();
-
         stage.act(delta);
         stage.draw();
     }
@@ -147,7 +137,9 @@ public class PantallaSeleccionAvatar extends PantallaBase {
     @Override
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        if (stage != null) stage.getViewport().update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
     }
 
     @Override
@@ -157,6 +149,8 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         texBtnListo.dispose();
         texVolumen.dispose();
         fuente.dispose();
-        if (stage != null) stage.dispose();
+        if (stage != null) {
+            stage.dispose();
+        }
     }
 }

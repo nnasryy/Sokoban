@@ -23,9 +23,8 @@ public class PantallaAdvertencia extends PantallaBase {
     private Texture texBtnOk;
     private BitmapFont fuente;
     private Stage stage;
-
-    private String mensaje;          // texto que cambia según la situación
-    private PantallaBase pantallaAnterior; // a dónde volver al cerrar
+    private String mensaje;
+    private PantallaBase pantallaAnterior;
 
     public PantallaAdvertencia(SokobanGame juego,
             String mensaje,
@@ -50,11 +49,10 @@ public class PantallaAdvertencia extends PantallaBase {
         stage = new Stage(new FitViewport(650, 350));
         Gdx.input.setInputProcessor(stage);
 
-        // Botón OK centrado
         ImageButton btnOk = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnOk)));
         btnOk.setSize(120, 40);
-        btnOk.setPosition(265, 20); // centrado en 650px
+        btnOk.setPosition(265, 20);
         btnOk.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
@@ -75,14 +73,8 @@ public class PantallaAdvertencia extends PantallaBase {
 
         batch.begin();
         batch.draw(texFondo, 0, 0, 650, 350);
-
-        // Texto dentro del cuadro
-        // cuadro: x=35, y=98.5, w=580, h=216.5
-        // en libGDX Y va de abajo arriba
-        // centro vertical del cuadro = 350 - 98.5 - (216.5/2) = ~143
         fuente.setColor(Color.BLACK);
 
-        // Dibuja el texto con wrap dentro del cuadro
         com.badlogic.gdx.graphics.g2d.GlyphLayout layout
                 = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
         layout.setText(fuente, mensaje.toUpperCase(), Color.BLACK,

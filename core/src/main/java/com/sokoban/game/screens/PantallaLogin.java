@@ -30,7 +30,6 @@ public class PantallaLogin extends PantallaBase {
     private boolean mostrarPassword = false;
     private boolean musicaActiva = true;
 
-    // Mensaje de error
     private String mensajeError = "";
 
     public PantallaLogin(SokobanGame juego) {
@@ -42,11 +41,9 @@ public class PantallaLogin extends PantallaBase {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // Fuente
         fuentePixel = new BitmapFont(
                 Gdx.files.internal("fuentes/Pixellari.fnt"));
         fuentePixel.getData().setScale(1f);
-        // Texturas
         texFondo = new Texture("imagenes/fondos/LogIn.png");
         texBtnLogin = new Texture("imagenes/botones/login_button.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
@@ -60,7 +57,6 @@ public class PantallaLogin extends PantallaBase {
 
         TextField.TextFieldStyle estilo = crearEstiloTextField();
 
-        // Login solo pide username y password
         campoUsername = new TextField("", estilo);
         campoUsername.setMessageText("USERNAME");
         campoUsername.setBounds(148, 550 - 249 - 44, 312, 44);
@@ -71,7 +67,6 @@ public class PantallaLogin extends PantallaBase {
         campoPassword.setPasswordCharacter('*');
         campoPassword.setBounds(148, 550 - 309 - 44, 312, 44);
 
-        // Botón ojo
         ImageButton btnOjo = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texOjoCerrado)));
         btnOjo.setBounds(472, 550 - 309 - 45, 50, 45);
@@ -86,7 +81,6 @@ public class PantallaLogin extends PantallaBase {
             }
         });
 
-        // Botón Login
         ImageButton btnLogin = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnLogin)));
         btnLogin.setBounds(325, 102, 150, 44);
@@ -97,7 +91,6 @@ public class PantallaLogin extends PantallaBase {
             }
         });
 
-        // Botón Exit
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setBounds(177, 550 - 404 - 44, 120, 44);
@@ -108,10 +101,9 @@ public class PantallaLogin extends PantallaBase {
             }
         });
 
-        // Botón Volumen
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
-      btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
+        btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
@@ -127,34 +119,34 @@ public class PantallaLogin extends PantallaBase {
         stage.addActor(btnVolumen);
     }
 
-private void iniciarSesion() {
-    String username = campoUsername.getText().trim();
-    String password = campoPassword.getText();
+    private void iniciarSesion() {
+        String username = campoUsername.getText().trim();
+        String password = campoPassword.getText();
 
-    if (username.isEmpty() || password.isEmpty()) {
-        juego.setScreen(new PantallaAdvertencia(juego,
-            "Completa todos los campos",
-            new PantallaLogin(juego)));
-        return;
-    }
+        if (username.isEmpty() || password.isEmpty()) {
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    "Completa todos los campos",
+                    new PantallaLogin(juego)));
+            return;
+        }
 
-    Usuario u = GestorUsuarios.login(username, password);
-    if (u != null) {
-        juego.setUsuarioActual(u);
-        juego.setScreen(new PantallaMenu(juego));
-    } else {
-        juego.setScreen(new PantallaAdvertencia(juego,
-            "Usuario o contrasena incorrectos",
-            new PantallaLogin(juego)));
+        Usuario u = GestorUsuarios.login(username, password);
+        if (u != null) {
+            juego.setUsuarioActual(u);
+            juego.setScreen(new PantallaMenu(juego));
+        } else {
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    "Usuario o contrasena incorrectos",
+                    new PantallaLogin(juego)));
+        }
     }
-}
 
     private TextField.TextFieldStyle crearEstiloTextField() {
         TextField.TextFieldStyle estilo = new TextField.TextFieldStyle();
         estilo.font = fuentePixel;
         estilo.fontColor = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
         estilo.messageFontColor = new Color(87f / 255f, 41f / 255f, 35f / 255f, 0.7f);
-        
+
         com.badlogic.gdx.graphics.Pixmap pixmap
                 = new com.badlogic.gdx.graphics.Pixmap(1, 1,
                         com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
@@ -171,34 +163,36 @@ private void iniciarSesion() {
         estilo.cursor = new TextureRegionDrawable(new Texture(cursorMap));
         cursorMap.dispose();
 
-        return estilo;  
-    }   
-    
-@Override
-public void render(float delta) {
-    if (texFondo == null || fuentePixel == null) return; // ← agrega esto
-
-    viewport.apply();
-    batch.setProjectionMatrix(viewport.getCamera().combined);
-
-    batch.begin();
-    batch.draw(texFondo, 0, 0, 650, 550);
-    if (!mensajeError.isEmpty()) {
-        fuentePixel.setColor(Color.RED);
-        fuentePixel.draw(batch, mensajeError, 148, 550 - 430);
+        return estilo;
     }
-    batch.end();
 
-    stage.act(delta);
-    stage.draw();
-}
+    @Override
+    public void render(float delta) {
+        if (texFondo == null || fuentePixel == null) {
+            return; // ← agrega esto
+        }
+        viewport.apply();
+        batch.setProjectionMatrix(viewport.getCamera().combined);
 
+        batch.begin();
+        batch.draw(texFondo, 0, 0, 650, 550);
+        if (!mensajeError.isEmpty()) {
+            fuentePixel.setColor(Color.RED);
+            fuentePixel.draw(batch, mensajeError, 148, 550 - 430);
+        }
+        batch.end();
 
-   @Override
-public void resize(int w, int h) {
-    viewport.update(w, h, true);
-    if (stage != null) stage.getViewport().update(w, h, true);
-}
+        stage.act(delta);
+        stage.draw();
+    }
+
+    @Override
+    public void resize(int w, int h) {
+        viewport.update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
+    }
 
     @Override
     public void dispose() {

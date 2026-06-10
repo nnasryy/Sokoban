@@ -23,23 +23,14 @@ import com.sokoban.game.usuarios.ValidadorContrasena;
 
 public class PantallaRegistro extends PantallaBase {
 
-    // Texturas
     private Texture texFondo, texExit, texBotonSignUp, texVolumen;
     private Texture texOjoAbierto, texOjoCerrado;
-
-    // Stage y campos
     private Stage stage;
     private TextField campoNombre, campoUsername, campoPassword;
-
-    // Fuente
     private BitmapFont fuentePixel;
-
-    // Estado
     private boolean mostrarPassword = false;
     private boolean musicaActiva = true;
     private String mensajeError = "";
-
-    // Colores requisitos
     private Color colorEspecial = Color.RED;
     private Color colorNumero = Color.RED;
     private Color colorCaract = Color.RED;
@@ -54,7 +45,6 @@ public class PantallaRegistro extends PantallaBase {
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
         fuentePixel = new BitmapFont(
                 Gdx.files.internal("fuentes/Pixellari.fnt"));
-        // Cargar texturas
         texFondo = new Texture("imagenes/fondos/SignUp.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
         texBotonSignUp = new Texture("imagenes/botones/signup_button.png");
@@ -62,45 +52,37 @@ public class PantallaRegistro extends PantallaBase {
         texOjoAbierto = new Texture("imagenes/botones/OpenedEye.png");
         texOjoCerrado = new Texture("imagenes/botones/ClosedEye.png");
 
-        // Stage
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // Skin básico para TextField
         TextField.TextFieldStyle estiloField = crearEstiloTextField();
 
-        // Campo Nombre
         campoNombre = new TextField("", estiloField);
         campoNombre.setMessageText("NOMBRE COMPLETO");
         campoNombre.setBounds(148, 550 - 189 - 44, 312, 44);
 
-        // Campo Username
         campoUsername = new TextField("", estiloField);
         campoUsername.setMessageText("USERNAME");
         campoUsername.setBounds(148, 550 - 249 - 44, 312, 44);
 
-        // Campo Password
         campoPassword = new TextField("", estiloField);
         campoPassword.setMessageText("PASSWORD");
         campoPassword.setPasswordMode(true);
         campoPassword.setPasswordCharacter('*');
         campoPassword.setBounds(148, 550 - 309 - 44, 312, 44);
 
-        // Listener para validar contraseña en tiempo real
         campoPassword.setTextFieldListener((field, c) -> {
             String pass = field.getText();
             colorEspecial = ValidadorContrasena
                     .tieneCaracterEspecial(pass) ? Color.GREEN : Color.RED;
             colorNumero = ValidadorContrasena
                     .tieneNumero(pass) ? Color.GREEN : Color.RED;
-            // Verde solo si tiene 5 Y no pasa de 5
             colorCaract = (ValidadorContrasena.tieneMinCaracteres(pass)
                     && ValidadorContrasena.passwordLongitudValida(pass))
                     ? Color.GREEN : Color.RED;
         });
 
-        // Botón ojo contraseña
         ImageButton btnOjo = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texOjoCerrado)));
         btnOjo.setBounds(472, 550 - 309 - 45, 50, 45);
@@ -115,7 +97,6 @@ public class PantallaRegistro extends PantallaBase {
             }
         });
 
-        // Botón Sign Up
         ImageButton btnSignUp = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBotonSignUp)));
         btnSignUp.setBounds(325, 102, 150, 44);
@@ -126,7 +107,6 @@ public class PantallaRegistro extends PantallaBase {
             }
         });
 
-        // Botón Exit
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setBounds(177, 550 - 404 - 44, 120, 44);
@@ -137,7 +117,6 @@ public class PantallaRegistro extends PantallaBase {
             }
         });
 
-        // Botón Volumen
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
         btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
@@ -212,7 +191,6 @@ public class PantallaRegistro extends PantallaBase {
         estilo.fontColor = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
         estilo.messageFontColor = new Color(87f / 255f, 41f / 255f, 35f / 255f, 0.7f);
 
-        // Fondo del textfield con color personalizado
         com.badlogic.gdx.graphics.Pixmap pixmap
                 = new com.badlogic.gdx.graphics.Pixmap(1, 1,
                         com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
@@ -222,7 +200,6 @@ public class PantallaRegistro extends PantallaBase {
                 new Texture(pixmap));
         pixmap.dispose();
 
-        // Cursor
         com.badlogic.gdx.graphics.Pixmap cursorMap
                 = new com.badlogic.gdx.graphics.Pixmap(2, 44,
                         com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
@@ -237,7 +214,7 @@ public class PantallaRegistro extends PantallaBase {
     @Override
     public void render(float delta) {
         if (texFondo == null || fuentePixel == null) {
-            return; // ← agrega esto
+            return;
         }
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);

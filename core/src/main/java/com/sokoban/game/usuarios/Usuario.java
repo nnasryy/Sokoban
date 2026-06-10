@@ -10,39 +10,27 @@ import java.util.Date;
 import java.util.List;
 
 public class Usuario implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
-    // Identidad
     private String username;
     private String passwordHash;
     private String nombreCompleto;
-
-    // Fechas
     private Date fechaRegistro;
     private Date ultimaSesion;
-
-    // Progreso
     private int nivelActual;
     private int[] intentosPorNivel;
     private long tiempoTotalJugado;
     private List<Long> tiempoPorNivel;
-
-    // Perfil
     private String rutaFotoPerfil;
     private int tipoAvatar;
     private int[] configAvatar;
-
-    // Preferencias
     private float volumen;
     private String idioma;
-
-    // Stats
     private int partidasJugadas;
     private int nivelesCompletados;
     private List<String> historialPartidas;
     private int puntajeTotal;
-
-    // Amigos
     private List<String> amigos;
 
     public Usuario(String username, String password, String nombreCompleto) {
@@ -87,45 +75,136 @@ public class Usuario implements Serializable {
         partidasJugadas++;
         tiempoTotalJugado += tiempo;
         tiempoPorNivel.add(tiempo);
-        if (completado) nivelesCompletados++;
+        if (completado) {
+            nivelesCompletados++;
+        }
         intentosPorNivel[nivel]++;
-        historialPartidas.add("Nivel " + nivel +
-            " | Tiempo: " + tiempo + "s" +
-            " | " + (completado ? "Completado" : "Fallido") +
-            " | " + new Date());
+        historialPartidas.add("Nivel " + nivel
+                + " | Tiempo: " + tiempo + "s"
+                + " | " + (completado ? "Completado" : "Fallido")
+                + " | " + new Date());
     }
 
     // Getters y Setters
-    public String getUsername()          { return username; }
-    public String getNombreCompleto()    { return nombreCompleto; }
-    public Date getFechaRegistro()       { return fechaRegistro; }
-    public Date getUltimaSesion()        { return ultimaSesion; }
-    public int getNivelActual()          { return nivelActual; }
-    public void setNivelActual(int n)    { this.nivelActual = n; }
-    public int getPartidasJugadas()      { return partidasJugadas; }
-    public int getNivelesCompletados()   { return nivelesCompletados; }
-    public long getTiempoTotalJugado()   { return tiempoTotalJugado; }
-    public int[] getIntentosPorNivel()   { return intentosPorNivel; }
-    public List<Long> getTiempoPorNivel(){ return tiempoPorNivel; }
-    public int getPuntajeTotal()         { return puntajeTotal; }
-    public void setPuntajeTotal(int p)   { this.puntajeTotal = p; }
-    public List<String> getAmigos()      { return amigos; }
-    public float getVolumen()            { return volumen; }
-    public void setVolumen(float v)      { this.volumen = v; }
-    public String getIdioma()            { return idioma; }
-    public void setIdioma(String i)      { this.idioma = i; }
-    public int[] getConfigAvatar()       { return configAvatar; }
-    public void setConfigAvatar(int[] c) { this.configAvatar = c; }
-    public int getTipoAvatar()           { return tipoAvatar; }
-    public void setTipoAvatar(int t)     { this.tipoAvatar = t; }
-    public String getRutaFotoPerfil()    { return rutaFotoPerfil; }
-    public void setRutaFotoPerfil(String r) { this.rutaFotoPerfil = r; }
-    public List<String> getHistorial()   { return historialPartidas; }
+    public String getUsername() {
+        return username;
+    }
+
+    public String getNombreCompleto() {
+        return nombreCompleto;
+    }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public Date getUltimaSesion() {
+        return ultimaSesion;
+    }
+
+    public int getNivelActual() {
+        return nivelActual;
+    }
+
+    public void setNivelActual(int n) {
+        this.nivelActual = n;
+    }
+
+    public int getPartidasJugadas() {
+        return partidasJugadas;
+    }
+
+    public int getNivelesCompletados() {
+        return nivelesCompletados;
+    }
+
+    public long getTiempoTotalJugado() {
+        return tiempoTotalJugado;
+    }
+
+    public int[] getIntentosPorNivel() {
+        return intentosPorNivel;
+    }
+
+    public List<Long> getTiempoPorNivel() {
+        return tiempoPorNivel;
+    }
+
+    public int getPuntajeTotal() {
+        return puntajeTotal;
+    }
+
+    public void setPuntajeTotal(int p) {
+        this.puntajeTotal = p;
+    }
+
+    public List<String> getAmigos() {
+        return amigos;
+    }
+
+    public float getVolumen() {
+        return volumen;
+    }
+
+    public void setVolumen(float v) {
+        this.volumen = v;
+    }
+
+    public String getIdioma() {
+        return idioma;
+    }
+
+    public void setIdioma(String i) {
+        this.idioma = i;
+    }
+
+    public int[] getConfigAvatar() {
+        return configAvatar;
+    }
+
+    public void setConfigAvatar(int[] c) {
+        this.configAvatar = c;
+    }
+
+    public int getTipoAvatar() {
+        return tipoAvatar;
+    }
+
+    public void setTipoAvatar(int t) {
+        this.tipoAvatar = t;
+    }
+
+    public String getRutaFotoPerfil() {
+        return rutaFotoPerfil;
+    }
+
+    public void setRutaFotoPerfil(String r) {
+        this.rutaFotoPerfil = r;
+    }
+
+    public List<String> getHistorial() {
+        return historialPartidas;
+    }
 
     public long getTiempoPromedioPorNivel() {
-        if (tiempoPorNivel.isEmpty()) return 0;
+        if (tiempoPorNivel.isEmpty()) {
+            return 0;
+        }
         long total = 0;
-        for (long t : tiempoPorNivel) total += t;
+        for (long t : tiempoPorNivel) {
+            total += t;
+        }
         return total / tiempoPorNivel.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{"
+                + "username='" + username + '\''
+                + ", nombreCompleto='" + nombreCompleto + '\''
+                + ", fechaRegistro=" + fechaRegistro
+                + ", nivelActual=" + nivelActual
+                + ", partidasJugadas=" + partidasJugadas
+                + '}';
     }
 }

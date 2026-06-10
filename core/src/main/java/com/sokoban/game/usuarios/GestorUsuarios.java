@@ -12,12 +12,13 @@ public class GestorUsuarios {
 
     private static final String CARPETA_BASE = "datos/usuarios/";
 
-    // Crear carpeta del usuario y guardar
     public static boolean registrarUsuario(Usuario u) {
-        if (existeUsuario(u.getUsername())) return false;
+        if (existeUsuario(u.getUsername())) {
+            return false;
+        }
 
         File carpeta = new File(CARPETA_BASE + u.getUsername());
-        carpeta.mkdirs(); // crea la carpeta del usuario
+        carpeta.mkdirs();
 
         guardarUsuario(u);
         return true;
@@ -46,11 +47,11 @@ public class GestorUsuarios {
     public static Usuario login(String username, String password) {
         Usuario u = cargarUsuario(username);
         if (u != null && u.verificarPassword(password)) {
-            u.actualizarUltimaSesion(); // ← aquí se actualiza
-            guardarUsuario(u);          // ← se guarda inmediatamente
+            u.actualizarUltimaSesion();
+            guardarUsuario(u);
             return u;
         }
-        return null; // credenciales incorrectas
+        return null;
     }
 
     public static boolean existeUsuario(String username) {
@@ -64,14 +65,15 @@ public class GestorUsuarios {
             for (File sub : carpeta.listFiles()) {
                 if (sub.isDirectory()) {
                     Usuario u = cargarUsuario(sub.getName());
-                    if (u != null) lista.add(u);
+                    if (u != null) {
+                        lista.add(u);
+                    }
                 }
             }
         }
         return lista;
     }
 
-    // Para ranking — ordena por puntaje
     public static List<Usuario> getRanking() {
         List<Usuario> todos = cargarTodos();
         todos.sort((a, b) -> b.getPuntajeTotal() - a.getPuntajeTotal());

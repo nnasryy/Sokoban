@@ -12,7 +12,7 @@ public class GestorNiveles {
 
     public static Tablero cargarNivel(int numeroNivel) {
         if (numeroNivel < 0 || numeroNivel >= TOTAL_NIVELES) {
-            return new Tablero(0); // default nivel 1
+            return new Tablero(0);
         }
         return new Tablero(numeroNivel);
     }
