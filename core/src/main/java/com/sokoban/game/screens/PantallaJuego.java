@@ -29,6 +29,7 @@ public class PantallaJuego extends PantallaBase {
     private BitmapFont fuenteNivel;    // Pixellari 14
     private BitmapFont fuenteHUD;      // Pixellari 28
     private Stage stage;
+    private BitmapFont fuenteNivel24;
 
     // Tiles — se cargan según el nivel
     private Texture[] tiles;
@@ -64,14 +65,17 @@ public class PantallaJuego extends PantallaBase {
         tablero = GestorNiveles.cargarNivel(numeroNivel);
 
         // HUD
-        texHUD = new Texture("imagenes/fondos/fondonivel.png");
+        String[] fondosPorNivel = {
+            "FondoNivel1", "FondoNivel2", "FondoNivel3", "FondoNivel4", "FondoNivel1"
+        };
+        texHUD = new Texture("imagenes/fondos/" + fondosPorNivel[numeroNivel] + ".png");
         texRestart = new Texture("imagenes/botones/restart.png");
         texRevert = new Texture("imagenes/botones/revert.png");
 
         // Fuentes
-        fuenteNivel = new BitmapFont(
-                Gdx.files.internal("fuentes/Pixellari.fnt"));
-        fuenteNivel.getData().setScale(1f);
+        fuenteNivel24 = new BitmapFont(
+                Gdx.files.internal("fuentes/Pixellari24.fnt"));
+        fuenteNivel24.getData().setScale(1f);
 
         fuenteHUD = new BitmapFont(
                 Gdx.files.internal("fuentes/Pixellari28.fnt"));
@@ -185,25 +189,23 @@ public class PantallaJuego extends PantallaBase {
         // Dibujar HUD de fondo
         batch.draw(texHUD, 0, 0, 1000, 628);
 
-        // Texto número de nivel
-        // Texto número de nivel — negro
-        fuenteNivel.setColor(Color.BLACK);
-        fuenteNivel.draw(batch,
-                String.valueOf(numeroNivel + 1),
-                137f, 628 - 12.9f);
+        // Texto "NIVEL: X" — negro, Pixellari24
+        fuenteNivel24.setColor(Color.BLACK);
+        fuenteNivel24.draw(batch,
+                "NIVEL: " + (numeroNivel + 1),
+                21.3f, 628 - 7.1f);
 
-// Texto movimientos — negro
+// Texto "MOVIMIENTOS: X" — negro, Pixellari28
         fuenteHUD.setColor(Color.BLACK);
         fuenteHUD.draw(batch,
-                String.valueOf(tablero.getMovimientos()),
-                393.5f, 628 - 46.6f);
+                "MOVIMIENTOS: " + tablero.getMovimientos(),
+                164.7f, 628 - 38.1f);
 
-// Texto tiempo — negro
+// Texto tiempo — negro, Pixellari28
         fuenteHUD.setColor(Color.BLACK);
         fuenteHUD.draw(batch,
                 formatearTiempo((int) tiempoSegundos),
-                577.1f, 628 - 47.9f);
-
+                682.4f, 628 - 35f);
         // Dibujar mapa
         dibujarMapa();
 
@@ -260,9 +262,11 @@ public class PantallaJuego extends PantallaBase {
                 float py = mapaYlibGDX + (filas - 1 - fila) * tileAlto;
 
                 // Si es jugador dibuja el tile de debajo (0)
-                int tileBase = (valor == Constantes.JUGADOR) ? 0 : valor;
+                int tileBase = (valor == Constantes.JUGADOR) ? Constantes.VACIO : valor;
 
-                if (tileBase >= 0 && tileBase < tiles.length
+// No dibuja nada si es VACIO (0) — el fondo del nivel se ve a través
+                if (tileBase != Constantes.VACIO
+                        && tileBase >= 0 && tileBase < tiles.length
                         && tiles[tileBase] != null) {
                     batch.draw(tiles[tileBase], px, py, tileAncho, tileAlto);
                 }
@@ -289,7 +293,7 @@ public class PantallaJuego extends PantallaBase {
         }
         juego.getUsuarioActual().registrarPartida(
                 numeroNivel, (long) tiempoSegundos, true);
-        juego.getUsuarioActual().setNivelActual(numeroNivel + 1);
+        juego.getUsuarioActual().desbloquearSiguienteNivel();
         com.sokoban.game.usuarios.GestorUsuarios
                 .guardarUsuario(juego.getUsuarioActual());
     }
@@ -322,6 +326,7 @@ public class PantallaJuego extends PantallaBase {
         texRestart.dispose();
         texRevert.dispose();
         fuenteNivel.dispose();
+        fuenteNivel24.dispose();
         fuenteHUD.dispose();
         texJugador.dispose();
         if (tiles != null) {

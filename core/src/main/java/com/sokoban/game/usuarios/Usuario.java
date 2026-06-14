@@ -12,7 +12,7 @@ import java.util.List;
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private int nivelesDesbloqueados = 1;
     private String username;
     private String passwordHash;
     private String nombreCompleto;
@@ -32,6 +32,7 @@ public class Usuario implements Serializable {
     private List<String> historialPartidas;
     private int puntajeTotal;
     private List<String> amigos;
+    private List<String> solicitudesPendientes;
 
     public Usuario(String username, String password, String nombreCompleto) {
         this.username = username;
@@ -206,5 +207,15 @@ public class Usuario implements Serializable {
                 + ", nivelActual=" + nivelActual
                 + ", partidasJugadas=" + partidasJugadas
                 + '}';
+    }
+
+    public int getNivelesDesbloqueados() {
+        return nivelesDesbloqueados;
+    }
+
+    public void desbloquearSiguienteNivel() {
+        if (nivelesDesbloqueados < 5) {
+            nivelesDesbloqueados++;
+        }
     }
 }

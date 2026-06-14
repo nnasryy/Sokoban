@@ -28,30 +28,30 @@ public class PantallaFelicidades extends PantallaBase {
     @Override
     public void show() {
         Gdx.graphics.setWindowedMode(
-            SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
         // Texturas
-        texFondo         = new Texture("imagenes/fondos/Fondodefault.png");
+        texFondo = new Texture("imagenes/fondos/Fondodefault.png");
         texBtnSeleccionar = new Texture("imagenes/botones/SeleccionarNivel.png");
-        texBtnMenu       = new Texture("imagenes/botones/RegresarAMenu.png");
+        texBtnMenu = new Texture("imagenes/botones/RegresarAMenu.png");
 
         // Fuentes
         fuenteTitulo = new BitmapFont(
-            Gdx.files.internal("fuentes/Pixellari60.fnt"));
+                Gdx.files.internal("fuentes/Pixellari60.fnt"));
         fuenteTitulo.getData().setScale(1f);
 
         fuenteSubtitulo = new BitmapFont(
-            Gdx.files.internal("fuentes/Pixellari35.fnt"));
+                Gdx.files.internal("fuentes/Pixellari35.fnt"));
         fuenteSubtitulo.getData().setScale(1f);
 
         // Stage
         stage = new Stage(new FitViewport(
-            SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
+                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
         // Botón Seleccionar Nivel
         ImageButton btnSeleccionar = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texBtnSeleccionar)));
+                new TextureRegionDrawable(new TextureRegion(texBtnSeleccionar)));
         btnSeleccionar.setSize(215.7f, 73.9f);
         btnSeleccionar.setPosition(75.2f, 550 - 367.8f - 73.9f);
         btnSeleccionar.addListener(new ClickListener() {
@@ -63,7 +63,7 @@ public class PantallaFelicidades extends PantallaBase {
 
         // Botón Regresar al Menú
         ImageButton btnMenu = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texBtnMenu)));
+                new TextureRegionDrawable(new TextureRegion(texBtnMenu)));
         btnMenu.setSize(215.7f, 73.9f);
         btnMenu.setPosition(364.9f, 550 - 367.8f - 73.9f);
         btnMenu.addListener(new ClickListener() {
@@ -79,7 +79,9 @@ public class PantallaFelicidades extends PantallaBase {
 
     @Override
     public void render(float delta) {
-        if (texFondo == null) return;
+        if (texFondo == null) {
+            return;
+        }
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -90,18 +92,25 @@ public class PantallaFelicidades extends PantallaBase {
         batch.draw(texFondo, 0, 0, 650, 550);
 
         // Título — idioma dinámico
+        com.badlogic.gdx.graphics.g2d.GlyphLayout layout
+                = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
+
+// Título centrado horizontalmente en 650px
         String titulo = obtenerTitulo();
         fuenteTitulo.setColor(Color.WHITE);
-        fuenteTitulo.draw(batch, titulo, 526f, 550 - 96.4f);
+        layout.setText(fuenteTitulo, titulo, Color.WHITE, 650,
+                com.badlogic.gdx.utils.Align.center, false);
+        fuenteTitulo.draw(batch, layout, 0f, 550 - 96.4f);
 
-        // Subtítulo con username
+// Subtítulo centrado
         String username = juego.getUsuarioActual() != null
-            ? juego.getUsuarioActual().getUsername().toUpperCase()
-            : "JUGADOR";
+                ? juego.getUsuarioActual().getUsername().toUpperCase()
+                : "JUGADOR";
         String subtitulo = obtenerSubtitulo(username);
         fuenteSubtitulo.setColor(Color.WHITE);
-        fuenteSubtitulo.draw(batch, subtitulo, 522.9f, 550 - 179.2f);
-
+        layout.setText(fuenteSubtitulo, subtitulo, Color.WHITE, 650,
+                com.badlogic.gdx.utils.Align.center, true);
+        fuenteSubtitulo.draw(batch, layout, 0f, 550 - 179.2f);
         batch.end();
 
         stage.act(delta);
@@ -109,16 +118,16 @@ public class PantallaFelicidades extends PantallaBase {
     }
 
     private String obtenerTitulo() {
-        if (juego.getUsuarioActual() != null &&
-            "en".equals(juego.getUsuarioActual().getIdioma())) {
+        if (juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma())) {
             return "!CONGRATULATIONS!";
         }
         return "!FELICIDADES!";
     }
 
     private String obtenerSubtitulo(String username) {
-        if (juego.getUsuarioActual() != null &&
-            "en".equals(juego.getUsuarioActual().getIdioma())) {
+        if (juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma())) {
             return "@" + username + " HAS COMPLETED ALL LEVELS";
         }
         return "@" + username + " HAS COMPLETADO TODOS LOS NIVELES";
@@ -127,7 +136,9 @@ public class PantallaFelicidades extends PantallaBase {
     @Override
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        if (stage != null) stage.getViewport().update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
     }
 
     @Override
@@ -137,6 +148,8 @@ public class PantallaFelicidades extends PantallaBase {
         texBtnMenu.dispose();
         fuenteTitulo.dispose();
         fuenteSubtitulo.dispose();
-        if (stage != null) stage.dispose();
+        if (stage != null) {
+            stage.dispose();
+        }
     }
 }
