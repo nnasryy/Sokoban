@@ -79,4 +79,35 @@ public class GestorUsuarios {
         todos.sort((a, b) -> b.getPuntajeTotal() - a.getPuntajeTotal());
         return todos;
     }
+    // Envía solicitud de A hacia B
+public static boolean enviarSolicitud(String deUsername, String aUsername) {
+    if (!existeUsuario(aUsername)) return false;
+    if (deUsername.equals(aUsername)) return false;
+
+    Usuario destino = cargarUsuario(aUsername);
+    if (destino == null) return false;
+
+    // Verifica que no sean ya amigos
+    if (destino.getAmigos().contains(deUsername)) return false;
+
+    destino.recibirSolicitud(deUsername);
+    guardarUsuario(destino);
+    return true;
+}
+
+public static void aceptarSolicitud(Usuario usuarioActual, String deUsername) {
+    usuarioActual.aceptarSolicitud(deUsername);
+    guardarUsuario(usuarioActual);
+
+    Usuario otro = cargarUsuario(deUsername);
+    if (otro != null) {
+        otro.agregarAmigo(usuarioActual.getUsername());
+        guardarUsuario(otro);
+    }
+}
+
+public static void rechazarSolicitud(Usuario usuarioActual, String deUsername) {
+    usuarioActual.rechazarSolicitud(deUsername);
+    guardarUsuario(usuarioActual);
+}
 }

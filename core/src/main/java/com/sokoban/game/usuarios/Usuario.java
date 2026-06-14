@@ -52,6 +52,7 @@ public class Usuario implements Serializable {
         this.idioma = "es";
         this.puntajeTotal = 0;
         this.amigos = new ArrayList<>();
+        this.solicitudesPendientes = new ArrayList<>();
     }
 
     private String hashPassword(String password) {
@@ -71,6 +72,26 @@ public class Usuario implements Serializable {
             amigos.add(usernameAmigo);
         }
     }
+    public List<String> getSolicitudesPendientes() {
+    return solicitudesPendientes;
+}
+
+public void recibirSolicitud(String deUsername) {
+    if (!solicitudesPendientes.contains(deUsername) 
+        && !amigos.contains(deUsername)) {
+        solicitudesPendientes.add(deUsername);
+    }
+}
+
+public void aceptarSolicitud(String username) {
+    if (solicitudesPendientes.remove(username)) {
+        agregarAmigo(username);
+    }
+}
+
+public void rechazarSolicitud(String username) {
+    solicitudesPendientes.remove(username);
+}
 
     public void registrarPartida(int nivel, long tiempo, boolean completado) {
         partidasJugadas++;
