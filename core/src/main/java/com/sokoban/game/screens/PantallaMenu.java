@@ -48,7 +48,7 @@ public class PantallaMenu extends PantallaBase {
             @Override
             public void clicked(InputEvent e, float x, float y) {
                 int nivelAJugar = juego.getUsuarioActual().getNivelesDesbloqueados() - 1;
-                juego.setScreen(new PantallaJuego(juego, nivelAJugar));
+              juego.setScreen(new PantallaSeleccionNivel(juego));
             }
         });
 
