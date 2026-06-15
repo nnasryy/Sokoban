@@ -18,6 +18,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.Usuario;
 import java.text.SimpleDateFormat;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.sokoban.game.usuarios.GestorUsuarios;
 
 public class PantallaStats extends PantallaBase {
 
@@ -25,6 +27,9 @@ public class PantallaStats extends PantallaBase {
     private BitmapFont fuente;
     private Stage stage;
     private Texture texPixel; // para dibujar bordes y rectángulos
+    private TextField campoAgregarAmigo;
+    private Texture texPixel2; // reutilizamos texPixel si ya existe, sino crea uno
+    private java.util.List<ImageButton> botonesSolicitudes = new java.util.ArrayList<>();
 
     // Tabs
     private enum Tab {
@@ -88,7 +93,12 @@ public class PantallaStats extends PantallaBase {
                 // música después
             }
         });
-
+// TextField para agregar amigo
+        TextField.TextFieldStyle estiloField = crearEstiloTextFieldSimple();
+        campoAgregarAmigo = new TextField("", estiloField);
+        campoAgregarAmigo.setMessageText("USERNAME");
+        campoAgregarAmigo.setBounds(75f, 550 - 210f - 30f, 200f, 30f);
+        stage.addActor(campoAgregarAmigo);
         stage.addActor(btnExit);
         stage.addActor(btnVolumen);
     }
@@ -103,13 +113,36 @@ public class PantallaStats extends PantallaBase {
         dibujarRectanguloConBorde(64.8f, 187.6f, 523.5f, 271.4f, borde);
     }
 
+    private void dibujarBotonTexto(String texto, float x, float yCanva, float w, float h) {
+        float y = 550 - yCanva - h;
+        Color borde = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
+        Color relleno = new Color(208f / 255f, 104f / 255f, 63f / 255f, 1f);
+
+        batch.setColor(relleno);
+        batch.draw(texPixel, x + 1, y + 1, w - 2, h - 2);
+
+        batch.setColor(borde);
+        batch.draw(texPixel, x, y, w, 1);
+        batch.draw(texPixel, x, y + h - 1, w, 1);
+        batch.draw(texPixel, x, y, 1, h);
+        batch.draw(texPixel, x + w - 1, y, 1, h);
+
+        batch.setColor(Color.WHITE);
+
+        fuente.setColor(borde);
+        com.badlogic.gdx.graphics.g2d.GlyphLayout layout
+                = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
+        layout.setText(fuente, texto, borde, w, com.badlogic.gdx.utils.Align.center, false);
+        fuente.draw(batch, layout, x, y + h / 2 + layout.height / 2);
+    }
+
     private void dibujarRectanguloConBorde(float x, float yCanva, float w, float h, Color borde) {
         float y = 550 - yCanva - h; // convertir a libGDX
 
-        Color relleno = new Color(208f/255f, 104f/255f, 63f/255f, 1f);
-    batch.setColor(relleno);
-    batch.draw(texPixel, x + 1, y + 1, w - 2, h - 2);
-        
+        Color relleno = new Color(208f / 255f, 104f / 255f, 63f / 255f, 1f);
+        batch.setColor(relleno);
+        batch.draw(texPixel, x + 1, y + 1, w - 2, h - 2);
+
         batch.setColor(borde);
         // Borde de 1px — dibuja 4 líneas finas
         batch.draw(texPixel, x, y, w, 1);          // abajo
@@ -174,7 +207,6 @@ public class PantallaStats extends PantallaBase {
             return;
         }
 
-        // Convertir coordenadas de pantalla a coordenadas del viewport
         com.badlogic.gdx.math.Vector2 touchPos = new com.badlogic.gdx.math.Vector2(
                 Gdx.input.getX(), Gdx.input.getY());
         viewport.unproject(touchPos);
@@ -182,19 +214,55 @@ public class PantallaStats extends PantallaBase {
         float tx = touchPos.x;
         float ty = touchPos.y;
 
-        // Área aproximada de cada tab (ancho ~80px, alto ~20px desde su posición)
+        // Tabs
         if (estaEnArea(tx, ty, 62.1f, 148.5f, 70, 20)) {
             tabActual = Tab.RANKING;
+            return;
         } else if (estaEnArea(tx, ty, 175f, 148.5f, 100, 20)) {
             tabActual = Tab.SOLICITUDES;
+            return;
         } else if (estaEnArea(tx, ty, 350f, 148.5f, 80, 20)) {
             tabActual = Tab.PARTIDAS;
+            return;
         } else if (estaEnArea(tx, ty, 473.4f, 148.5f, 80, 20)) {
             tabActual = Tab.COMPARAR;
+            return;
+        }
+
+        // Solo procesa botones del tab Solicitudes si está activo
+        if (tabActual != Tab.SOLICITUDES) {
+            return;
+        }
+
+        Usuario u = juego.getUsuarioActual();
+        if (u == null) {
+            return;
+        }
+
+        // Botón ENVIAR
+        if (estaEnArea(tx, ty, 290f, 210f, 80f, 30f)) {
+            enviarSolicitud();
+            return;
+        }
+
+        // Botones ACEPTAR/RECHAZAR por cada solicitud
+        java.util.List<String> pendientes = new java.util.ArrayList<>(u.getSolicitudesPendientes());
+        float y = 285f;
+        for (String solicitante : pendientes) {
+            if (estaEnArea(tx, ty, 280f, y - 15f, 80f, 25f)) {
+                GestorUsuarios.aceptarSolicitud(u, solicitante);
+                return;
+            }
+            if (estaEnArea(tx, ty, 370f, y - 15f, 90f, 25f)) {
+                GestorUsuarios.rechazarSolicitud(u, solicitante);
+                return;
+            }
+            y += 35f;
         }
     }
 
-    private boolean estaEnArea(float tx, float ty, float x, float y, float w, float h) {
+
+private boolean estaEnArea(float tx, float ty, float x, float y, float w, float h) {
         float yLib = 550 - y - h;
         return tx >= x && tx <= x + w && ty >= yLib && ty <= yLib + h;
     }
@@ -246,8 +314,91 @@ public class PantallaStats extends PantallaBase {
 
     // ============ TAB SOLICITUDES ============
     private void dibujarSolicitudes() {
+        Usuario u = juego.getUsuarioActual();
+        if (u == null) {
+            return;
+        }
+
         fuente.setColor(COLOR_NORMAL);
-        fuente.draw(batch, "SOLICITUDES - PROXIMAMENTE", 80f, 550 - 200f);
+
+        // Label del campo
+        fuente.draw(batch, "AGREGAR AMIGO:", 75f, 550 - 200f);
+
+        // Mostrar/ocultar el textfield según el tab
+        campoAgregarAmigo.setVisible(tabActual == Tab.SOLICITUDES);
+
+        // Botón Enviar — texto con borde
+        dibujarBotonTexto("ENVIAR", 290f, 210f, 80f, 30f);
+
+        // Título solicitudes
+        fuente.draw(batch, "SOLICITUDES PENDIENTES:", 75f, 550 - 260f);
+
+        // Lista de solicitudes pendientes
+        java.util.List<String> pendientes = u.getSolicitudesPendientes();
+        if (pendientes.isEmpty()) {
+            fuente.draw(batch, "No tienes solicitudes", 90f, 550 - 285f);
+        } else {
+            float y = 285f;
+            for (String solicitante : pendientes) {
+                fuente.draw(batch, solicitante, 90f, 550 - y);
+                dibujarBotonTexto("ACEPTAR", 280f, y - 15f, 80f, 25f);
+                dibujarBotonTexto("RECHAZAR", 370f, y - 15f, 90f, 25f);
+                y += 35f;
+            }
+        }
+
+        // Lista de amigos
+        fuente.draw(batch, "MIS AMIGOS:", 75f, 550 - 400f);
+        java.util.List<String> amigos = u.getAmigos();
+        if (amigos.isEmpty()) {
+            fuente.draw(batch, "Aun no tienes amigos", 90f, 550 - 425f);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (String amigo : amigos) {
+                sb.append(amigo).append("  ");
+            }
+            fuente.draw(batch, sb.toString(), 90f, 550 - 425f);
+        }
+    }
+
+    private TextField.TextFieldStyle crearEstiloTextFieldSimple() {
+        TextField.TextFieldStyle estilo = new TextField.TextFieldStyle();
+        estilo.font = fuente;
+        estilo.fontColor = COLOR_NORMAL;
+        estilo.messageFontColor = new Color(117f / 255f, 58f / 255f, 50f / 255f, 0.6f);
+
+        com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(
+                1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+        pixmap.setColor(1f, 1f, 1f, 0.3f);
+        pixmap.fill();
+        estilo.background = new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
+
+        com.badlogic.gdx.graphics.Pixmap cursorMap = new com.badlogic.gdx.graphics.Pixmap(
+                2, 25, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+        cursorMap.setColor(COLOR_NORMAL);
+        cursorMap.fill();
+        estilo.cursor = new TextureRegionDrawable(new Texture(cursorMap));
+        cursorMap.dispose();
+
+        return estilo;
+    }
+
+    private void enviarSolicitud() {
+        String destino = campoAgregarAmigo.getText().trim();
+        Usuario actual = juego.getUsuarioActual();
+
+        if (destino.isEmpty() || actual == null) {
+            return;
+        }
+
+        boolean enviado = GestorUsuarios.enviarSolicitud(actual.getUsername(), destino);
+
+        String mensaje = enviado
+                ? "Solicitud enviada"
+                : "Usuario no encontrado o ya son amigos";
+
+        juego.setScreen(new PantallaAdvertencia(juego, mensaje, new PantallaStats(juego)));
     }
 
     // ============ TAB COMPARAR ============
@@ -263,7 +414,7 @@ public class PantallaStats extends PantallaBase {
     }
 
     @Override
-    public void resize(int w, int h) {
+public void resize(int w, int h) {
         viewport.update(w, h, true);
         if (stage != null) {
             stage.getViewport().update(w, h, true);
@@ -271,7 +422,7 @@ public class PantallaStats extends PantallaBase {
     }
 
     @Override
-    public void dispose() {
+public void dispose() {
         texFondo.dispose();
         texExit.dispose();
         texVolumen.dispose();
