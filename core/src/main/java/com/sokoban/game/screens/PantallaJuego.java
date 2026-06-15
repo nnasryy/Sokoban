@@ -20,6 +20,7 @@ import com.sokoban.game.SokobanGame;
 import com.sokoban.game.logica.Constantes;
 import com.sokoban.game.logica.Tablero;
 import com.sokoban.game.niveles.GestorNiveles;
+import com.sokoban.game.hilos.HiloTimer;
 
 public class PantallaJuego extends PantallaBase {
 
@@ -42,7 +43,7 @@ public class PantallaJuego extends PantallaBase {
     private int numeroNivel;
 
     // Timer
-    private float tiempoSegundos = 0f;
+    private HiloTimer hiloTimer;
     private boolean jugando = true;
 
     // Tamaño del mapa en pantalla
@@ -103,7 +104,7 @@ public class PantallaJuego extends PantallaBase {
             @Override
             public void clicked(InputEvent e, float x, float y) {
                 tablero.reiniciar();
-                tiempoSegundos = 0f;
+                hiloTimer.reiniciar();
                 jugando = true;
             }
         });
@@ -145,6 +146,8 @@ public class PantallaJuego extends PantallaBase {
         stage.addActor(btnRestart);
         stage.addActor(btnRevert);
         stage.addActor(btnExit);
+        hiloTimer = new HiloTimer();
+        hiloTimer.start();
     }
 
     private void cargarTiles() {
@@ -173,11 +176,6 @@ public class PantallaJuego extends PantallaBase {
             return;
         }
 
-        // Actualizar timer
-        if (jugando) {
-            tiempoSegundos += delta;
-        }
-
         // Input teclado
         manejarInput();
 
@@ -204,16 +202,18 @@ public class PantallaJuego extends PantallaBase {
 // Texto tiempo — negro, Pixellari28
         fuenteHUD.setColor(Color.BLACK);
         fuenteHUD.draw(batch,
-                formatearTiempo((int) tiempoSegundos),
+                formatearTiempo(hiloTimer.getSegundos()),
                 682.4f, 628 - 35f);
-        // Dibujar mapa
+
         dibujarMapa();
 
         batch.end();
 
         // Verificar victoria
+        // Verificar victoria
         if (tablero.nivelCompleto() && jugando) {
             jugando = false;
+            hiloTimer.pausar();
             guardarProgreso();
             irSiguienteNivel();
         }
@@ -292,7 +292,7 @@ public class PantallaJuego extends PantallaBase {
             return;
         }
         juego.getUsuarioActual().registrarPartida(
-                numeroNivel, (long) tiempoSegundos, true);
+                numeroNivel, hiloTimer.getSegundos(), true);
         juego.getUsuarioActual().desbloquearSiguienteNivel();
         com.sokoban.game.usuarios.GestorUsuarios
                 .guardarUsuario(juego.getUsuarioActual());
@@ -325,7 +325,6 @@ public class PantallaJuego extends PantallaBase {
         texHUD.dispose();
         texRestart.dispose();
         texRevert.dispose();
-        fuenteNivel.dispose();
         fuenteNivel24.dispose();
         fuenteHUD.dispose();
         texJugador.dispose();
@@ -341,6 +340,9 @@ public class PantallaJuego extends PantallaBase {
         }
         if (stage != null) {
             stage.dispose();
+        }
+        if (hiloTimer != null) {
+            hiloTimer.detener();
         }
     }
 }
