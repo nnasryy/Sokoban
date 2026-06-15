@@ -42,7 +42,7 @@ public class PantallaAdvertencia extends PantallaBase {
         texBtnOk = new Texture("imagenes/botones/exit_button.png");
 
         fuente = new BitmapFont(
-                Gdx.files.internal("fuentes/Pixellari28.fnt"));
+                Gdx.files.internal("fuentes/Pixellari24.fnt"));
         fuente.getData().setScale(1f);
         fuente.setColor(Color.WHITE);
 

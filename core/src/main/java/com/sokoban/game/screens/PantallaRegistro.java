@@ -149,13 +149,13 @@ public class PantallaRegistro extends PantallaBase {
         }
         if (!ValidadorContrasena.nombreLongitudValida(nombre)) {
             juego.setScreen(new PantallaAdvertencia(juego,
-                    "El nombre debe tener entre 3 y 5 caracteres",
+                    "El nombre debe tener entre 3 y 8 caracteres",
                     new PantallaRegistro(juego)));
             return;
         }
         if (!ValidadorContrasena.usernameLongitudValida(username)) {
             juego.setScreen(new PantallaAdvertencia(juego,
-                    "El username debe tener entre 3 y 5 caracteres",
+                    "El username debe tener entre 3 y 8 caracteres",
                     new PantallaRegistro(juego)));
             return;
         }

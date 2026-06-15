@@ -48,7 +48,7 @@ public class PantallaMenu extends PantallaBase {
             @Override
             public void clicked(InputEvent e, float x, float y) {
                 int nivelAJugar = juego.getUsuarioActual().getNivelesDesbloqueados() - 1;
-              juego.setScreen(new PantallaSeleccionNivel(juego));
+                juego.setScreen(new PantallaSeleccionNivel(juego));
             }
         });
 
@@ -78,7 +78,8 @@ public class PantallaMenu extends PantallaBase {
         btnExit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                Gdx.app.exit();
+                juego.setUsuarioActual(null); // cierra sesión
+                juego.setScreen(new PantallaInicio(juego));
             }
         });
 

@@ -72,26 +72,27 @@ public class Usuario implements Serializable {
             amigos.add(usernameAmigo);
         }
     }
+
     public List<String> getSolicitudesPendientes() {
-    return solicitudesPendientes;
-}
-
-public void recibirSolicitud(String deUsername) {
-    if (!solicitudesPendientes.contains(deUsername) 
-        && !amigos.contains(deUsername)) {
-        solicitudesPendientes.add(deUsername);
+        return solicitudesPendientes;
     }
-}
 
-public void aceptarSolicitud(String username) {
-    if (solicitudesPendientes.remove(username)) {
-        agregarAmigo(username);
+    public void recibirSolicitud(String deUsername) {
+        if (!solicitudesPendientes.contains(deUsername)
+                && !amigos.contains(deUsername)) {
+            solicitudesPendientes.add(deUsername);
+        }
     }
-}
 
-public void rechazarSolicitud(String username) {
-    solicitudesPendientes.remove(username);
-}
+    public void aceptarSolicitud(String username) {
+        if (solicitudesPendientes.remove(username)) {
+            agregarAmigo(username);
+        }
+    }
+
+    public void rechazarSolicitud(String username) {
+        solicitudesPendientes.remove(username);
+    }
 
     public void registrarPartida(int nivel, long tiempo, boolean completado) {
         partidasJugadas++;
@@ -234,9 +235,18 @@ public void rechazarSolicitud(String username) {
         return nivelesDesbloqueados;
     }
 
+    public void setNombreCompleto(String nombre) {
+        this.nombreCompleto = nombre;
+    }
+
+    public void cambiarPassword(String nuevaPassword) {
+        this.passwordHash = Integer.toHexString(nuevaPassword.hashCode());
+    }
+
     public void desbloquearSiguienteNivel() {
         if (nivelesDesbloqueados < 5) {
             nivelesDesbloqueados++;
         }
+
     }
 }

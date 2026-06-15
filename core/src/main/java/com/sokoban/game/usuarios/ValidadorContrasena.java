@@ -35,14 +35,13 @@ public class ValidadorContrasena {
                 && tieneCaracterEspecial(password);
     }
 
-    public static boolean usernameLongitudValida(String username) {
-        return username.length() >= 3 && username.length() <= 5;
-    }
+   public static boolean usernameLongitudValida(String username) {
+    return username.length() >= 3 && username.length() <= 8;
+}
 
-    public static boolean nombreLongitudValida(String nombre) {
-        return nombre.length() >= 3 && nombre.length() <= 5;
-    }
-
+public static boolean nombreLongitudValida(String nombre) {
+    return nombre.length() >= 3 && nombre.length() <= 8;
+}
     public static boolean passwordLongitudValida(String password) {
         return password.length() <= 5;
     }
