@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -24,50 +28,47 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
     private BitmapFont fuenteTitulo;
     private BitmapFont fuenteTab;
     private Stage stage;
-
     private Texture texDefault;
     private Texture texCapaPiel;
     private Texture texCapaCabello;
     private Texture texCapaVest;
-
-    private int selPiel    = 0;
+    private int selPiel = 0;
     private int selCabello = 0;
-    private int selVest    = 0;
+    private int selVest = 0;
 
-    private enum TabAvatar { PIEL, CABELLO, VEST }
+    private enum TabAvatar {
+        PIEL, CABELLO, VEST
+    }
     private TabAvatar tabActivo = TabAvatar.PIEL;
-
-    private static final float AV_X      = 257.1f;
+    private static final float AV_X = 257.1f;
     private static final float AV_Y_CANVA = 140.4f;
-    private static final float AV_W      = 148.9f;
-    private static final float AV_H      = 185.8f;
-
-    // Constantes del panel
-    private static final float CUAD_W  = 77.4f;
-    private static final float CUAD_H  = 73.9f;
+    private static final float AV_W = 148.9f;
+    private static final float AV_H = 185.8f;
+    private static final float CUAD_W = 77.4f;
+    private static final float CUAD_H = 73.9f;
     private static final float CUAD_GAP = 27f;
-    private static final float CUAD_Y  = 421f;
+    private static final float CUAD_Y = 421f;
     private static final float TAB_Y_CANVA = 354.4f;
     private static final float[] TABS_X = {221.1f, 307.1f, 393.1f};
 
     public PantallaPersonalizarAvatar(SokobanGame juego, Usuario usuario, boolean esBoy) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
         this.usuario = usuario;
-        this.esBoy   = esBoy;
+        this.esBoy = esBoy;
     }
 
     @Override
     public void show() {
         Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        texFondo   = new Texture("imagenes/fondos/FondoAzul.png");
-        texExit    = new Texture("imagenes/botones/exit_button.png");
+        texFondo = new Texture("imagenes/fondos/FondoAzul.png");
+        texExit = new Texture("imagenes/botones/exit_button.png");
         texVolumen = new Texture("imagenes/botones/volume_button.png");
-        texListo   = new Texture("imagenes/botones/listo_button.png");
+        texListo = new Texture("imagenes/botones/listo_button.png");
 
         String prefijo = esBoy ? "Boy" : "Girl";
-        texDefault = new Texture("imagenes/avatar/" + prefijo +
-            "/" + prefijo + "DefaultAvatar.png");
+        texDefault = new Texture("imagenes/avatar/" + prefijo
+                + "/" + prefijo + "DefaultAvatar.png");
 
         fuenteTitulo = new BitmapFont(Gdx.files.internal("fuentes/Pixellari60.fnt"));
         fuenteTitulo.getData().setScale(1f);
@@ -75,7 +76,7 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         fuenteTab.getData().setScale(1f);
 
         com.badlogic.gdx.graphics.Pixmap pm = new com.badlogic.gdx.graphics.Pixmap(
-            1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+                1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         pm.setColor(Color.WHITE);
         pm.fill();
         texPixel = new Texture(pm);
@@ -87,7 +88,7 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         Gdx.input.setInputProcessor(stage);
 
         ImageButton btnExit = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texExit)));
+                new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setSize(120.9f, 50.3f);
         btnExit.setPosition(10.7f, 550 - 281.5f - 50.3f);
         btnExit.addListener(new ClickListener() {
@@ -98,11 +99,11 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         });
 
         ImageButton btnVolumen = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texVolumen)));
+                new TextureRegionDrawable(new TextureRegion(texVolumen)));
         btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
 
         ImageButton btnListo = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texListo)));
+                new TextureRegionDrawable(new TextureRegion(texListo)));
         btnListo.setSize(182f, 62f);
         btnListo.setPosition(468f, 550 - 275f - 62f);
         btnListo.addListener(new ClickListener() {
@@ -120,32 +121,38 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
     private void cargarCapas() {
         String prefijo = esBoy ? "Boy" : "Girl";
 
-        // Piel
         String[] pielNombres = {"", "DarkSkin", "PaleSkin"};
-        if (texCapaPiel != null) { texCapaPiel.dispose(); texCapaPiel = null; }
+        if (texCapaPiel != null) {
+            texCapaPiel.dispose();
+            texCapaPiel = null;
+        }
         if (selPiel > 0) {
-            texCapaPiel = new Texture("imagenes/avatar/" + prefijo +
-                "/Skintones/" + prefijo + pielNombres[selPiel] + ".png");
+            texCapaPiel = new Texture("imagenes/avatar/" + prefijo
+                    + "/Skintones/" + prefijo + pielNombres[selPiel] + ".png");
         }
 
-        // Cabello
         String[] cabellosGirl = {"", "PinkHair", "YellowHair", "GreenHair", "BlueHair"};
-        String[] cabellosBoy  = {"", "PinkHair", "YellowHair", "GreenHair", "BlueHair", "OrangeHair"};
+        String[] cabellosBoy = {"", "PinkHair", "YellowHair", "GreenHair", "BlueHair", "OrangeHair"};
         String[] cabellos = esBoy ? cabellosBoy : cabellosGirl;
-        if (texCapaCabello != null) { texCapaCabello.dispose(); texCapaCabello = null; }
+        if (texCapaCabello != null) {
+            texCapaCabello.dispose();
+            texCapaCabello = null;
+        }
         if (selCabello > 0) {
-            texCapaCabello = new Texture("imagenes/avatar/" + prefijo +
-                "/Hairs/" + prefijo + cabellos[selCabello] + ".png");
+            texCapaCabello = new Texture("imagenes/avatar/" + prefijo
+                    + "/Hairs/" + prefijo + cabellos[selCabello] + ".png");
         }
 
-        // Vest
         String[] vestsGirl = {"", "BlueVest", "PinkVest", "OrangeVest", "YellowVest"};
-        String[] vestsBoy  = {"", "GreenVest", "PinkVest", "OrangeVest", "YellowVest"};
+        String[] vestsBoy = {"", "GreenVest", "PinkVest", "OrangeVest", "YellowVest"};
         String[] vests = esBoy ? vestsBoy : vestsGirl;
-        if (texCapaVest != null) { texCapaVest.dispose(); texCapaVest = null; }
+        if (texCapaVest != null) {
+            texCapaVest.dispose();
+            texCapaVest = null;
+        }
         if (selVest > 0) {
-            texCapaVest = new Texture("imagenes/avatar/" + prefijo +
-                "/Vests/" + prefijo + vests[selVest] + ".png");
+            texCapaVest = new Texture("imagenes/avatar/" + prefijo
+                    + "/Vests/" + prefijo + vests[selVest] + ".png");
         }
     }
 
@@ -160,7 +167,9 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
 
     @Override
     public void render(float delta) {
-        if (texFondo == null) return;
+        if (texFondo == null) {
+            return;
+        }
 
         manejarClicksPanel();
 
@@ -174,18 +183,23 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         boolean ingles = "en".equals(juego.getUsuarioActual().getIdioma());
         String titulo = ingles ? "CUSTOMIZE YOUR AVATAR" : "PERSONALIZA TU AVATAR";
         fuenteTitulo.setColor(Color.WHITE);
-        com.badlogic.gdx.graphics.g2d.GlyphLayout layout =
-            new com.badlogic.gdx.graphics.g2d.GlyphLayout();
+        com.badlogic.gdx.graphics.g2d.GlyphLayout layout
+                = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
         layout.setText(fuenteTitulo, titulo, Color.WHITE, 650,
-            com.badlogic.gdx.utils.Align.center, false);
+                com.badlogic.gdx.utils.Align.center, false);
         fuenteTitulo.draw(batch, layout, 0f, 550 - 75.9f);
 
-        // Avatar capas
         float avY = 550 - AV_Y_CANVA - AV_H;
         batch.draw(texDefault, AV_X, avY, AV_W, AV_H);
-        if (texCapaPiel    != null) batch.draw(texCapaPiel,    AV_X, avY, AV_W, AV_H);
-        if (texCapaCabello != null) batch.draw(texCapaCabello, AV_X, avY, AV_W, AV_H);
-        if (texCapaVest    != null) batch.draw(texCapaVest,    AV_X, avY, AV_W, AV_H);
+        if (texCapaPiel != null) {
+            batch.draw(texCapaPiel, AV_X, avY, AV_W, AV_H);
+        }
+        if (texCapaCabello != null) {
+            batch.draw(texCapaCabello, AV_X, avY, AV_W, AV_H);
+        }
+        if (texCapaVest != null) {
+            batch.draw(texCapaVest, AV_X, avY, AV_W, AV_H);
+        }
 
         dibujarPanel(ingles);
 
@@ -196,9 +210,9 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
     }
 
     private void dibujarPanel(boolean ingles) {
-        Color colorFondo  = new Color(208f/255f, 104f/255f, 63f/255f, 1f);
-        Color colorBorde  = new Color(87f/255f,  41f/255f,  35f/255f, 1f);
-        Color colorNormal = new Color(117f/255f, 58f/255f,  50f/255f, 1f);
+        Color colorFondo = new Color(208f / 255f, 104f / 255f, 63f / 255f, 1f);
+        Color colorBorde = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
+        Color colorNormal = new Color(117f / 255f, 58f / 255f, 50f / 255f, 1f);
 
         float panelY = 550 - 344.9f - 205.1f;
 
@@ -208,10 +222,9 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         batch.draw(texPixel, 0, panelY + 205.1f - 4, 650, 4);
         batch.setColor(Color.WHITE);
 
-        // Tabs
         float tabY = 550 - TAB_Y_CANVA;
         String[] tabsEs = {"TONO DE PIEL", "CABELLO", "UNIFORME"};
-        String[] tabsEn = {"SKIN TONE",    "HAIR",    "UNIFORM"};
+        String[] tabsEn = {"SKIN TONE", "HAIR", "UNIFORM"};
         String[] tabs = ingles ? tabsEn : tabsEs;
         TabAvatar[] tabVals = {TabAvatar.PIEL, TabAvatar.CABELLO, TabAvatar.VEST};
 
@@ -220,64 +233,63 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
             fuenteTab.draw(batch, tabs[i], TABS_X[i], tabY);
         }
 
-        // Opciones
         switch (tabActivo) {
             case PIEL:
                 dibujarOpcionColor(201.5f, CUAD_Y, CUAD_W, CUAD_H, CUAD_GAP,
-                    new Color[]{
-                        new Color(255f/255f, 144f/255f, 100f/255f, 1f),
-                        new Color(160f/255f, 109f/255f, 75f/255f,  1f),
-                        new Color(255f/255f, 194f/255f, 169f/255f, 1f)
-                    }, selPiel);
+                        new Color[]{
+                            new Color(255f / 255f, 144f / 255f, 100f / 255f, 1f),
+                            new Color(160f / 255f, 109f / 255f, 75f / 255f, 1f),
+                            new Color(255f / 255f, 194f / 255f, 169f / 255f, 1f)
+                        }, selPiel);
                 break;
             case CABELLO:
                 Color[] coloresCab = esBoy
-                    ? new Color[]{
-                        new Color(0f,    219f/255f, 78f/255f,  1f),
-                        new Color(1f,    0f,        184f/255f, 1f),
-                        new Color(1f,    245f/255f, 0f,        1f),
-                        new Color(0f,    219f/255f, 78f/255f,  1f),
-                        new Color(0f,    72f/255f,  1f,        1f),
-                        new Color(1f,    142f/255f, 0f,        1f)
-                      }
-                    : new Color[]{
-                        new Color(1f,    142f/255f, 0f,        1f),
-                        new Color(1f,    0f,        184f/255f, 1f),
-                        new Color(1f,    245f/255f, 0f,        1f),
-                        new Color(0f,    219f/255f, 78f/255f,  1f),
-                        new Color(0f,    72f/255f,  1f,        1f)
-                      };
+                        ? new Color[]{
+                            new Color(0f, 219f / 255f, 78f / 255f, 1f),
+                            new Color(1f, 0f, 184f / 255f, 1f),
+                            new Color(1f, 245f / 255f, 0f, 1f),
+                            new Color(0f, 219f / 255f, 78f / 255f, 1f),
+                            new Color(0f, 72f / 255f, 1f, 1f),
+                            new Color(1f, 142f / 255f, 0f, 1f)
+                        }
+                        : new Color[]{
+                            new Color(1f, 142f / 255f, 0f, 1f),
+                            new Color(1f, 0f, 184f / 255f, 1f),
+                            new Color(1f, 245f / 255f, 0f, 1f),
+                            new Color(0f, 219f / 255f, 78f / 255f, 1f),
+                            new Color(0f, 72f / 255f, 1f, 1f)
+                        };
                 dibujarOpcionColor(98.2f, CUAD_Y, CUAD_W, CUAD_H, CUAD_GAP,
-                    coloresCab, selCabello);
+                        coloresCab, selCabello);
                 break;
             case VEST:
                 Color[] coloresVest = esBoy
-                    ? new Color[]{
-                        new Color(0f,    72f/255f,  1f,        1f),
-                        new Color(0f,    219f/255f, 78f/255f,  1f),
-                        new Color(1f,    0f,        184f/255f, 1f),
-                        new Color(1f,    142f/255f, 0f,        1f),
-                        new Color(1f,    245f/255f, 0f,        1f)
-                      }
-                    : new Color[]{
-                        new Color(0f,    177f/255f, 139f/255f, 1f),
-                        new Color(0f,    72f/255f,  1f,        1f),
-                        new Color(1f,    0f,        184f/255f, 1f),
-                        new Color(1f,    142f/255f, 0f,        1f),
-                        new Color(1f,    245f/255f, 0f,        1f)
-                      };
+                        ? new Color[]{
+                            new Color(0f, 72f / 255f, 1f, 1f),
+                            new Color(0f, 219f / 255f, 78f / 255f, 1f),
+                            new Color(1f, 0f, 184f / 255f, 1f),
+                            new Color(1f, 142f / 255f, 0f, 1f),
+                            new Color(1f, 245f / 255f, 0f, 1f)
+                        }
+                        : new Color[]{
+                            new Color(0f, 177f / 255f, 139f / 255f, 1f),
+                            new Color(0f, 72f / 255f, 1f, 1f),
+                            new Color(1f, 0f, 184f / 255f, 1f),
+                            new Color(1f, 142f / 255f, 0f, 1f),
+                            new Color(1f, 245f / 255f, 0f, 1f)
+                        };
                 dibujarOpcionColor(98.2f, CUAD_Y, CUAD_W, CUAD_H, CUAD_GAP,
-                    coloresVest, selVest);
+                        coloresVest, selVest);
                 break;
         }
     }
 
     private void dibujarOpcionColor(float startX, float yCanva, float w, float h,
-                                     float gap, Color[] colores, int seleccionado) {
-        Color colorBorde = new Color(87f/255f, 41f/255f, 35f/255f, 1f);
+            float gap, Color[] colores, int seleccionado) {
+        Color colorBorde = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
 
         for (int i = 0; i < colores.length; i++) {
-            float x    = startX + i * (w + gap);
+            float x = startX + i * (w + gap);
             float yBase = 550 - yCanva - h;
 
             batch.setColor(colores[i]);
@@ -285,36 +297,36 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
 
             int grosor = (i == seleccionado) ? 4 : 2;
             batch.setColor(colorBorde);
-            batch.draw(texPixel, x,           yBase,           w,      grosor);
-            batch.draw(texPixel, x,           yBase + h - grosor, w,   grosor);
-            batch.draw(texPixel, x,           yBase,           grosor, h);
-            batch.draw(texPixel, x + w - grosor, yBase,        grosor, h);
+            batch.draw(texPixel, x, yBase, w, grosor);
+            batch.draw(texPixel, x, yBase + h - grosor, w, grosor);
+            batch.draw(texPixel, x, yBase, grosor, h);
+            batch.draw(texPixel, x + w - grosor, yBase, grosor, h);
 
             batch.setColor(Color.WHITE);
         }
     }
 
     private void manejarClicksPanel() {
-        if (!Gdx.input.justTouched()) return;
+        if (!Gdx.input.justTouched()) {
+            return;
+        }
 
         com.badlogic.gdx.math.Vector2 tp = new com.badlogic.gdx.math.Vector2(
-            Gdx.input.getX(), Gdx.input.getY());
+                Gdx.input.getX(), Gdx.input.getY());
         viewport.unproject(tp);
         float tx = tp.x, ty = tp.y;
 
         float tabY = 550 - TAB_Y_CANVA;
         TabAvatar[] tabVals = {TabAvatar.PIEL, TabAvatar.CABELLO, TabAvatar.VEST};
 
-        // Click en tabs
         for (int i = 0; i < 3; i++) {
-            if (tx >= TABS_X[i] && tx <= TABS_X[i] + 100f &&
-                ty >= tabY - 20f && ty <= tabY + 5f) {
+            if (tx >= TABS_X[i] && tx <= TABS_X[i] + 100f
+                    && ty >= tabY - 20f && ty <= tabY + 5f) {
                 tabActivo = tabVals[i];
                 return;
             }
         }
 
-        // Click en opciones de color
         int maxOpciones = 0;
         float startX = 98.2f;
 
@@ -335,12 +347,18 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
 
         for (int i = 0; i < maxOpciones; i++) {
             float cx = startX + i * (CUAD_W + CUAD_GAP);
-            if (tx >= cx && tx <= cx + CUAD_W &&
-                ty >= yBase && ty <= yBase + CUAD_H) {
+            if (tx >= cx && tx <= cx + CUAD_W
+                    && ty >= yBase && ty <= yBase + CUAD_H) {
                 switch (tabActivo) {
-                    case PIEL:    selPiel    = i; break;
-                    case CABELLO: selCabello = i; break;
-                    case VEST:    selVest    = i; break;
+                    case PIEL:
+                        selPiel = i;
+                        break;
+                    case CABELLO:
+                        selCabello = i;
+                        break;
+                    case VEST:
+                        selVest = i;
+                        break;
                 }
                 cargarCapas();
                 return;
@@ -351,7 +369,9 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
     @Override
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        if (stage != null) stage.getViewport().update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
     }
 
     @Override
@@ -364,9 +384,17 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         texPixel.dispose();
         fuenteTitulo.dispose();
         fuenteTab.dispose();
-        if (texCapaPiel    != null) texCapaPiel.dispose();
-        if (texCapaCabello != null) texCapaCabello.dispose();
-        if (texCapaVest    != null) texCapaVest.dispose();
-        if (stage != null) stage.dispose();
+        if (texCapaPiel != null) {
+            texCapaPiel.dispose();
+        }
+        if (texCapaCabello != null) {
+            texCapaCabello.dispose();
+        }
+        if (texCapaVest != null) {
+            texCapaVest.dispose();
+        }
+        if (stage != null) {
+            stage.dispose();
+        }
     }
 }

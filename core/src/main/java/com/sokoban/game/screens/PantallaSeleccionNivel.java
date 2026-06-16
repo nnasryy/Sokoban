@@ -24,12 +24,11 @@ public class PantallaSeleccionNivel extends PantallaBase {
     private BitmapFont fuenteTitulo;
     private Stage stage;
     private Texture texVolumen;
-
     private static final float[] XS = {36f, 148.4f, 271.4f, 400.1f, 523.9f};
     private static final float Y_NIVEL = 216.5f;
     private static final float ANCHO_BLOQUE = 90f;
     private static final float ALTO_BLOQUE = 100f;
-    private BitmapFont fuenteNumeros; // Pixellari35
+    private BitmapFont fuenteNumeros;
 
     public PantallaSeleccionNivel(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -68,7 +67,7 @@ public class PantallaSeleccionNivel extends PantallaBase {
         Texture[] texturas = {texNivel1, texNivel2, texNivel3, texNivel4, texNivel1};
 
         for (int i = 0; i < 5; i++) {
-            final int numeroNivel = i; // 0-indexado
+            final int numeroNivel = i;
 
             ImageButton btnNivel = new ImageButton(
                     new TextureRegionDrawable(new TextureRegion(texturas[i])));
@@ -88,7 +87,6 @@ public class PantallaSeleccionNivel extends PantallaBase {
 
             stage.addActor(btnNivel);
 
-            // Candado encima si está bloqueado
             if (!desbloqueado) {
                 ImageButton candado = new ImageButton(
                         new TextureRegionDrawable(new TextureRegion(texCandado)));
@@ -99,7 +97,6 @@ public class PantallaSeleccionNivel extends PantallaBase {
             }
         }
 
-        // Botón Competitivo
         ImageButton btnCompetitivo = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texCompetitivo)));
         btnCompetitivo.setSize(224f, 77f);
@@ -111,7 +108,6 @@ public class PantallaSeleccionNivel extends PantallaBase {
             }
         });
 
-        // Botón Exit
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setSize(120.9f, 50.3f);
@@ -130,7 +126,6 @@ public class PantallaSeleccionNivel extends PantallaBase {
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                // música después
             }
         });
         stage.addActor(btnVolumen);

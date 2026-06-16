@@ -68,7 +68,6 @@ public class PantallaInicio extends PantallaBase {
             @Override
             public void clicked(InputEvent e, float x, float y) {
                 musicaActiva = !musicaActiva;
-                // Aquí después controlarás la música
             }
         });
 

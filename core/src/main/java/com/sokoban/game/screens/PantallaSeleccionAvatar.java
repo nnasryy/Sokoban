@@ -77,7 +77,7 @@ public class PantallaSeleccionAvatar extends PantallaBase {
             public void clicked(InputEvent e, float x, float y) {
             }
         });
-// Botón GirlAvatar
+
         Texture texGirl = new Texture("imagenes/botones/GirlAvatar.png");
         ImageButton btnGirl = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texGirl)));
@@ -90,7 +90,6 @@ public class PantallaSeleccionAvatar extends PantallaBase {
             }
         });
 
-// Botón BoyAvatar
         Texture texBoy = new Texture("imagenes/botones/BoyAvatar.png");
         ImageButton btnBoy = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBoy)));

@@ -17,8 +17,8 @@ public class PantallaFelicidades extends PantallaBase {
 
     private Texture texFondo;
     private Texture texBtnSeleccionar, texBtnMenu;
-    private BitmapFont fuenteTitulo;   // Pixellari60
-    private BitmapFont fuenteSubtitulo; // Pixellari35
+    private BitmapFont fuenteTitulo;
+    private BitmapFont fuenteSubtitulo;
     private Stage stage;
     private String mensajeGanador = null;
 
@@ -26,7 +26,6 @@ public class PantallaFelicidades extends PantallaBase {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
     }
 
-// Agrega este constructor adicional (deja el original):
     public PantallaFelicidades(SokobanGame juego, String mensajeGanador) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
         this.mensajeGanador = mensajeGanador;
@@ -37,12 +36,10 @@ public class PantallaFelicidades extends PantallaBase {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // Texturas
         texFondo = new Texture("imagenes/fondos/Fondodefault.png");
         texBtnSeleccionar = new Texture("imagenes/botones/SeleccionarNivel.png");
         texBtnMenu = new Texture("imagenes/botones/RegresarAMenu.png");
 
-        // Fuentes
         fuenteTitulo = new BitmapFont(
                 Gdx.files.internal("fuentes/Pixellari60.fnt"));
         fuenteTitulo.getData().setScale(1f);
@@ -51,12 +48,10 @@ public class PantallaFelicidades extends PantallaBase {
                 Gdx.files.internal("fuentes/Pixellari35.fnt"));
         fuenteSubtitulo.getData().setScale(1f);
 
-        // Stage
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // Botón Seleccionar Nivel
         ImageButton btnSeleccionar = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnSeleccionar)));
         btnSeleccionar.setSize(215.7f, 73.9f);
@@ -68,7 +63,6 @@ public class PantallaFelicidades extends PantallaBase {
             }
         });
 
-        // Botón Regresar al Menú
         ImageButton btnMenu = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnMenu)));
         btnMenu.setSize(215.7f, 73.9f);
@@ -95,21 +89,17 @@ public class PantallaFelicidades extends PantallaBase {
 
         batch.begin();
 
-        // Fondo
         batch.draw(texFondo, 0, 0, 650, 550);
 
-        // Título — idioma dinámico
         com.badlogic.gdx.graphics.g2d.GlyphLayout layout
                 = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
 
-// Título centrado horizontalmente en 650px
         String titulo = obtenerTitulo();
         fuenteTitulo.setColor(Color.WHITE);
         layout.setText(fuenteTitulo, titulo, Color.WHITE, 650,
                 com.badlogic.gdx.utils.Align.center, false);
         fuenteTitulo.draw(batch, layout, 0f, 550 - 96.4f);
 
-// Subtítulo centrado
         String username = juego.getUsuarioActual() != null
                 ? juego.getUsuarioActual().getUsername().toUpperCase()
                 : "JUGADOR";

@@ -20,13 +20,12 @@ public class Tablero {
     private Deque<int[][]> historial = new ArrayDeque<>();
     private int[][] gridInicial;
 
-    // Paredes por nivel
     private static final int[][] PAREDES_POR_NIVEL = {
-        {1, 2, 7}, // Nivel 1
-        {1}, // Nivel 2
-        {1, 2}, // Nivel 3
-        {1, 2}, // Nivel 4
-        {1, 2, 7} // Nivel 5
+        {1, 2, 7},
+        {1},
+        {1, 2},
+        {1, 2},
+        {1, 2, 7}
     };
 
     public Tablero(int numeroNivel) {
@@ -40,7 +39,7 @@ public class Tablero {
 
         this.totalMetas = NivelData.contarMetas(numeroNivel);
         inicializar();
-        guardarHistorial(); // estado inicial para revert
+        guardarHistorial();
     }
 
     private void inicializar() {
@@ -76,7 +75,6 @@ public class Tablero {
     }
 
     private boolean esCaminable(int valor) {
-        // Solo 0 (vacio) es caminable además de meta y suelo
         return valor == VACIO || valor == META;
     }
 
@@ -94,7 +92,6 @@ public class Tablero {
             return false;
         }
 
-        // Si hay caja intenta empujarla
         if (celdaDestino == CAJA || celdaDestino == CAJA_EN_META) {
             int nx2 = nx + dx;
             int ny2 = ny + dy;
@@ -105,7 +102,6 @@ public class Tablero {
 
             int celdaSiguiente = grid[ny2][nx2];
 
-            // La caja no puede empujarse a pared ni a otra caja
             if (esPared(celdaSiguiente)) {
                 return false;
             }
@@ -113,12 +109,11 @@ public class Tablero {
                     || celdaSiguiente == CAJA_EN_META) {
                 return false;
             }
-            // La caja tampoco puede ir fuera del camino
             if (!esCaminable(celdaSiguiente)) {
                 return false;
             }
 
-            guardarHistorial(); // guarda antes de mover para revert
+            guardarHistorial();
             empujarCaja(nx, ny, nx2, ny2);
         } else if (!esCaminable(celdaDestino)) {
             return false;
@@ -126,8 +121,6 @@ public class Tablero {
             guardarHistorial();
         }
 
-        // Mover jugador
-        // Mover jugador — restaura meta si había una
         grid[jugadorY][jugadorX] = esMeta[jugadorY][jugadorX] ? META : VACIO;
         jugadorX = nx;
         jugadorY = ny;
@@ -158,10 +151,9 @@ public class Tablero {
     }
 
     private void guardarHistorial() {
-        historial.push(copiarGrid()); // CAMBIO — usa la Deque
+        historial.push(copiarGrid());
     }
 
-    // Revert — deshace el último movimiento
     public void revert() {
         if (historial.isEmpty()) {
             return;
@@ -183,7 +175,6 @@ public class Tablero {
         return copia;
     }
 
-    // Restart — reinicia el nivel completo
     public void reiniciar() {
         historial.clear();
         movimientos = 0;
@@ -199,7 +190,6 @@ public class Tablero {
         return cajasEnMeta == totalMetas && totalMetas > 0;
     }
 
-    // Getters
     public int[][] getGrid() {
         return grid;
     }

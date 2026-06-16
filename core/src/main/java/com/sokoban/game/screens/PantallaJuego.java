@@ -24,45 +24,33 @@ import com.sokoban.game.hilos.HiloTimer;
 
 public class PantallaJuego extends PantallaBase {
 
-    // HUD
     private Texture texHUD;
     private Texture texRestart, texRevert, texExit;
-    private BitmapFont fuenteNivel;    // Pixellari 14
-    private BitmapFont fuenteHUD;      // Pixellari 28
+    private BitmapFont fuenteNivel;
+    private BitmapFont fuenteHUD;
     private Stage stage;
     private BitmapFont fuenteNivel24;
     private int intentos = 1;
-    // Tiles — se cargan según el nivel
     private Texture[] tiles;
-// Modo competitivo
     private boolean modoCompetitivo = false;
     private String nombreJ1 = "";
     private String nombreJ2 = "";
-    private int turnoActual = 1;        // 1 o 2
-    private int tiempoJ1 = -1;          // segundos al terminar J1
-    // Sprite jugador
-    // Sprites de animación
-    private Texture[] spritesIdle = new Texture[4]; // bottom, left, right, top
-    private Texture[] spritesLeftF = new Texture[4]; // walkingleftfoot
-    private Texture[] spritesRightF = new Texture[4]; // walkingrightfoot
-
-    private int direccionActual = 0; // 0=bottom,1=left,2=right,3=top
-    private boolean pieDerecho = false;  // alterna entre leftfoot/rightfoot
+    private int turnoActual = 1;
+    private int tiempoJ1 = -1;
+    private Texture[] spritesIdle = new Texture[4];
+    private Texture[] spritesLeftF = new Texture[4];
+    private Texture[] spritesRightF = new Texture[4];
+    private int direccionActual = 0;
+    private boolean pieDerecho = false;
     private float tiempoFrame = 0f;
-    private static final float DURACION_FRAME = 0.15f; // segundos por frame
-    private boolean seMovio = false;  // flag para alternar pie
-
-    // Lógica
+    private static final float DURACION_FRAME = 0.15f;
+    private boolean seMovio = false;
     private Tablero tablero;
     private int numeroNivel;
-
-    // Timer
     private HiloTimer hiloTimer;
     private boolean jugando = true;
-
-    // Tamaño del mapa en pantalla
     private static final float MAPA_X = 160.6f;
-    private static final float MAPA_Y_TOP = 94.8f;   // desde arriba en Canva
+    private static final float MAPA_Y_TOP = 94.8f;
     private static final float MAPA_ANCHO = 607f;
     private static final float MAPA_ALTO = 533f;
 
@@ -87,10 +75,8 @@ public class PantallaJuego extends PantallaBase {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_GAME, SokobanGame.ALTO_GAME);
 
-        // Cargar tablero
         tablero = GestorNiveles.cargarNivel(numeroNivel);
 
-        // HUD
         String[] fondosPorNivel = {
             "FondoNivel1", "FondoNivel2", "FondoNivel3", "FondoNivel4", "FondoNivel1"
         };
@@ -98,7 +84,6 @@ public class PantallaJuego extends PantallaBase {
         texRestart = new Texture("imagenes/botones/restart.png");
         texRevert = new Texture("imagenes/botones/revert.png");
 
-        // Fuentes
         fuenteNivel24 = new BitmapFont(
                 Gdx.files.internal("fuentes/Pixellari24.fnt"));
         fuenteNivel24.getData().setScale(1f);
@@ -107,10 +92,8 @@ public class PantallaJuego extends PantallaBase {
                 Gdx.files.internal("fuentes/Pixellari28.fnt"));
         fuenteHUD.getData().setScale(1f);
 
-        // Cargar tiles del nivel actual
         cargarTiles();
 
-        // Determinar carpeta según avatar
         String carpetaAvatar;
         if (juego.getUsuarioActual() != null && juego.getUsuarioActual().getTipoAvatar() == 1) {
             carpetaAvatar = "imagenes/avatar/girl_sprite/";
@@ -124,12 +107,10 @@ public class PantallaJuego extends PantallaBase {
             spritesLeftF[i] = new Texture(carpetaAvatar + "walkingleftfoot_" + dirs[i] + ".png");
             spritesRightF[i] = new Texture(carpetaAvatar + "walkingrightfoot_" + dirs[i] + ".png");
         }
-        // Stage
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_GAME, SokobanGame.ALTO_GAME));
         Gdx.input.setInputProcessor(stage);
 
-        // Botón Restart
         ImageButton btnRestart = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texRestart)));
         btnRestart.pack();
@@ -139,13 +120,11 @@ public class PantallaJuego extends PantallaBase {
             @Override
             public void clicked(InputEvent e, float x, float y) {
                 tablero.reiniciar();
-                // CAMBIO — NO hacer hiloTimer.reiniciar(), el tiempo sigue corriendo
-                intentos++;         // CAMBIO — cuenta el intento
+                intentos++;
                 jugando = true;
             }
         });
 
-        // Botón Revert
         ImageButton btnRevert = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texRevert)));
         btnRevert.pack();
@@ -158,7 +137,6 @@ public class PantallaJuego extends PantallaBase {
             }
         });
 
-// Botón Exit
         texExit = new Texture("imagenes/botones/exit_button.png");
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
@@ -179,10 +157,8 @@ public class PantallaJuego extends PantallaBase {
     }
 
     private void cargarTiles() {
-        // Busca las imágenes del nivel actual
-        // Cada nivel tiene su carpeta: tiles/nivel1/, tiles/nivel2/, etc.
         String carpeta = "imagenes/tiles/nivel" + (numeroNivel + 1) + "/";
-        int maxTiles = 12; // máximo número de tiles posibles
+        int maxTiles = 12;
         tiles = new Texture[maxTiles];
 
         for (int i = 0; i < maxTiles; i++) {
@@ -193,7 +169,6 @@ public class PantallaJuego extends PantallaBase {
                     tiles[i] = new Texture(file);
                 }
             } catch (Exception e) {
-                // tile no existe para este nivel
             }
         }
     }
@@ -204,7 +179,6 @@ public class PantallaJuego extends PantallaBase {
             return;
         }
 
-        // Input teclado
         manejarInput(delta);
 
         viewport.apply();
@@ -212,7 +186,6 @@ public class PantallaJuego extends PantallaBase {
 
         batch.begin();
 
-        // Dibujar HUD de fondo
         batch.draw(texHUD, 0, 0, 1000, 628);
 
         boolean ingles = juego.getUsuarioActual() != null
@@ -237,27 +210,22 @@ public class PantallaJuego extends PantallaBase {
         fuenteHUD.draw(batch,
                 formatearTiempo(hiloTimer.getSegundos()),
                 682.4f, 628 - 35f);
-// Turno actual (solo en modo competitivo)
-if (modoCompetitivo) {
-    String textoTurno = ingles
-        ? "TURN: " + (turnoActual == 1 ? nombreJ1 : nombreJ2)
-        : "TURNO: " + (turnoActual == 1 ? nombreJ1 : nombreJ2);
-    fuenteHUD.setColor(Color.BLACK);
-    fuenteHUD.draw(batch, textoTurno, 854.2f, 628 - 157.1f);
+        if (modoCompetitivo) {
+            String textoTurno = ingles
+                    ? "TURN: " + (turnoActual == 1 ? nombreJ1 : nombreJ2)
+                    : "TURNO: " + (turnoActual == 1 ? nombreJ1 : nombreJ2);
+            fuenteHUD.setColor(Color.BLACK);
+            fuenteHUD.draw(batch, textoTurno, 854.2f, 628 - 157.1f);
 
-    // Quién es el jugador actual en pixellari18 — necesitarás cargar esa fuente
-    // Por ahora usa fuenteNivel24 como aproximación:
-    fuenteNivel24.setColor(Color.BLACK);
-    fuenteNivel24.draw(batch,
-        turnoActual == 1 ? nombreJ1 : nombreJ2,
-        866f, 628 - 190.6f);
-}
+            fuenteNivel24.setColor(Color.BLACK);
+            fuenteNivel24.draw(batch,
+                    turnoActual == 1 ? nombreJ1 : nombreJ2,
+                    866f, 628 - 190.6f);
+        }
         dibujarMapa();
 
         batch.end();
 
-        // Verificar victoria
-        // Verificar victoria
         if (tablero.nivelCompleto() && jugando) {
             jugando = false;
             hiloTimer.pausar();
@@ -307,13 +275,13 @@ if (modoCompetitivo) {
         }
 
         if (seMovio) {
-            tiempoFrame += delta; // acumula tiempo — ver paso 4
+            tiempoFrame += delta;
             if (tiempoFrame >= DURACION_FRAME) {
                 tiempoFrame = 0f;
-                pieDerecho = !pieDerecho; // alterna pie
+                pieDerecho = !pieDerecho;
             }
         } else {
-            tiempoFrame = 0f; // resetea al detenerse
+            tiempoFrame = 0f;
         }
     }
 
@@ -322,7 +290,6 @@ if (modoCompetitivo) {
                 && "en".equals(juego.getUsuarioActual().getIdioma());
 
         if (turnoActual == 1) {
-            // J1 terminó — guardar su tiempo y pasar turno a J2
             int tiempoFinalJ1 = hiloTimer.getSegundos();
             String msg = ingles
                     ? "Player 1 finished in " + formatearTiempo(tiempoFinalJ1) + "!\nNow it's Player 2's turn."
@@ -333,10 +300,9 @@ if (modoCompetitivo) {
                             nombreJ1, nombreJ2, 2, tiempoFinalJ1)));
 
         } else {
-            // J2 terminó — comparar tiempos y mostrar ganador
             int tiempoFinalJ2 = hiloTimer.getSegundos();
             String ganador;
-            boolean ingles2 = ingles; // ya la tenemos
+            boolean ingles2 = ingles;
 
             if (tiempoJ1 < tiempoFinalJ2) {
                 ganador = ingles2
@@ -363,17 +329,14 @@ if (modoCompetitivo) {
         float tileAlto = MAPA_ALTO / filas;
         float mapaYlibGDX = 628 - MAPA_Y_TOP - MAPA_ALTO;
 
-        // Primera pasada — todos los tiles de fondo
         for (int fila = 0; fila < filas; fila++) {
             for (int col = 0; col < columnas; col++) {
                 int valor = grid[fila][col];
                 float px = MAPA_X + col * tileAncho;
                 float py = mapaYlibGDX + (filas - 1 - fila) * tileAlto;
 
-                // Si es jugador dibuja el tile de debajo (0)
                 int tileBase = (valor == Constantes.JUGADOR) ? Constantes.VACIO : valor;
 
-// No dibuja nada si es VACIO (0) — el fondo del nivel se ve a través
                 if (tileBase != Constantes.VACIO
                         && tileBase >= 0 && tileBase < tiles.length
                         && tiles[tileBase] != null) {
@@ -382,8 +345,6 @@ if (modoCompetitivo) {
             }
         }
 
-        // Segunda pasada — jugador encima de todo
-        // Segunda pasada — jugador encima de todo
         for (int fila = 0; fila < filas; fila++) {
             for (int col = 0; col < columnas; col++) {
                 if (grid[fila][col] == Constantes.JUGADOR) {
@@ -392,7 +353,6 @@ if (modoCompetitivo) {
 
                     Texture spriteActual;
                     if (!seMovio) {
-                        // Quieto → idle en la dirección que miraba
                         spriteActual = spritesIdle[direccionActual];
                     } else if (pieDerecho) {
                         spriteActual = spritesRightF[direccionActual];

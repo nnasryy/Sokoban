@@ -29,15 +29,12 @@ public class PantallaMisDatos extends PantallaBase {
     private BitmapFont fuenteLabel;
     private BitmapFont fuente18;
     private Stage stage;
-
     private TextField campoNombre, campoUsername, campoPassword;
     private boolean mostrarPassword = false;
     private ImageButton btnOjo;
-
     private Color colorEspecial = Color.RED;
-    private Color colorNumero   = Color.RED;
-    private Color colorCaract   = Color.RED;
-
+    private Color colorNumero = Color.RED;
+    private Color colorCaract = Color.RED;
     private boolean ingles;
 
     public PantallaMisDatos(SokobanGame juego) {
@@ -48,17 +45,15 @@ public class PantallaMisDatos extends PantallaBase {
     public void show() {
         Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // Leer idioma UNA vez
         ingles = juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma());
 
-        texFondo      = new Texture("imagenes/fondos/FondoAzul.png");
-        texExit       = new Texture("imagenes/botones/exit_button.png");
-        texVolumen    = new Texture("imagenes/botones/volume_button.png");
+        texFondo = new Texture("imagenes/fondos/FondoAzul.png");
+        texExit = new Texture("imagenes/botones/exit_button.png");
+        texVolumen = new Texture("imagenes/botones/volume_button.png");
         texOjoAbierto = new Texture("imagenes/botones/OpenedEye.png");
         texOjoCerrado = new Texture("imagenes/botones/ClosedEye.png");
 
-        // Botón guardar según idioma
         texBtnGuardar = new Texture(ingles
                 ? "imagenes/botones/Save.png"
                 : "imagenes/botones/Guardar.png");
@@ -86,16 +81,13 @@ public class PantallaMisDatos extends PantallaBase {
 
         var usuario = juego.getUsuarioActual();
 
-        // Campo Nombre — editable
         campoNombre = new TextField(usuario.getNombreCompleto(), estilo);
         campoNombre.setBounds(236.2f, 550 - 165.7f - 52.9f, 288.9f, 52.9f);
 
-        // Campo Username — NO editable
         campoUsername = new TextField(usuario.getUsername(), estilo);
         campoUsername.setBounds(236.2f, 550 - 231.2f - 52.9f, 288.9f, 52.9f);
         campoUsername.setDisabled(true);
 
-        // Campo Password
         campoPassword = new TextField("", estilo);
         campoPassword.setMessageText("********");
         campoPassword.setPasswordMode(true);
@@ -105,12 +97,11 @@ public class PantallaMisDatos extends PantallaBase {
         campoPassword.setTextFieldListener((field, c) -> {
             String pass = field.getText();
             colorEspecial = ValidadorContrasena.tieneCaracterEspecial(pass) ? Color.GREEN : Color.RED;
-            colorNumero   = ValidadorContrasena.tieneNumero(pass)           ? Color.GREEN : Color.RED;
-            colorCaract   = (ValidadorContrasena.tieneMinCaracteres(pass)
-                          && ValidadorContrasena.passwordLongitudValida(pass)) ? Color.GREEN : Color.RED;
+            colorNumero = ValidadorContrasena.tieneNumero(pass) ? Color.GREEN : Color.RED;
+            colorCaract = (ValidadorContrasena.tieneMinCaracteres(pass)
+                    && ValidadorContrasena.passwordLongitudValida(pass)) ? Color.GREEN : Color.RED;
         });
 
-        // Botón ojo — FIX: usar TextureRegionDrawable actualizable correctamente
         btnOjo = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texOjoCerrado)));
         btnOjo.setSize(50, 45);
@@ -120,35 +111,33 @@ public class PantallaMisDatos extends PantallaBase {
             public void clicked(InputEvent e, float x, float y) {
                 mostrarPassword = !mostrarPassword;
                 campoPassword.setPasswordMode(!mostrarPassword);
-                // FIX: actualizar ícono correctamente
                 ((TextureRegionDrawable) btnOjo.getStyle().imageUp)
                         .setRegion(new TextureRegion(
                                 mostrarPassword ? texOjoAbierto : texOjoCerrado));
             }
         });
 
-        // Botón Guardar
         ImageButton btnGuardar = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnGuardar)));
         btnGuardar.setSize(223.7f, 76.7f);
         btnGuardar.setPosition(213.1f, 550 - 418.3f - 76.7f);
         btnGuardar.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent e, float x, float y) {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
                 guardarCambios();
             }
         });
 
-        // Exit
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setBounds(8.5f, 550 - 410.8f - 50f, 120.9f, 50.3f);
         btnExit.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent e, float x, float y) {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
                 juego.setScreen(new PantallaConfiguracion(juego));
             }
         });
 
-        // Volumen
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
@@ -164,13 +153,13 @@ public class PantallaMisDatos extends PantallaBase {
 
     private void guardarCambios() {
         var usuario = juego.getUsuarioActual();
-        String nuevoNombre   = campoNombre.getText().trim();
+        String nuevoNombre = campoNombre.getText().trim();
         String nuevaPassword = campoPassword.getText();
 
         if (!ValidadorContrasena.nombreLongitudValida(nuevoNombre)) {
             juego.setScreen(new PantallaAdvertencia(juego,
                     ingles ? "Name must be between 3 and 8 characters"
-                           : "El nombre debe tener entre 3 y 8 caracteres",
+                            : "El nombre debe tener entre 3 y 8 caracteres",
                     new PantallaMisDatos(juego)));
             return;
         }
@@ -181,7 +170,7 @@ public class PantallaMisDatos extends PantallaBase {
             if (!ValidadorContrasena.esValida(nuevaPassword)) {
                 juego.setScreen(new PantallaAdvertencia(juego,
                         ingles ? "Password does not meet the requirements"
-                               : "La nueva contrasena no cumple los requisitos",
+                                : "La nueva contrasena no cumple los requisitos",
                         new PantallaMisDatos(juego)));
                 return;
             }
@@ -191,20 +180,20 @@ public class PantallaMisDatos extends PantallaBase {
         GestorUsuarios.guardarUsuario(usuario);
         juego.setScreen(new PantallaAdvertencia(juego,
                 ingles ? "Data saved successfully"
-                       : "Datos guardados correctamente",
+                        : "Datos guardados correctamente",
                 new PantallaConfiguracion(juego)));
     }
 
     private TextField.TextFieldStyle crearEstiloTextField() {
         TextField.TextFieldStyle estilo = new TextField.TextFieldStyle();
         estilo.font = fuente18;
-        Color colorTexto = new Color(87f/255f, 41f/255f, 35f/255f, 1f);
-        estilo.fontColor        = colorTexto;
+        Color colorTexto = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
+        estilo.fontColor = colorTexto;
         estilo.messageFontColor = colorTexto;
 
         com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(
                 1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
-        pixmap.setColor(208f/255f, 104f/255f, 63f/255f, 1f);
+        pixmap.setColor(208f / 255f, 104f / 255f, 63f / 255f, 1f);
         pixmap.fill();
         estilo.background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
@@ -221,7 +210,9 @@ public class PantallaMisDatos extends PantallaBase {
 
     @Override
     public void render(float delta) {
-        if (texFondo == null) return;
+        if (texFondo == null) {
+            return;
+        }
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -229,19 +220,16 @@ public class PantallaMisDatos extends PantallaBase {
         batch.begin();
         batch.draw(texFondo, 0, 0, 650, 550);
 
-        // Título
         fuenteTitulo.setColor(Color.WHITE);
         fuenteTitulo.draw(batch,
                 ingles ? "MY INFO" : "MIS DATOS",
                 48.2f, 550 - 55f);
 
-        // Labels
         fuenteLabel.setColor(Color.WHITE);
-        fuenteLabel.draw(batch, ingles ? "NAME:"     : "NOMBRE:",   55f,  550 - 170.6f);
-        fuenteLabel.draw(batch, ingles ? "USERNAME:" : "USUARIO:",  54.2f, 550 - 242.1f);
-        fuenteLabel.draw(batch, "PASSWORD:",                         54.2f, 550 - 302.5f);
+        fuenteLabel.draw(batch, ingles ? "NAME:" : "NOMBRE:", 55f, 550 - 170.6f);
+        fuenteLabel.draw(batch, ingles ? "USERNAME:" : "USUARIO:", 54.2f, 550 - 242.1f);
+        fuenteLabel.draw(batch, "PASSWORD:", 54.2f, 550 - 302.5f);
 
-        // Requisitos contraseña
         float yReq = 550 - 371.5f;
 
         fuente18.setColor(colorEspecial);
@@ -268,21 +256,45 @@ public class PantallaMisDatos extends PantallaBase {
     @Override
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        if (stage != null) stage.getViewport().update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
     }
 
     @Override
     public void dispose() {
-        if (texFondo       != null) texFondo.dispose();
-        if (texExit        != null) texExit.dispose();
-        if (texVolumen     != null) texVolumen.dispose();
-        if (texBtnGuardar  != null) texBtnGuardar.dispose();
-        if (texOjoAbierto  != null) texOjoAbierto.dispose();
-        if (texOjoCerrado  != null) texOjoCerrado.dispose();
-        if (texPixel       != null) texPixel.dispose();
-        if (fuenteTitulo   != null) fuenteTitulo.dispose();
-        if (fuenteLabel    != null) fuenteLabel.dispose();
-        if (fuente18       != null) fuente18.dispose();
-        if (stage          != null) stage.dispose();
+        if (texFondo != null) {
+            texFondo.dispose();
+        }
+        if (texExit != null) {
+            texExit.dispose();
+        }
+        if (texVolumen != null) {
+            texVolumen.dispose();
+        }
+        if (texBtnGuardar != null) {
+            texBtnGuardar.dispose();
+        }
+        if (texOjoAbierto != null) {
+            texOjoAbierto.dispose();
+        }
+        if (texOjoCerrado != null) {
+            texOjoCerrado.dispose();
+        }
+        if (texPixel != null) {
+            texPixel.dispose();
+        }
+        if (fuenteTitulo != null) {
+            fuenteTitulo.dispose();
+        }
+        if (fuenteLabel != null) {
+            fuenteLabel.dispose();
+        }
+        if (fuente18 != null) {
+            fuente18.dispose();
+        }
+        if (stage != null) {
+            stage.dispose();
+        }
     }
 }

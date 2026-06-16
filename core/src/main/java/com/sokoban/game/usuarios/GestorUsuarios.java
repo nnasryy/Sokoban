@@ -88,7 +88,6 @@ public class GestorUsuarios {
         });
         return todos;
     }
-    // Envía solicitud de A hacia B
 
     public static boolean enviarSolicitud(String deUsername, String aUsername) {
         if (!existeUsuario(aUsername)) {
@@ -103,7 +102,6 @@ public class GestorUsuarios {
             return false;
         }
 
-        // Verifica que no sean ya amigos
         if (destino.getAmigos().contains(deUsername)) {
             return false;
         }

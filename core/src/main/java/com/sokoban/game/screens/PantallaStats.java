@@ -34,8 +34,8 @@ public class PantallaStats extends PantallaBase {
     private enum Tab {
         RANKING, PARTIDAS, SOLICITUDES, COMPARAR
     }
-    private Tab tabActual = Tab.PARTIDAS;
 
+    private Tab tabActual = Tab.PARTIDAS;
     private static final Color COLOR_FONDO_CUADRO = new Color(208f / 255f, 104f / 255f, 63f / 255f, 1f);
     private static final Color COLOR_BORDE = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
     private static final Color COLOR_TAB_NORMAL = new Color(117f / 255f, 58f / 255f, 50f / 255f, 1f);
@@ -43,22 +43,17 @@ public class PantallaStats extends PantallaBase {
     private static final Color COLOR_DATOS = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
     private static final Color COLOR_VERDE = new Color(0f / 255f, 130f / 255f, 0f / 255f, 1f);
     private static final Color COLOR_ROJO = new Color(180f / 255f, 0f / 255f, 0f / 255f, 1f);
-
     private static final float CX = 37.8f, CY_TOP = 127.2f, CW = 577.3f, CH = 343.2f;
     private static final float IX = 64.8f, IY_TOP = 187.6f, IW = 523.5f, IH = 271.4f;
     private static final float[] TAB_X = {62f, 170f, 340f, 464f};
     private static final float[] TAB_W = {90f, 110f, 85f, 85f};
     private static final float TAB_Y_TOP = 148.5f;
     private static final float TAB_H = 22f;
-
     private TextField campoBusqueda;
     private String mensajeSolicitud = "";
     private Color colorMensaje = COLOR_DATOS;
     private String amigoSeleccionado = null;
-
-    // Idioma
     private boolean ingles;
-
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     public PantallaStats(SokobanGame juego) {
@@ -69,7 +64,6 @@ public class PantallaStats extends PantallaBase {
     public void show() {
         Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // Leer idioma UNA vez al mostrar
         ingles = juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma());
 
@@ -92,7 +86,6 @@ public class PantallaStats extends PantallaBase {
         stage = new Stage(new FitViewport(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // Campo búsqueda solicitudes
         TextField.TextFieldStyle estilo = crearEstiloTextField();
         campoBusqueda = new TextField("", estilo);
         campoBusqueda.setMessageText(ingles ? "SEARCH USER..." : "BUSCAR USUARIO...");
@@ -100,7 +93,6 @@ public class PantallaStats extends PantallaBase {
         campoBusqueda.setVisible(false);
         stage.addActor(campoBusqueda);
 
-        // Exit
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setSize(120.9f, 50.3f);
@@ -112,7 +104,6 @@ public class PantallaStats extends PantallaBase {
             }
         });
 
-        // Volumen
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
@@ -139,7 +130,6 @@ public class PantallaStats extends PantallaBase {
         dibujarRect(CX, CY_TOP, CW, CH);
         dibujarRect(IX, IY_TOP, IW, IH);
 
-        // Tabs con idioma
         String[] labels = ingles
                 ? new String[]{"RANKING", "REQUESTS", "MATCHES", "COMPARE"}
                 : new String[]{"RANKING", "SOLICITUDES", "PARTIDAS", "COMPARAR"};
@@ -175,9 +165,6 @@ public class PantallaStats extends PantallaBase {
         stage.draw();
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    // TAB: PARTIDAS / MATCHES
-    // ═════════════════════════════════════════════════════════════════════════
     private void dibujarPartidas() {
         Usuario u = juego.getUsuarioActual();
         if (u == null) {
@@ -213,9 +200,6 @@ public class PantallaStats extends PantallaBase {
         }
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    // TAB: RANKING
-    // ═════════════════════════════════════════════════════════════════════════
     private void dibujarRanking() {
         List<Usuario> ranking = GestorUsuarios.getRanking();
 
@@ -256,9 +240,6 @@ public class PantallaStats extends PantallaBase {
         }
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    // TAB: SOLICITUDES / REQUESTS
-    // ═════════════════════════════════════════════════════════════════════════
     private void dibujarSolicitudes() {
         Usuario u = juego.getUsuarioActual();
         if (u == null) {
@@ -269,13 +250,11 @@ public class PantallaStats extends PantallaBase {
         float yIni = IY_TOP + 15f;
         float esp = 24f;
 
-        // Label búsqueda
         fuenteDatos.setColor(COLOR_BORDE);
         fuenteDatos.draw(batch,
                 ingles ? "SEARCH AND ADD FRIEND:" : "BUSCAR Y AGREGAR AMIGO:",
                 x, 550 - yIni);
 
-        // Botón ENVIAR / SEND
         float btnEnviarX = IX + IW - 110f;
         float btnEnviarY = IY_TOP + 42f;
         dibujarBotonTexto(ingles ? "SEND" : "ENVIAR", btnEnviarX, btnEnviarY);
@@ -288,13 +267,11 @@ public class PantallaStats extends PantallaBase {
             }
         }
 
-        // Mensaje resultado
         if (!mensajeSolicitud.isEmpty()) {
             fuenteDatos.setColor(colorMensaje);
             fuenteDatos.draw(batch, mensajeSolicitud, x, 550 - (yIni + esp * 2f + 5f));
         }
 
-        // Solicitudes recibidas
         float ySol = yIni + esp * 3.5f;
         List<String> solicitudes = u.getSolicitudesPendientes();
 
@@ -341,7 +318,6 @@ public class PantallaStats extends PantallaBase {
             }
         }
 
-        // Lista amigos
         float yAm = ySol + esp * 4f;
         List<String> amigos = u.getAmigos();
 
@@ -371,9 +347,6 @@ public class PantallaStats extends PantallaBase {
         }
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    // TAB: COMPARAR / COMPARE
-    // ═════════════════════════════════════════════════════════════════════════
     private void dibujarComparar() {
         Usuario yo = juego.getUsuarioActual();
         if (yo == null) {
@@ -400,7 +373,6 @@ public class PantallaStats extends PantallaBase {
             return;
         }
 
-        // Botones de amigos
         float xBtn = x;
         float yBtn = yIni + esp;
         int maxAmigos = Math.min(amigos.size(), 4);
@@ -451,7 +423,6 @@ public class PantallaStats extends PantallaBase {
             return;
         }
 
-        // Encabezado tabla
         float yTabla = yIni + esp * 2.5f;
         fuenteDatos.setColor(COLOR_BORDE);
         fuenteDatos.draw(batch,
@@ -462,7 +433,6 @@ public class PantallaStats extends PantallaBase {
                 x, 550 - yTabla);
         dibujarLinea(x, yTabla + 18f, IW - 15f);
 
-        // Filas
         String[][] filas = ingles ? new String[][]{
             {"MATCHES PLAYED", String.valueOf(yo.getPartidasJugadas()), String.valueOf(ellos.getPartidasJugadas())},
             {"LEVELS COMPLET.", String.valueOf(yo.getNivelesCompletados()), String.valueOf(ellos.getNivelesCompletados())},
@@ -495,7 +465,6 @@ public class PantallaStats extends PantallaBase {
             fuenteDatos.draw(batch, filas[i][2], x + 320f, 550 - yFila);
         }
 
-        // Veredicto
         float yVeredicto = yTabla + esp * 5.5f;
         boolean yoMejor = yo.getNivelesCompletados() >= ellos.getNivelesCompletados();
         fuenteDatos.setColor(yoMejor ? COLOR_VERDE : COLOR_DATOS);
@@ -509,9 +478,6 @@ public class PantallaStats extends PantallaBase {
                 x, 550 - yVeredicto);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────────────────
     private void enviarSolicitud() {
         String destino = campoBusqueda.getText().trim();
         if (destino.isEmpty()) {

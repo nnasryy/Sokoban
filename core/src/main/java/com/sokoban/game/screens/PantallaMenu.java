@@ -33,17 +33,15 @@ public class PantallaMenu extends PantallaBase {
     public void show() {
         Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // Leer idioma UNA vez al mostrar
         ingles = juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma());
 
-        texFondo    = new Texture("imagenes/fondos/MenuPrincipal.png");
-        texExit     = new Texture("imagenes/botones/exit_button.png");
-        texVolumen  = new Texture("imagenes/botones/volume_button.png");
+        texFondo = new Texture("imagenes/fondos/MenuPrincipal.png");
+        texExit = new Texture("imagenes/botones/exit_button.png");
+        texVolumen = new Texture("imagenes/botones/volume_button.png");
 
-        // Botones según idioma
-        texPlay     = new Texture(ingles ? "imagenes/botones/play_button.png" : "imagenes/botones/Jugar.png");
-        texStats    = new Texture("imagenes/botones/stats_button.png");
+        texPlay = new Texture(ingles ? "imagenes/botones/play_button.png" : "imagenes/botones/Jugar.png");
+        texStats = new Texture("imagenes/botones/stats_button.png");
         texSettings = new Texture(ingles ? "imagenes/botones/settings_button.png" : "imagenes/botones/Ajustes.png");
 
         stage = new Stage(new FitViewport(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
@@ -53,7 +51,8 @@ public class PantallaMenu extends PantallaBase {
                 new TextureRegionDrawable(new TextureRegion(texPlay)));
         btnPlay.setBounds(189.5f, 550 - 159.4f - 93f, 271f, 93f);
         btnPlay.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent e, float x, float y) {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
                 juego.setScreen(new PantallaSeleccionNivel(juego));
             }
         });
@@ -62,7 +61,8 @@ public class PantallaMenu extends PantallaBase {
                 new TextureRegionDrawable(new TextureRegion(texStats)));
         btnStats.setBounds(189.5f, 550 - 258.3f - 93f, 271f, 93f);
         btnStats.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent e, float x, float y) {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
                 juego.setScreen(new PantallaStats(juego));
             }
         });
@@ -71,7 +71,8 @@ public class PantallaMenu extends PantallaBase {
                 new TextureRegionDrawable(new TextureRegion(texSettings)));
         btnSettings.setBounds(189.5f, 550 - 357.1f - 93f, 271f, 93f);
         btnSettings.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent e, float x, float y) {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
                 juego.setScreen(new PantallaConfiguracion(juego));
             }
         });
@@ -80,7 +81,8 @@ public class PantallaMenu extends PantallaBase {
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setBounds(8.5f, 550 - 410.8f - 50f, 120.9f, 50.3f);
         btnExit.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent e, float x, float y) {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
                 juego.setUsuarioActual(null);
                 juego.setScreen(new PantallaInicio(juego));
             }
@@ -99,7 +101,9 @@ public class PantallaMenu extends PantallaBase {
 
     @Override
     public void render(float delta) {
-        if (texFondo == null) return;
+        if (texFondo == null) {
+            return;
+        }
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -115,17 +119,33 @@ public class PantallaMenu extends PantallaBase {
     @Override
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        if (stage != null) stage.getViewport().update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
     }
 
     @Override
     public void dispose() {
-        if (texFondo    != null) texFondo.dispose();
-        if (texPlay     != null) texPlay.dispose();
-        if (texStats    != null) texStats.dispose();
-        if (texSettings != null) texSettings.dispose();
-        if (texExit     != null) texExit.dispose();
-        if (texVolumen  != null) texVolumen.dispose();
-        if (stage       != null) stage.dispose();
+        if (texFondo != null) {
+            texFondo.dispose();
+        }
+        if (texPlay != null) {
+            texPlay.dispose();
+        }
+        if (texStats != null) {
+            texStats.dispose();
+        }
+        if (texSettings != null) {
+            texSettings.dispose();
+        }
+        if (texExit != null) {
+            texExit.dispose();
+        }
+        if (texVolumen != null) {
+            texVolumen.dispose();
+        }
+        if (stage != null) {
+            stage.dispose();
+        }
     }
 }

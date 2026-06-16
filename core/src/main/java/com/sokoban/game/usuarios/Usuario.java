@@ -108,7 +108,6 @@ public class Usuario implements Serializable {
                 + " | " + new Date());
     }
 
-    // Getters y Setters
     public String getUsername() {
         return username;
     }

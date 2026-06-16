@@ -27,8 +27,8 @@ public class PantallaCompetitivo extends PantallaBase {
     private Texture texFondo, texExit, texPlayCompetitivo, texCandado;
     private Texture texNivel1, texNivel2, texNivel3, texNivel4;
     private Texture texPixel;
-    private BitmapFont fuenteTitulo;   // Pixellari60
-    private BitmapFont fuente18;       // Pixellari18
+    private BitmapFont fuenteTitulo;
+    private BitmapFont fuente18;
     private Stage stage;
     private TextField campoAmigo;
 
@@ -67,7 +67,6 @@ public class PantallaCompetitivo extends PantallaBase {
                 Gdx.files.internal("fuentes/Pixellari27.fnt"));
         fuente18.getData().setScale(1f);
 
-        // Pixel para fondo del textfield
         com.badlogic.gdx.graphics.Pixmap pm = new com.badlogic.gdx.graphics.Pixmap(
                 1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         pm.setColor(Color.WHITE);
@@ -79,13 +78,11 @@ public class PantallaCompetitivo extends PantallaBase {
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // TextField amigo
         TextField.TextFieldStyle estilo = crearEstiloTextField();
         campoAmigo = new TextField("", estilo);
         campoAmigo.setMessageText("USER DE AMIGO A COMPETIR");
         campoAmigo.setBounds(64.8f, 550 - 220f - 40f, 520f, 40f);
 
-        // Niveles
         int nivelesDesbloqueados = juego.getUsuarioActual() != null
                 ? juego.getUsuarioActual().getNivelesDesbloqueados() : 1;
 
@@ -122,7 +119,6 @@ public class PantallaCompetitivo extends PantallaBase {
             }
         }
 
-        // Botón Play Competitivo
         ImageButton btnPlay = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texPlayCompetitivo)));
         btnPlay.setSize(223.7f, 76.7f);
@@ -134,7 +130,6 @@ public class PantallaCompetitivo extends PantallaBase {
             }
         });
 
-        // Botón Exit
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setSize(120.9f, 50.3f);
@@ -180,7 +175,6 @@ public class PantallaCompetitivo extends PantallaBase {
                 ? "Player 1: " + nombreJ1 + "\nYour turn! Good luck."
                 : "Jugador 1: " + nombreJ1 + "\nEs tu turno! Buena suerte.";
 
-        // Muestra advertencia con turno antes de empezar
         juego.setScreen(new PantallaAdvertencia(juego, msg,
                 new PantallaJuego(juego, nivelSeleccionado,
                         nombreJ1, nombreJ2, 1, -1)));
@@ -193,7 +187,6 @@ public class PantallaCompetitivo extends PantallaBase {
         estilo.fontColor = colorTexto;
         estilo.messageFontColor = colorTexto;
 
-        // Fondo
         com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(
                 1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         pixmap.setColor(208f / 255f, 104f / 255f, 63f / 255f, 1f);
@@ -227,17 +220,15 @@ public class PantallaCompetitivo extends PantallaBase {
         fuenteTitulo.setColor(Color.WHITE);
         fuenteTitulo.draw(batch, obtenerTitulo(), 67.6f, 550 - 84.9f);
 
-        // Borde del textfield 4px
         Color colorBorde = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
         batch.setColor(colorBorde);
         float fx = 64.8f, fy = 550 - 220f - 40f, fw = 520f, fh = 40f;
-        batch.draw(texPixel, fx - 4, fy - 4, fw + 8, 4);          // abajo
-        batch.draw(texPixel, fx - 4, fy + fh, fw + 8, 4);         // arriba
-        batch.draw(texPixel, fx - 4, fy - 4, 4, fh + 8);          // izquierda
-        batch.draw(texPixel, fx + fw, fy - 4, 4, fh + 8);         // derecha
+        batch.draw(texPixel, fx - 4, fy - 4, fw + 8, 4);
+        batch.draw(texPixel, fx - 4, fy + fh, fw + 8, 4);
+        batch.draw(texPixel, fx - 4, fy - 4, 4, fh + 8);
+        batch.draw(texPixel, fx + fw, fy - 4, 4, fh + 8);
         batch.setColor(Color.WHITE);
 
-        // Texto "Selecciona el nivel"
         fuente18.setColor(colorBorde);
         fuente18.draw(batch, obtenerTextoSelecciona(), 64.8f, 550 - 290f);
 

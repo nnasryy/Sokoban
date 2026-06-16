@@ -25,7 +25,7 @@ public class PantallaConfiguracion extends PantallaBase {
     private Texture texExit, texVolumen;
     private Stage stage;
     private BitmapFont fuenteTitulo;
-    private boolean ingles; // se fija UNA vez en show() y no cambia
+    private boolean ingles;
 
     public PantallaConfiguracion(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -35,7 +35,6 @@ public class PantallaConfiguracion extends PantallaBase {
     public void show() {
         Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // Leer idioma UNA sola vez al mostrar la pantalla
         ingles = juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma());
 
@@ -53,7 +52,6 @@ public class PantallaConfiguracion extends PantallaBase {
         stage = new Stage(new FitViewport(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // Mis Datos
         ImageButton btnMisDatos = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texMisDatos)));
         btnMisDatos.setBounds(189.5f, 550 - 159.4f - 93f, 271f, 93f);
@@ -64,7 +62,6 @@ public class PantallaConfiguracion extends PantallaBase {
             }
         });
 
-        // Idioma
         ImageButton btnIdioma = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texIdioma)));
         btnIdioma.setBounds(189.5f, 550 - 258.3f - 93f, 271f, 93f);
@@ -75,7 +72,6 @@ public class PantallaConfiguracion extends PantallaBase {
             }
         });
 
-        // Cambiar Avatar
         ImageButton btnCambiarAvatar = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texCambiarAvatar)));
         btnCambiarAvatar.setBounds(189.5f, 550 - 357.1f - 93f, 271f, 93f);
@@ -86,7 +82,6 @@ public class PantallaConfiguracion extends PantallaBase {
             }
         });
 
-        // Exit → Menú
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setBounds(8.5f, 550 - 410.8f - 50f, 120.9f, 50.3f);
@@ -97,7 +92,6 @@ public class PantallaConfiguracion extends PantallaBase {
             }
         });
 
-        // Volumen
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
@@ -121,7 +115,6 @@ public class PantallaConfiguracion extends PantallaBase {
         batch.begin();
         batch.draw(texFondo, 0, 0, 650, 550);
 
-        // Usa la variable 'ingles' fijada en show(), no llama getIdioma() cada frame
         String titulo = ingles ? "SETTINGS" : "AJUSTES";
         fuenteTitulo.setColor(Color.WHITE);
         GlyphLayout layout = new GlyphLayout();
