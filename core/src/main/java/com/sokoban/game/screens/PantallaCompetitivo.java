@@ -2,6 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -46,7 +50,8 @@ public class PantallaCompetitivo extends PantallaBase {
 
         texFondo           = new Texture("imagenes/fondos/FondoAzul.png");
         texExit            = new Texture("imagenes/botones/exit_button.png");
-        texPlayCompetitivo = new Texture("imagenes/botones/PlayCompetitivo.png");
+        boolean ingles = juego.getUsuarioActual() != null && "en".equals(juego.getUsuarioActual().getIdioma());
+        texPlayCompetitivo = new Texture(ingles ? "imagenes/botones/PlayCompetitivo.png" : "imagenes/botones/JugarCompetitivo.png");
         texCandado         = new Texture("imagenes/botones/Candado.png");
 
         texNivel1 = new Texture("imagenes/botones/Nivel1Bloque.png");

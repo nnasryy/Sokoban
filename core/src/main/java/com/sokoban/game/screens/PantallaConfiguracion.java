@@ -5,16 +5,18 @@
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.sokoban.game.SokobanGame;
 
 public class PantallaConfiguracion extends PantallaBase {
@@ -23,6 +25,7 @@ public class PantallaConfiguracion extends PantallaBase {
     private Texture texExit, texVolumen;
     private Stage stage;
     private BitmapFont fuenteTitulo;
+    private boolean ingles; // se fija UNA vez en show() y no cambia
 
     public PantallaConfiguracion(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -30,29 +33,24 @@ public class PantallaConfiguracion extends PantallaBase {
 
     @Override
     public void show() {
-        Gdx.graphics.setWindowedMode(
-                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+        Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+
+        // Leer idioma UNA sola vez al mostrar la pantalla
+        ingles = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
 
         texFondo = new Texture("imagenes/fondos/FondoDefault.png");
 
-        boolean ingles = juego.getUsuarioActual() != null
-                && "en".equals(juego.getUsuarioActual().getIdioma());
-
-        texMisDatos = new Texture("imagenes/botones/"
-                + (ingles ? "MyDetails.png" : "MisDatos.png"));
-        texIdioma = new Texture("imagenes/botones/"
-                + (ingles ? "Language.png" : "Idioma.png"));
-        texCambiarAvatar = new Texture("imagenes/botones/"
-                + (ingles ? "ChangeAvatar.png" : "CambiarAvatar.png"));
-
+        texMisDatos = new Texture("imagenes/botones/" + (ingles ? "MyDetails.png" : "MisDatos.png"));
+        texIdioma = new Texture("imagenes/botones/" + (ingles ? "Language.png" : "Idioma.png"));
+        texCambiarAvatar = new Texture("imagenes/botones/" + (ingles ? "ChangeAvatar.png" : "CambiarAvatar.png"));
         texExit = new Texture("imagenes/botones/exit_button.png");
         texVolumen = new Texture("imagenes/botones/volume_button.png");
 
         fuenteTitulo = new BitmapFont(Gdx.files.internal("fuentes/Pixellari100.fnt"));
         fuenteTitulo.getData().setScale(1f);
 
-        stage = new Stage(new FitViewport(
-                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
+        stage = new Stage(new FitViewport(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
         // Mis Datos
@@ -84,12 +82,11 @@ public class PantallaConfiguracion extends PantallaBase {
         btnCambiarAvatar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                juego.setScreen(new PantallaSeleccionAvatar(
-                        juego, juego.getUsuarioActual()));
+                juego.setScreen(new PantallaSeleccionAvatar(juego, juego.getUsuarioActual()));
             }
         });
 
-        // Exit
+        // Exit → Menú
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setBounds(8.5f, 550 - 410.8f - 50f, 120.9f, 50.3f);
@@ -104,12 +101,6 @@ public class PantallaConfiguracion extends PantallaBase {
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
-        btnVolumen.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent e, float x, float y) {
-                // música después
-            }
-        });
 
         stage.addActor(btnMisDatos);
         stage.addActor(btnIdioma);
@@ -129,15 +120,14 @@ public class PantallaConfiguracion extends PantallaBase {
 
         batch.begin();
         batch.draw(texFondo, 0, 0, 650, 550);
-        boolean ingles = "en".equals(juego.getUsuarioActual().getIdioma());
-        String titulo = ingles ? "SETTINGS" : "CONFIGURACION";
 
+        // Usa la variable 'ingles' fijada en show(), no llama getIdioma() cada frame
+        String titulo = ingles ? "SETTINGS" : "AJUSTES";
         fuenteTitulo.setColor(Color.WHITE);
-        com.badlogic.gdx.graphics.g2d.GlyphLayout layout
-                = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
-        layout.setText(fuenteTitulo, titulo, Color.WHITE, 650,
-                com.badlogic.gdx.utils.Align.center, false);
+        GlyphLayout layout = new GlyphLayout();
+        layout.setText(fuenteTitulo, titulo, Color.WHITE, 650, Align.center, false);
         fuenteTitulo.draw(batch, layout, 0f, 550 - 55f);
+
         batch.end();
 
         stage.act(delta);
@@ -154,13 +144,27 @@ public class PantallaConfiguracion extends PantallaBase {
 
     @Override
     public void dispose() {
-        texFondo.dispose();
-        texMisDatos.dispose();
-        texIdioma.dispose();
-        fuenteTitulo.dispose();
-        texCambiarAvatar.dispose();
-        texExit.dispose();
-        texVolumen.dispose();
+        if (texFondo != null) {
+            texFondo.dispose();
+        }
+        if (texMisDatos != null) {
+            texMisDatos.dispose();
+        }
+        if (texIdioma != null) {
+            texIdioma.dispose();
+        }
+        if (texCambiarAvatar != null) {
+            texCambiarAvatar.dispose();
+        }
+        if (texExit != null) {
+            texExit.dispose();
+        }
+        if (texVolumen != null) {
+            texVolumen.dispose();
+        }
+        if (fuenteTitulo != null) {
+            fuenteTitulo.dispose();
+        }
         if (stage != null) {
             stage.dispose();
         }

@@ -2,6 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+ /*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.sokoban.game.usuarios;
 
 import java.io.*;
@@ -76,38 +80,52 @@ public class GestorUsuarios {
 
     public static List<Usuario> getRanking() {
         List<Usuario> todos = cargarTodos();
-        todos.sort((a, b) -> b.getPuntajeTotal() - a.getPuntajeTotal());
+        todos.sort((a, b) -> {
+            if (b.getNivelesCompletados() != a.getNivelesCompletados()) {
+                return b.getNivelesCompletados() - a.getNivelesCompletados();
+            }
+            return Long.compare(a.getTiempoTotalJugado(), b.getTiempoTotalJugado());
+        });
         return todos;
     }
     // Envía solicitud de A hacia B
-public static boolean enviarSolicitud(String deUsername, String aUsername) {
-    if (!existeUsuario(aUsername)) return false;
-    if (deUsername.equals(aUsername)) return false;
 
-    Usuario destino = cargarUsuario(aUsername);
-    if (destino == null) return false;
+    public static boolean enviarSolicitud(String deUsername, String aUsername) {
+        if (!existeUsuario(aUsername)) {
+            return false;
+        }
+        if (deUsername.equals(aUsername)) {
+            return false;
+        }
 
-    // Verifica que no sean ya amigos
-    if (destino.getAmigos().contains(deUsername)) return false;
+        Usuario destino = cargarUsuario(aUsername);
+        if (destino == null) {
+            return false;
+        }
 
-    destino.recibirSolicitud(deUsername);
-    guardarUsuario(destino);
-    return true;
-}
+        // Verifica que no sean ya amigos
+        if (destino.getAmigos().contains(deUsername)) {
+            return false;
+        }
 
-public static void aceptarSolicitud(Usuario usuarioActual, String deUsername) {
-    usuarioActual.aceptarSolicitud(deUsername);
-    guardarUsuario(usuarioActual);
-
-    Usuario otro = cargarUsuario(deUsername);
-    if (otro != null) {
-        otro.agregarAmigo(usuarioActual.getUsername());
-        guardarUsuario(otro);
+        destino.recibirSolicitud(deUsername);
+        guardarUsuario(destino);
+        return true;
     }
-}
 
-public static void rechazarSolicitud(Usuario usuarioActual, String deUsername) {
-    usuarioActual.rechazarSolicitud(deUsername);
-    guardarUsuario(usuarioActual);
-}
+    public static void aceptarSolicitud(Usuario usuarioActual, String deUsername) {
+        usuarioActual.aceptarSolicitud(deUsername);
+        guardarUsuario(usuarioActual);
+
+        Usuario otro = cargarUsuario(deUsername);
+        if (otro != null) {
+            otro.agregarAmigo(usuarioActual.getUsername());
+            guardarUsuario(otro);
+        }
+    }
+
+    public static void rechazarSolicitud(Usuario usuarioActual, String deUsername) {
+        usuarioActual.rechazarSolicitud(deUsername);
+        guardarUsuario(usuarioActual);
+    }
 }

@@ -6,42 +6,60 @@ package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
+import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
 import java.text.SimpleDateFormat;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.sokoban.game.usuarios.GestorUsuarios;
+import java.util.List;
 
 public class PantallaStats extends PantallaBase {
 
-    private Texture texFondo, texExit, texVolumen;
-    private BitmapFont fuente;
+    private Texture texFondo, texExit, texVolumen, texPixel;
+    private BitmapFont fuenteTab;
+    private BitmapFont fuenteDatos;
     private Stage stage;
-    private Texture texPixel; // para dibujar bordes y rectángulos
-    private TextField campoAgregarAmigo;
-    private Texture texPixel2; // reutilizamos texPixel si ya existe, sino crea uno
-    private java.util.List<ImageButton> botonesSolicitudes = new java.util.ArrayList<>();
 
-    // Tabs
     private enum Tab {
         RANKING, PARTIDAS, SOLICITUDES, COMPARAR
     }
     private Tab tabActual = Tab.PARTIDAS;
 
-    // Colores
-    private static final Color COLOR_NORMAL
-            = new Color(117f / 255f, 58f / 255f, 50f / 255f, 1f);
-    private static final Color COLOR_SELECCIONADO
-            = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
+    private static final Color COLOR_FONDO_CUADRO = new Color(208f / 255f, 104f / 255f, 63f / 255f, 1f);
+    private static final Color COLOR_BORDE = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
+    private static final Color COLOR_TAB_NORMAL = new Color(117f / 255f, 58f / 255f, 50f / 255f, 1f);
+    private static final Color COLOR_TAB_ACTIVO = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
+    private static final Color COLOR_DATOS = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
+    private static final Color COLOR_VERDE = new Color(0f / 255f, 130f / 255f, 0f / 255f, 1f);
+    private static final Color COLOR_ROJO = new Color(180f / 255f, 0f / 255f, 0f / 255f, 1f);
+
+    private static final float CX = 37.8f, CY_TOP = 127.2f, CW = 577.3f, CH = 343.2f;
+    private static final float IX = 64.8f, IY_TOP = 187.6f, IW = 523.5f, IH = 271.4f;
+    private static final float[] TAB_X = {62f, 170f, 340f, 464f};
+    private static final float[] TAB_W = {90f, 110f, 85f, 85f};
+    private static final float TAB_Y_TOP = 148.5f;
+    private static final float TAB_H = 22f;
+
+    private TextField campoBusqueda;
+    private String mensajeSolicitud = "";
+    private Color colorMensaje = COLOR_DATOS;
+    private String amigoSeleccionado = null;
+
+    // Idioma
+    private boolean ingles;
+
+    private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     public PantallaStats(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -49,29 +67,40 @@ public class PantallaStats extends PantallaBase {
 
     @Override
     public void show() {
-        Gdx.graphics.setWindowedMode(
-                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+        Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+
+        // Leer idioma UNA vez al mostrar
+        ingles = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
 
         texFondo = new Texture("imagenes/fondos/FondoStats.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
         texVolumen = new Texture("imagenes/botones/volume_button.png");
 
-        fuente = new BitmapFont(Gdx.files.internal("fuentes/Pixellari.fnt"));
-        fuente.getData().setScale(1f);
-
-        // Pixel blanco 1x1 para dibujar rectángulos con tinte
-        com.badlogic.gdx.graphics.Pixmap pm = new com.badlogic.gdx.graphics.Pixmap(
-                1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pm.setColor(Color.WHITE);
         pm.fill();
         texPixel = new Texture(pm);
         pm.dispose();
 
-        stage = new Stage(new FitViewport(
-                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
+        fuenteTab = new BitmapFont(Gdx.files.internal("fuentes/Pixellari.fnt"));
+        fuenteTab.getData().setScale(1f);
+
+        fuenteDatos = new BitmapFont(Gdx.files.internal("fuentes/Pixellari.fnt"));
+        fuenteDatos.getData().setScale(1f);
+
+        stage = new Stage(new FitViewport(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // Botón Exit
+        // Campo búsqueda solicitudes
+        TextField.TextFieldStyle estilo = crearEstiloTextField();
+        campoBusqueda = new TextField("", estilo);
+        campoBusqueda.setMessageText(ingles ? "SEARCH USER..." : "BUSCAR USUARIO...");
+        campoBusqueda.setBounds(IX + 10f, 550 - IY_TOP - 50f, IW - 130f, 36f);
+        campoBusqueda.setVisible(false);
+        stage.addActor(campoBusqueda);
+
+        // Exit
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setSize(120.9f, 50.3f);
@@ -83,74 +112,13 @@ public class PantallaStats extends PantallaBase {
             }
         });
 
-        // Botón Volumen
+        // Volumen
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texVolumen)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
-        btnVolumen.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent e, float x, float y) {
-                // música después
-            }
-        });
-// TextField para agregar amigo
-        TextField.TextFieldStyle estiloField = crearEstiloTextFieldSimple();
-        campoAgregarAmigo = new TextField("", estiloField);
-        campoAgregarAmigo.setMessageText("USERNAME");
-        campoAgregarAmigo.setBounds(75f, 550 - 210f - 30f, 200f, 30f);
-        stage.addActor(campoAgregarAmigo);
+
         stage.addActor(btnExit);
         stage.addActor(btnVolumen);
-    }
-
-    private void dibujarCuadros() {
-        Color borde = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
-
-        // Cuadro exterior (tabs)
-        dibujarRectanguloConBorde(37.8f, 127.2f, 577.3f, 343.2f, borde);
-
-        // Cuadro interior (contenido)
-        dibujarRectanguloConBorde(64.8f, 187.6f, 523.5f, 271.4f, borde);
-    }
-
-    private void dibujarBotonTexto(String texto, float x, float yCanva, float w, float h) {
-        float y = 550 - yCanva - h;
-        Color borde = new Color(70f / 255f, 39f / 255f, 35f / 255f, 1f);
-        Color relleno = new Color(208f / 255f, 104f / 255f, 63f / 255f, 1f);
-
-        batch.setColor(relleno);
-        batch.draw(texPixel, x + 1, y + 1, w - 2, h - 2);
-
-        batch.setColor(borde);
-        batch.draw(texPixel, x, y, w, 1);
-        batch.draw(texPixel, x, y + h - 1, w, 1);
-        batch.draw(texPixel, x, y, 1, h);
-        batch.draw(texPixel, x + w - 1, y, 1, h);
-
-        batch.setColor(Color.WHITE);
-
-        fuente.setColor(borde);
-        com.badlogic.gdx.graphics.g2d.GlyphLayout layout
-                = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
-        layout.setText(fuente, texto, borde, w, com.badlogic.gdx.utils.Align.center, false);
-        fuente.draw(batch, layout, x, y + h / 2 + layout.height / 2);
-    }
-
-    private void dibujarRectanguloConBorde(float x, float yCanva, float w, float h, Color borde) {
-        float y = 550 - yCanva - h; // convertir a libGDX
-
-        Color relleno = new Color(208f / 255f, 104f / 255f, 63f / 255f, 1f);
-        batch.setColor(relleno);
-        batch.draw(texPixel, x + 1, y + 1, w - 2, h - 2);
-
-        batch.setColor(borde);
-        // Borde de 1px — dibuja 4 líneas finas
-        batch.draw(texPixel, x, y, w, 1);          // abajo
-        batch.draw(texPixel, x, y + h - 1, w, 1);  // arriba
-        batch.draw(texPixel, x, y, 1, h);          // izquierda
-        batch.draw(texPixel, x + w - 1, y, 1, h);  // derecha
-
-        batch.setColor(Color.WHITE); // resetear color
     }
 
     @Override
@@ -159,23 +127,33 @@ public class PantallaStats extends PantallaBase {
             return;
         }
 
+        manejarClickTabs();
+        campoBusqueda.setVisible(tabActual == Tab.SOLICITUDES);
+
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
 
-        // Manejar clicks en los tabs (texto clickeable)
-        manejarClickTabs();
-
         batch.begin();
+
         batch.draw(texFondo, 0, 0, 650, 550);
-        dibujarCuadros();
+        dibujarRect(CX, CY_TOP, CW, CH);
+        dibujarRect(IX, IY_TOP, IW, IH);
 
-        // Dibujar los 4 tabs
-        dibujarTab("RANKING", 62.1f, 148.5f, Tab.RANKING);
-        dibujarTab("SOLICITUDES", 175f, 148.5f, Tab.SOLICITUDES);
-        dibujarTab("PARTIDAS", 350f, 148.5f, Tab.PARTIDAS);
-        dibujarTab("COMPARAR", 473.4f, 148.5f, Tab.COMPARAR);
+        // Tabs con idioma
+        String[] labels = ingles
+                ? new String[]{"RANKING", "REQUESTS", "MATCHES", "COMPARE"}
+                : new String[]{"RANKING", "SOLICITUDES", "PARTIDAS", "COMPARAR"};
+        Tab[] tabs = {Tab.RANKING, Tab.SOLICITUDES, Tab.PARTIDAS, Tab.COMPARAR};
 
-        // Contenido según el tab activo
+        for (int i = 0; i < 4; i++) {
+            boolean activo = tabActual == tabs[i];
+            fuenteTab.setColor(activo ? COLOR_TAB_ACTIVO : COLOR_TAB_NORMAL);
+            fuenteTab.draw(batch, labels[i], TAB_X[i], 550 - TAB_Y_TOP);
+            if (activo) {
+                fuenteTab.draw(batch, labels[i], TAB_X[i] + 0.5f, 550 - TAB_Y_TOP);
+            }
+        }
+
         switch (tabActual) {
             case PARTIDAS:
                 dibujarPartidas();
@@ -197,214 +175,419 @@ public class PantallaStats extends PantallaBase {
         stage.draw();
     }
 
-    private void dibujarTab(String texto, float x, float y, Tab tab) {
-        fuente.setColor(tabActual == tab ? COLOR_SELECCIONADO : COLOR_NORMAL);
-        fuente.draw(batch, texto, x, 550 - y);
-    }
-
-    private void manejarClickTabs() {
-        if (!Gdx.input.justTouched()) {
-            return;
-        }
-
-        com.badlogic.gdx.math.Vector2 touchPos = new com.badlogic.gdx.math.Vector2(
-                Gdx.input.getX(), Gdx.input.getY());
-        viewport.unproject(touchPos);
-
-        float tx = touchPos.x;
-        float ty = touchPos.y;
-
-        // Tabs
-        if (estaEnArea(tx, ty, 62.1f, 148.5f, 70, 20)) {
-            tabActual = Tab.RANKING;
-            return;
-        } else if (estaEnArea(tx, ty, 175f, 148.5f, 100, 20)) {
-            tabActual = Tab.SOLICITUDES;
-            return;
-        } else if (estaEnArea(tx, ty, 350f, 148.5f, 80, 20)) {
-            tabActual = Tab.PARTIDAS;
-            return;
-        } else if (estaEnArea(tx, ty, 473.4f, 148.5f, 80, 20)) {
-            tabActual = Tab.COMPARAR;
-            return;
-        }
-
-        // Solo procesa botones del tab Solicitudes si está activo
-        if (tabActual != Tab.SOLICITUDES) {
-            return;
-        }
-
-        Usuario u = juego.getUsuarioActual();
-        if (u == null) {
-            return;
-        }
-
-        // Botón ENVIAR
-        if (estaEnArea(tx, ty, 290f, 210f, 80f, 30f)) {
-            enviarSolicitud();
-            return;
-        }
-
-        // Botones ACEPTAR/RECHAZAR por cada solicitud
-        java.util.List<String> pendientes = new java.util.ArrayList<>(u.getSolicitudesPendientes());
-        float y = 285f;
-        for (String solicitante : pendientes) {
-            if (estaEnArea(tx, ty, 280f, y - 15f, 80f, 25f)) {
-                GestorUsuarios.aceptarSolicitud(u, solicitante);
-                return;
-            }
-            if (estaEnArea(tx, ty, 370f, y - 15f, 90f, 25f)) {
-                GestorUsuarios.rechazarSolicitud(u, solicitante);
-                return;
-            }
-            y += 35f;
-        }
-    }
-
-
-private boolean estaEnArea(float tx, float ty, float x, float y, float w, float h) {
-        float yLib = 550 - y - h;
-        return tx >= x && tx <= x + w && ty >= yLib && ty <= yLib + h;
-    }
-
-    // ============ TAB PARTIDAS ============
+    // ═════════════════════════════════════════════════════════════════════════
+    // TAB: PARTIDAS / MATCHES
+    // ═════════════════════════════════════════════════════════════════════════
     private void dibujarPartidas() {
         Usuario u = juego.getUsuarioActual();
         if (u == null) {
             return;
         }
 
-        fuente.setColor(COLOR_NORMAL);
-        float x = 80f;
-        float y = 200f;
-        float espaciado = 30f;
+        float x = IX + 15f;
+        float yIni = IY_TOP + 22f;
+        float esp = 30f;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        fuenteDatos.setColor(COLOR_DATOS);
 
-        fuente.draw(batch, "PARTIDAS JUGADAS - " + u.getPartidasJugadas(),
-                x, 550 - y);
-        fuente.draw(batch, "FECHA DE REGISTRO - " + sdf.format(u.getFechaRegistro()),
-                x, 550 - (y + espaciado));
-        fuente.draw(batch, "ULTIMA SESION - " + sdf.format(u.getUltimaSesion()),
-                x, 550 - (y + espaciado * 2));
-        fuente.draw(batch, "NIVELES COMPLETADOS - " + u.getNivelesCompletados(),
-                x, 550 - (y + espaciado * 3));
-        fuente.draw(batch, "TIEMPO TOTAL JUGADO - " + formatearTiempo(u.getTiempoTotalJugado()),
-                x, 550 - (y + espaciado * 4));
-        fuente.draw(batch, "TIEMPO PROMEDIO/NIVEL - " + formatearTiempo(u.getTiempoPromedioPorNivel()),
-                x, 550 - (y + espaciado * 5));
+        String[] lineas = ingles ? new String[]{
+            "MATCHES PLAYED:        " + u.getPartidasJugadas(),
+            "REGISTRATION DATE:     " + sdf.format(u.getFechaRegistro()),
+            "LAST SESSION:          " + sdf.format(u.getUltimaSesion()),
+            "LEVELS COMPLETED:      " + u.getNivelesCompletados(),
+            "TOTAL TIME PLAYED:     " + formatearTiempo(u.getTiempoTotalJugado()),
+            "AVG TIME/LEVEL:        " + formatearTiempo(u.getTiempoPromedioPorNivel()),
+            "ATTEMPTS/LEVEL:        " + formatearIntentos(u.getIntentosPorNivel())
+        } : new String[]{
+            "PARTIDAS JUGADAS:      " + u.getPartidasJugadas(),
+            "FECHA DE REGISTRO:     " + sdf.format(u.getFechaRegistro()),
+            "ULTIMA SESION:         " + sdf.format(u.getUltimaSesion()),
+            "NIVELES COMPLETADOS:   " + u.getNivelesCompletados(),
+            "TIEMPO TOTAL JUGADO:   " + formatearTiempo(u.getTiempoTotalJugado()),
+            "TIEMPO PROMEDIO/NIVEL: " + formatearTiempo(u.getTiempoPromedioPorNivel()),
+            "INTENTOS POR NIVEL:    " + formatearIntentos(u.getIntentosPorNivel())
+        };
 
-        // Intentos por nivel
-        StringBuilder intentos = new StringBuilder("INTENTOS POR NIVEL - ");
-        int[] arr = u.getIntentosPorNivel();
-        for (int i = 1; i < arr.length; i++) {
-            intentos.append("N").append(i).append(":").append(arr[i]);
-            if (i < arr.length - 1) {
-                intentos.append(" ");
-            }
+        for (int i = 0; i < lineas.length; i++) {
+            fuenteDatos.draw(batch, lineas[i], x, 550 - (yIni + esp * i));
         }
-        fuente.draw(batch, intentos.toString(), x, 550 - (y + espaciado * 6));
     }
 
-    // ============ TAB RANKING ============
+    // ═════════════════════════════════════════════════════════════════════════
+    // TAB: RANKING
+    // ═════════════════════════════════════════════════════════════════════════
     private void dibujarRanking() {
-        fuente.setColor(COLOR_NORMAL);
-        fuente.draw(batch, "RANKING - PROXIMAMENTE", 80f, 550 - 200f);
+        List<Usuario> ranking = GestorUsuarios.getRanking();
+
+        float x = IX + 10f;
+        float yIni = IY_TOP + 15f;
+        float esp = 26f;
+
+        fuenteDatos.setColor(COLOR_BORDE);
+        fuenteDatos.draw(batch,
+                ingles ? "#   USER               LEVELS    TOTAL TIME"
+                        : "#   USUARIO            NIVELES   TIEMPO TOTAL",
+                x, 550 - yIni);
+        dibujarLinea(x, yIni + 18f, IW - 15f);
+
+        int max = Math.min(ranking.size(), 7);
+        for (int i = 0; i < max; i++) {
+            Usuario u = ranking.get(i);
+            boolean esYo = juego.getUsuarioActual() != null
+                    && u.getUsername().equals(juego.getUsuarioActual().getUsername());
+
+            fuenteDatos.setColor(esYo ? COLOR_VERDE : COLOR_DATOS);
+
+            String linea = String.format("%-3d %-20s %-9d %s",
+                    i + 1,
+                    truncar(u.getUsername(), 18),
+                    u.getNivelesCompletados(),
+                    formatearTiempo(u.getTiempoTotalJugado()));
+
+            fuenteDatos.draw(batch, linea, x, 550 - (yIni + esp * (i + 1) + 5f));
+        }
+
+        if (ranking.isEmpty()) {
+            fuenteDatos.setColor(COLOR_DATOS);
+            fuenteDatos.draw(batch,
+                    ingles ? "No players registered yet."
+                            : "No hay jugadores registrados aun.",
+                    x, 550 - (yIni + esp));
+        }
     }
 
-    // ============ TAB SOLICITUDES ============
+    // ═════════════════════════════════════════════════════════════════════════
+    // TAB: SOLICITUDES / REQUESTS
+    // ═════════════════════════════════════════════════════════════════════════
     private void dibujarSolicitudes() {
         Usuario u = juego.getUsuarioActual();
         if (u == null) {
             return;
         }
 
-        fuente.setColor(COLOR_NORMAL);
+        float x = IX + 10f;
+        float yIni = IY_TOP + 15f;
+        float esp = 24f;
 
-        // Label del campo
-        fuente.draw(batch, "AGREGAR AMIGO:", 75f, 550 - 200f);
+        // Label búsqueda
+        fuenteDatos.setColor(COLOR_BORDE);
+        fuenteDatos.draw(batch,
+                ingles ? "SEARCH AND ADD FRIEND:" : "BUSCAR Y AGREGAR AMIGO:",
+                x, 550 - yIni);
 
-        // Mostrar/ocultar el textfield según el tab
-        campoAgregarAmigo.setVisible(tabActual == Tab.SOLICITUDES);
+        // Botón ENVIAR / SEND
+        float btnEnviarX = IX + IW - 110f;
+        float btnEnviarY = IY_TOP + 42f;
+        dibujarBotonTexto(ingles ? "SEND" : "ENVIAR", btnEnviarX, btnEnviarY);
 
-        // Botón Enviar — texto con borde
-        dibujarBotonTexto("ENVIAR", 290f, 210f, 80f, 30f);
-
-        // Título solicitudes
-        fuente.draw(batch, "SOLICITUDES PENDIENTES:", 75f, 550 - 260f);
-
-        // Lista de solicitudes pendientes
-        java.util.List<String> pendientes = u.getSolicitudesPendientes();
-        if (pendientes.isEmpty()) {
-            fuente.draw(batch, "No tienes solicitudes", 90f, 550 - 285f);
-        } else {
-            float y = 285f;
-            for (String solicitante : pendientes) {
-                fuente.draw(batch, solicitante, 90f, 550 - y);
-                dibujarBotonTexto("ACEPTAR", 280f, y - 15f, 80f, 25f);
-                dibujarBotonTexto("RECHAZAR", 370f, y - 15f, 90f, 25f);
-                y += 35f;
+        if (Gdx.input.justTouched()) {
+            Vector2 pos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(pos);
+            if (estaEnArea(pos.x, pos.y, btnEnviarX, btnEnviarY, 70f, 20f)) {
+                enviarSolicitud();
             }
         }
 
-        // Lista de amigos
-        fuente.draw(batch, "MIS AMIGOS:", 75f, 550 - 400f);
-        java.util.List<String> amigos = u.getAmigos();
+        // Mensaje resultado
+        if (!mensajeSolicitud.isEmpty()) {
+            fuenteDatos.setColor(colorMensaje);
+            fuenteDatos.draw(batch, mensajeSolicitud, x, 550 - (yIni + esp * 2f + 5f));
+        }
+
+        // Solicitudes recibidas
+        float ySol = yIni + esp * 3.5f;
+        List<String> solicitudes = u.getSolicitudesPendientes();
+
+        fuenteDatos.setColor(COLOR_BORDE);
+        fuenteDatos.draw(batch,
+                (ingles ? "RECEIVED REQUESTS (" : "SOLICITUDES RECIBIDAS (")
+                + solicitudes.size() + "):",
+                x, 550 - ySol);
+
+        if (solicitudes.isEmpty()) {
+            fuenteDatos.setColor(COLOR_DATOS);
+            fuenteDatos.draw(batch,
+                    ingles ? "  No pending requests." : "  Sin solicitudes pendientes.",
+                    x, 550 - (ySol + esp));
+        } else {
+            int maxSol = Math.min(solicitudes.size(), 2);
+            for (int i = 0; i < maxSol; i++) {
+                fuenteDatos.setColor(COLOR_DATOS);
+                fuenteDatos.draw(batch, "  @" + solicitudes.get(i),
+                        x, 550 - (ySol + esp * (i + 1)));
+
+                float yBtnSol = ySol + esp * (i + 1);
+                dibujarBotonTexto(ingles ? "ACCEPT" : "ACEPTAR", x + 180f, yBtnSol);
+                dibujarBotonTexto(ingles ? "DECLINE" : "RECHAZAR", x + 290f, yBtnSol);
+
+                final String de = solicitudes.get(i);
+                if (Gdx.input.justTouched()) {
+                    Vector2 pos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+                    viewport.unproject(pos);
+                    if (estaEnArea(pos.x, pos.y, x + 180f, yBtnSol, 70f, 20f)) {
+                        GestorUsuarios.aceptarSolicitud(u, de);
+                        mensajeSolicitud = ingles
+                                ? "@" + de + " is now your friend!"
+                                : "@" + de + " ahora es tu amigo!";
+                        colorMensaje = COLOR_VERDE;
+                    } else if (estaEnArea(pos.x, pos.y, x + 290f, yBtnSol, 80f, 20f)) {
+                        GestorUsuarios.rechazarSolicitud(u, de);
+                        mensajeSolicitud = ingles
+                                ? "Request from @" + de + " declined."
+                                : "Solicitud de @" + de + " rechazada.";
+                        colorMensaje = COLOR_ROJO;
+                    }
+                }
+            }
+        }
+
+        // Lista amigos
+        float yAm = ySol + esp * 4f;
+        List<String> amigos = u.getAmigos();
+
+        fuenteDatos.setColor(COLOR_BORDE);
+        fuenteDatos.draw(batch,
+                (ingles ? "FRIENDS (" : "AMIGOS (") + amigos.size() + "):",
+                x, 550 - yAm);
+
         if (amigos.isEmpty()) {
-            fuente.draw(batch, "Aun no tienes amigos", 90f, 550 - 425f);
+            fuenteDatos.setColor(COLOR_DATOS);
+            fuenteDatos.draw(batch,
+                    ingles ? "  No friends yet." : "  Sin amigos aun.",
+                    x, 550 - (yAm + esp));
         } else {
-            StringBuilder sb = new StringBuilder();
-            for (String amigo : amigos) {
-                sb.append(amigo).append("  ");
+            fuenteDatos.setColor(COLOR_DATOS);
+            int maxAm = Math.min(amigos.size(), 3);
+            for (int i = 0; i < maxAm; i++) {
+                fuenteDatos.draw(batch, "  @" + amigos.get(i),
+                        x, 550 - (yAm + esp * (i + 1)));
             }
-            fuente.draw(batch, sb.toString(), 90f, 550 - 425f);
+            if (amigos.size() > 3) {
+                fuenteDatos.draw(batch,
+                        "  ... " + (ingles ? "and " : "y ") + (amigos.size() - 3)
+                        + (ingles ? " more." : " mas."),
+                        x, 550 - (yAm + esp * 4));
+            }
         }
     }
 
-    private TextField.TextFieldStyle crearEstiloTextFieldSimple() {
-        TextField.TextFieldStyle estilo = new TextField.TextFieldStyle();
-        estilo.font = fuente;
-        estilo.fontColor = COLOR_NORMAL;
-        estilo.messageFontColor = new Color(117f / 255f, 58f / 255f, 50f / 255f, 0.6f);
-
-        com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(
-                1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
-        pixmap.setColor(1f, 1f, 1f, 0.3f);
-        pixmap.fill();
-        estilo.background = new TextureRegionDrawable(new Texture(pixmap));
-        pixmap.dispose();
-
-        com.badlogic.gdx.graphics.Pixmap cursorMap = new com.badlogic.gdx.graphics.Pixmap(
-                2, 25, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
-        cursorMap.setColor(COLOR_NORMAL);
-        cursorMap.fill();
-        estilo.cursor = new TextureRegionDrawable(new Texture(cursorMap));
-        cursorMap.dispose();
-
-        return estilo;
-    }
-
-    private void enviarSolicitud() {
-        String destino = campoAgregarAmigo.getText().trim();
-        Usuario actual = juego.getUsuarioActual();
-
-        if (destino.isEmpty() || actual == null) {
+    // ═════════════════════════════════════════════════════════════════════════
+    // TAB: COMPARAR / COMPARE
+    // ═════════════════════════════════════════════════════════════════════════
+    private void dibujarComparar() {
+        Usuario yo = juego.getUsuarioActual();
+        if (yo == null) {
             return;
         }
 
-        boolean enviado = GestorUsuarios.enviarSolicitud(actual.getUsername(), destino);
+        float x = IX + 10f;
+        float yIni = IY_TOP + 15f;
+        float esp = 26f;
 
-        String mensaje = enviado
-                ? "Solicitud enviada"
-                : "Usuario no encontrado o ya son amigos";
+        List<String> amigos = yo.getAmigos();
 
-        juego.setScreen(new PantallaAdvertencia(juego, mensaje, new PantallaStats(juego)));
+        fuenteDatos.setColor(COLOR_BORDE);
+        fuenteDatos.draw(batch,
+                ingles ? "SELECT A FRIEND:" : "SELECCIONA UN AMIGO:",
+                x, 550 - yIni);
+
+        if (amigos.isEmpty()) {
+            fuenteDatos.setColor(COLOR_DATOS);
+            fuenteDatos.draw(batch,
+                    ingles ? "No friends yet. Add from REQUESTS tab."
+                            : "No tienes amigos. Agrega desde SOLICITUDES.",
+                    x, 550 - (yIni + esp));
+            return;
+        }
+
+        // Botones de amigos
+        float xBtn = x;
+        float yBtn = yIni + esp;
+        int maxAmigos = Math.min(amigos.size(), 4);
+
+        for (int i = 0; i < maxAmigos; i++) {
+            String amigo = amigos.get(i);
+            boolean seleccionado = amigo.equals(amigoSeleccionado);
+
+            if (seleccionado) {
+                batch.setColor(COLOR_BORDE);
+                batch.draw(texPixel, xBtn - 3f, 550 - yBtn - 3f, 90f, 22f);
+                batch.setColor(Color.WHITE);
+                fuenteDatos.setColor(Color.WHITE);
+            } else {
+                fuenteDatos.setColor(COLOR_DATOS);
+            }
+
+            fuenteDatos.draw(batch, "@" + truncar(amigo, 8), xBtn, 550 - yBtn);
+
+            final String nombreAmigo = amigo;
+            if (Gdx.input.justTouched()) {
+                Vector2 pos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+                viewport.unproject(pos);
+                if (estaEnArea(pos.x, pos.y, xBtn, yBtn, 90f, 20f)) {
+                    amigoSeleccionado = nombreAmigo;
+                }
+            }
+
+            xBtn += 100f;
+        }
+
+        if (amigoSeleccionado == null) {
+            fuenteDatos.setColor(COLOR_DATOS);
+            fuenteDatos.draw(batch,
+                    ingles ? "Press a friend to compare."
+                            : "Presiona un amigo para comparar.",
+                    x, 550 - (yIni + esp * 2.5f));
+            return;
+        }
+
+        Usuario ellos = GestorUsuarios.cargarUsuario(amigoSeleccionado);
+        if (ellos == null) {
+            fuenteDatos.setColor(COLOR_ROJO);
+            fuenteDatos.draw(batch,
+                    (ingles ? "Could not load data for @" : "No se pudo cargar datos de @")
+                    + amigoSeleccionado,
+                    x, 550 - (yIni + esp * 2.5f));
+            return;
+        }
+
+        // Encabezado tabla
+        float yTabla = yIni + esp * 2.5f;
+        fuenteDatos.setColor(COLOR_BORDE);
+        fuenteDatos.draw(batch,
+                String.format("%-22s %-14s %s",
+                        ingles ? "STAT" : "ESTADISTICA",
+                        ingles ? "YOU" : "TU",
+                        "@" + truncar(amigoSeleccionado, 10)),
+                x, 550 - yTabla);
+        dibujarLinea(x, yTabla + 18f, IW - 15f);
+
+        // Filas
+        String[][] filas = ingles ? new String[][]{
+            {"MATCHES PLAYED", String.valueOf(yo.getPartidasJugadas()), String.valueOf(ellos.getPartidasJugadas())},
+            {"LEVELS COMPLET.", String.valueOf(yo.getNivelesCompletados()), String.valueOf(ellos.getNivelesCompletados())},
+            {"TOTAL TIME", formatearTiempo(yo.getTiempoTotalJugado()), formatearTiempo(ellos.getTiempoTotalJugado())},
+            {"AVG TIME/LEVEL", formatearTiempo(yo.getTiempoPromedioPorNivel()), formatearTiempo(ellos.getTiempoPromedioPorNivel())}
+        } : new String[][]{
+            {"PARTIDAS JUGADAS", String.valueOf(yo.getPartidasJugadas()), String.valueOf(ellos.getPartidasJugadas())},
+            {"NIVELES COMPLET.", String.valueOf(yo.getNivelesCompletados()), String.valueOf(ellos.getNivelesCompletados())},
+            {"TIEMPO TOTAL", formatearTiempo(yo.getTiempoTotalJugado()), formatearTiempo(ellos.getTiempoTotalJugado())},
+            {"TIEMPO PROM/NIV", formatearTiempo(yo.getTiempoPromedioPorNivel()), formatearTiempo(ellos.getTiempoPromedioPorNivel())}
+        };
+
+        int[] yoNums = {yo.getPartidasJugadas(), yo.getNivelesCompletados()};
+        int[] ellosNums = {ellos.getPartidasJugadas(), ellos.getNivelesCompletados()};
+
+        for (int i = 0; i < filas.length; i++) {
+            boolean yoGana = i < 2
+                    ? yoNums[i] >= ellosNums[i]
+                    : yo.getTiempoTotalJugado() <= ellos.getTiempoTotalJugado();
+
+            float yFila = yTabla + esp * (i + 1) + 5f;
+
+            fuenteDatos.setColor(COLOR_DATOS);
+            fuenteDatos.draw(batch, String.format("%-22s", filas[i][0]), x, 550 - yFila);
+
+            fuenteDatos.setColor(yoGana ? COLOR_VERDE : COLOR_ROJO);
+            fuenteDatos.draw(batch, String.format("%-14s", filas[i][1]), x + 200f, 550 - yFila);
+
+            fuenteDatos.setColor(yoGana ? COLOR_ROJO : COLOR_VERDE);
+            fuenteDatos.draw(batch, filas[i][2], x + 320f, 550 - yFila);
+        }
+
+        // Veredicto
+        float yVeredicto = yTabla + esp * 5.5f;
+        boolean yoMejor = yo.getNivelesCompletados() >= ellos.getNivelesCompletados();
+        fuenteDatos.setColor(yoMejor ? COLOR_VERDE : COLOR_DATOS);
+        fuenteDatos.draw(batch,
+                yoMejor
+                        ? (ingles ? "You're ahead of @" : "Vas ganando a @")
+                        + truncar(amigoSeleccionado, 10)
+                        + (ingles ? "! Keep it up." : "! Sigue asi.")
+                        : (ingles ? "@" : "@") + truncar(amigoSeleccionado, 10)
+                        + (ingles ? " has the lead. Play more!" : " te lleva ventaja. A jugar mas!"),
+                x, 550 - yVeredicto);
     }
 
-    // ============ TAB COMPARAR ============
-    private void dibujarComparar() {
-        fuente.setColor(COLOR_NORMAL);
-        fuente.draw(batch, "COMPARAR - PROXIMAMENTE", 80f, 550 - 200f);
+    // ─────────────────────────────────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────────────────────────────────
+    private void enviarSolicitud() {
+        String destino = campoBusqueda.getText().trim();
+        if (destino.isEmpty()) {
+            mensajeSolicitud = ingles ? "Enter a username first." : "Escribe un username primero.";
+            colorMensaje = COLOR_ROJO;
+            return;
+        }
+        String miUser = juego.getUsuarioActual() != null
+                ? juego.getUsuarioActual().getUsername() : "";
+        if (destino.equals(miUser)) {
+            mensajeSolicitud = ingles ? "You can't add yourself." : "No puedes agregarte a ti mismo.";
+            colorMensaje = COLOR_ROJO;
+            return;
+        }
+        boolean ok = GestorUsuarios.enviarSolicitud(miUser, destino);
+        if (ok) {
+            mensajeSolicitud = (ingles ? "Request sent to @" : "Solicitud enviada a @") + destino + "!";
+            colorMensaje = COLOR_VERDE;
+            campoBusqueda.setText("");
+        } else {
+            mensajeSolicitud = ingles ? "User not found or already a friend." : "Usuario no encontrado o ya es amigo.";
+            colorMensaje = COLOR_ROJO;
+        }
+    }
+
+    private void dibujarBotonTexto(String texto, float x, float yTop) {
+        float y = 550 - yTop;
+        batch.setColor(COLOR_BORDE);
+        batch.draw(texPixel, x - 2f, y - 16f, getTextWidth(texto) + 6f, 20f);
+        batch.setColor(Color.WHITE);
+        fuenteDatos.setColor(Color.WHITE);
+        fuenteDatos.draw(batch, texto, x, y);
+    }
+
+    private float getTextWidth(String texto) {
+        return texto.length() * 8f;
+    }
+
+    private void dibujarRect(float x, float yTop, float w, float h) {
+        float y = 550 - yTop - h;
+        batch.setColor(COLOR_FONDO_CUADRO);
+        batch.draw(texPixel, x + 2, y + 2, w - 4, h - 4);
+        batch.setColor(COLOR_BORDE);
+        batch.draw(texPixel, x, y, w, 2);
+        batch.draw(texPixel, x, y + h - 2, w, 2);
+        batch.draw(texPixel, x, y, 2, h);
+        batch.draw(texPixel, x + w - 2, y, 2, h);
+        batch.setColor(Color.WHITE);
+    }
+
+    private void dibujarLinea(float x, float yTop, float ancho) {
+        batch.setColor(COLOR_BORDE);
+        batch.draw(texPixel, x, 550 - yTop, ancho, 1.5f);
+        batch.setColor(Color.WHITE);
+    }
+
+    private void manejarClickTabs() {
+        if (!Gdx.input.justTouched()) {
+            return;
+        }
+        Vector2 pos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+        viewport.unproject(pos);
+        Tab[] tabs = {Tab.RANKING, Tab.SOLICITUDES, Tab.PARTIDAS, Tab.COMPARAR};
+        for (int i = 0; i < 4; i++) {
+            if (estaEnArea(pos.x, pos.y, TAB_X[i], TAB_Y_TOP, TAB_W[i], TAB_H)) {
+                tabActual = tabs[i];
+                mensajeSolicitud = "";
+                amigoSeleccionado = null;
+                break;
+            }
+        }
+    }
+
+    private boolean estaEnArea(float tx, float ty, float x, float yTop, float w, float h) {
+        float yLib = 550 - yTop - h;
+        return tx >= x && tx <= x + w && ty >= yLib && ty <= yLib + h;
     }
 
     private String formatearTiempo(long segundos) {
@@ -413,8 +596,47 @@ private boolean estaEnArea(float tx, float ty, float x, float y, float w, float 
         return String.format("%02d:%02d", min, seg);
     }
 
+    private String formatearIntentos(int[] arr) {
+        if (arr == null) {
+            return "N/D";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i < arr.length; i++) {
+            sb.append("N").append(i).append(":").append(arr[i]);
+            if (i < arr.length - 1) {
+                sb.append("  ");
+            }
+        }
+        return sb.toString();
+    }
+
+    private String truncar(String s, int max) {
+        return s != null && s.length() > max ? s.substring(0, max) : s;
+    }
+
+    private TextField.TextFieldStyle crearEstiloTextField() {
+        TextField.TextFieldStyle estilo = new TextField.TextFieldStyle();
+        estilo.font = fuenteDatos;
+        estilo.fontColor = COLOR_BORDE;
+        estilo.messageFontColor = new Color(COLOR_BORDE.r, COLOR_BORDE.g, COLOR_BORDE.b, 0.6f);
+
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(COLOR_FONDO_CUADRO);
+        pixmap.fill();
+        estilo.background = new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
+
+        Pixmap cursor = new Pixmap(2, 30, Pixmap.Format.RGBA8888);
+        cursor.setColor(COLOR_BORDE);
+        cursor.fill();
+        estilo.cursor = new TextureRegionDrawable(new Texture(cursor));
+        cursor.dispose();
+
+        return estilo;
+    }
+
     @Override
-public void resize(int w, int h) {
+    public void resize(int w, int h) {
         viewport.update(w, h, true);
         if (stage != null) {
             stage.getViewport().update(w, h, true);
@@ -422,12 +644,25 @@ public void resize(int w, int h) {
     }
 
     @Override
-public void dispose() {
-        texFondo.dispose();
-        texExit.dispose();
-        texVolumen.dispose();
-        texPixel.dispose();
-        fuente.dispose();
+    public void dispose() {
+        if (texFondo != null) {
+            texFondo.dispose();
+        }
+        if (texExit != null) {
+            texExit.dispose();
+        }
+        if (texVolumen != null) {
+            texVolumen.dispose();
+        }
+        if (texPixel != null) {
+            texPixel.dispose();
+        }
+        if (fuenteTab != null) {
+            fuenteTab.dispose();
+        }
+        if (fuenteDatos != null) {
+            fuenteDatos.dispose();
+        }
         if (stage != null) {
             stage.dispose();
         }
