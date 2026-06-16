@@ -31,12 +31,26 @@ public class PantallaJuego extends PantallaBase {
     private BitmapFont fuenteHUD;      // Pixellari 28
     private Stage stage;
     private BitmapFont fuenteNivel24;
-
+    private int intentos = 1;
     // Tiles — se cargan según el nivel
     private Texture[] tiles;
-
+// Modo competitivo
+    private boolean modoCompetitivo = false;
+    private String nombreJ1 = "";
+    private String nombreJ2 = "";
+    private int turnoActual = 1;        // 1 o 2
+    private int tiempoJ1 = -1;          // segundos al terminar J1
     // Sprite jugador
-    private Texture texJugador;
+    // Sprites de animación
+    private Texture[] spritesIdle = new Texture[4]; // bottom, left, right, top
+    private Texture[] spritesLeftF = new Texture[4]; // walkingleftfoot
+    private Texture[] spritesRightF = new Texture[4]; // walkingrightfoot
+
+    private int direccionActual = 0; // 0=bottom,1=left,2=right,3=top
+    private boolean pieDerecho = false;  // alterna entre leftfoot/rightfoot
+    private float tiempoFrame = 0f;
+    private static final float DURACION_FRAME = 0.15f; // segundos por frame
+    private boolean seMovio = false;  // flag para alternar pie
 
     // Lógica
     private Tablero tablero;
@@ -55,6 +69,17 @@ public class PantallaJuego extends PantallaBase {
     public PantallaJuego(SokobanGame juego, int numeroNivel) {
         super(juego, SokobanGame.ANCHO_GAME, SokobanGame.ALTO_GAME);
         this.numeroNivel = numeroNivel;
+    }
+
+    public PantallaJuego(SokobanGame juego, int numeroNivel,
+            String nombreJ1, String nombreJ2, int turno, int tiempoJ1) {
+        super(juego, SokobanGame.ANCHO_GAME, SokobanGame.ALTO_GAME);
+        this.numeroNivel = numeroNivel;
+        this.modoCompetitivo = true;
+        this.nombreJ1 = nombreJ1;
+        this.nombreJ2 = nombreJ2;
+        this.turnoActual = turno;
+        this.tiempoJ1 = tiempoJ1;
     }
 
     @Override
@@ -85,10 +110,20 @@ public class PantallaJuego extends PantallaBase {
         // Cargar tiles del nivel actual
         cargarTiles();
 
-        // Sprite jugador
-        texJugador = new Texture(
-                "imagenes/avatar/idle_bottom.png");
+        // Determinar carpeta según avatar
+        String carpetaAvatar;
+        if (juego.getUsuarioActual() != null && juego.getUsuarioActual().getTipoAvatar() == 1) {
+            carpetaAvatar = "imagenes/avatar/girl_sprite/";
+        } else {
+            carpetaAvatar = "imagenes/avatar/boy_sprite/";
+        }
 
+        String[] dirs = {"bottom", "left", "right", "top"};
+        for (int i = 0; i < 4; i++) {
+            spritesIdle[i] = new Texture(carpetaAvatar + "idle_" + dirs[i] + ".png");
+            spritesLeftF[i] = new Texture(carpetaAvatar + "walkingleftfoot_" + dirs[i] + ".png");
+            spritesRightF[i] = new Texture(carpetaAvatar + "walkingrightfoot_" + dirs[i] + ".png");
+        }
         // Stage
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_GAME, SokobanGame.ALTO_GAME));
@@ -104,7 +139,8 @@ public class PantallaJuego extends PantallaBase {
             @Override
             public void clicked(InputEvent e, float x, float y) {
                 tablero.reiniciar();
-                hiloTimer.reiniciar();
+                // CAMBIO — NO hacer hiloTimer.reiniciar(), el tiempo sigue corriendo
+                intentos++;         // CAMBIO — cuenta el intento
                 jugando = true;
             }
         });
@@ -115,14 +151,6 @@ public class PantallaJuego extends PantallaBase {
         btnRevert.pack();
         btnRevert.setPosition(828.6f,
                 628 - 71.6f - btnRevert.getHeight());
-        btnRevert.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent e, float x, float y) {
-                // lógica de deshacer después
-            }
-        });
-
-        // Revert conectado
         btnRevert.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
@@ -177,7 +205,7 @@ public class PantallaJuego extends PantallaBase {
         }
 
         // Input teclado
-        manejarInput();
+        manejarInput(delta);
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -187,24 +215,43 @@ public class PantallaJuego extends PantallaBase {
         // Dibujar HUD de fondo
         batch.draw(texHUD, 0, 0, 1000, 628);
 
-        // Texto "NIVEL: X" — negro, Pixellari24
+        boolean ingles = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
+
         fuenteNivel24.setColor(Color.BLACK);
         fuenteNivel24.draw(batch,
-                "NIVEL: " + (numeroNivel + 1),
+                (ingles ? "TRIES: " : "INTENTOS: ") + intentos,
+                21.3f, 628 - 30f);
+
+        fuenteNivel24.setColor(Color.BLACK);
+        fuenteNivel24.draw(batch,
+                (ingles ? "LEVEL: " : "NIVEL: ") + (numeroNivel + 1),
                 21.3f, 628 - 7.1f);
 
-// Texto "MOVIMIENTOS: X" — negro, Pixellari28
         fuenteHUD.setColor(Color.BLACK);
         fuenteHUD.draw(batch,
-                "MOVIMIENTOS: " + tablero.getMovimientos(),
+                (ingles ? "MOVES: " : "MOVIMIENTOS: ") + tablero.getMovimientos(),
                 164.7f, 628 - 38.1f);
 
-// Texto tiempo — negro, Pixellari28
         fuenteHUD.setColor(Color.BLACK);
         fuenteHUD.draw(batch,
                 formatearTiempo(hiloTimer.getSegundos()),
                 682.4f, 628 - 35f);
+// Turno actual (solo en modo competitivo)
+if (modoCompetitivo) {
+    String textoTurno = ingles
+        ? "TURN: " + (turnoActual == 1 ? nombreJ1 : nombreJ2)
+        : "TURNO: " + (turnoActual == 1 ? nombreJ1 : nombreJ2);
+    fuenteHUD.setColor(Color.BLACK);
+    fuenteHUD.draw(batch, textoTurno, 854.2f, 628 - 157.1f);
 
+    // Quién es el jugador actual en pixellari18 — necesitarás cargar esa fuente
+    // Por ahora usa fuenteNivel24 como aproximación:
+    fuenteNivel24.setColor(Color.BLACK);
+    fuenteNivel24.draw(batch,
+        turnoActual == 1 ? nombreJ1 : nombreJ2,
+        866f, 628 - 190.6f);
+}
         dibujarMapa();
 
         batch.end();
@@ -214,34 +261,96 @@ public class PantallaJuego extends PantallaBase {
         if (tablero.nivelCompleto() && jugando) {
             jugando = false;
             hiloTimer.pausar();
-            guardarProgreso();
-            irSiguienteNivel();
+
+            if (modoCompetitivo) {
+                manejarVictoriaCompetitiva();
+            } else {
+                guardarProgreso();
+                irSiguienteNivel();
+            }
         }
 
         stage.act(delta);
         stage.draw();
     }
 
-    private void manejarInput() {
+    private void manejarInput(float delta) {
         if (!jugando) {
             return;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)
-                || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
-            tablero.mover(0, -1);
+        seMovio = false;
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+            if (tablero.mover(0, -1)) {
+                direccionActual = 3;
+                seMovio = true;
+            }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)
-                || Gdx.input.isKeyJustPressed(Input.Keys.S)) {
-            tablero.mover(0, 1);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+            if (tablero.mover(0, 1)) {
+                direccionActual = 0;
+                seMovio = true;
+            }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)
-                || Gdx.input.isKeyJustPressed(Input.Keys.A)) {
-            tablero.mover(-1, 0);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+            if (tablero.mover(-1, 0)) {
+                direccionActual = 1;
+                seMovio = true;
+            }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)
-                || Gdx.input.isKeyJustPressed(Input.Keys.D)) {
-            tablero.mover(1, 0);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+            if (tablero.mover(1, 0)) {
+                direccionActual = 2;
+                seMovio = true;
+            }
+        }
+
+        if (seMovio) {
+            tiempoFrame += delta; // acumula tiempo — ver paso 4
+            if (tiempoFrame >= DURACION_FRAME) {
+                tiempoFrame = 0f;
+                pieDerecho = !pieDerecho; // alterna pie
+            }
+        } else {
+            tiempoFrame = 0f; // resetea al detenerse
+        }
+    }
+
+    private void manejarVictoriaCompetitiva() {
+        boolean ingles = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
+
+        if (turnoActual == 1) {
+            // J1 terminó — guardar su tiempo y pasar turno a J2
+            int tiempoFinalJ1 = hiloTimer.getSegundos();
+            String msg = ingles
+                    ? "Player 1 finished in " + formatearTiempo(tiempoFinalJ1) + "!\nNow it's Player 2's turn."
+                    : "Jugador 1 termino en " + formatearTiempo(tiempoFinalJ1) + "!\nAhora le toca al Jugador 2.";
+
+            juego.setScreen(new PantallaAdvertencia(juego, msg,
+                    new PantallaJuego(juego, numeroNivel,
+                            nombreJ1, nombreJ2, 2, tiempoFinalJ1)));
+
+        } else {
+            // J2 terminó — comparar tiempos y mostrar ganador
+            int tiempoFinalJ2 = hiloTimer.getSegundos();
+            String ganador;
+            boolean ingles2 = ingles; // ya la tenemos
+
+            if (tiempoJ1 < tiempoFinalJ2) {
+                ganador = ingles2
+                        ? nombreJ1 + " wins! (" + formatearTiempo(tiempoJ1) + " vs " + formatearTiempo(tiempoFinalJ2) + ")"
+                        : nombreJ1 + " gano! (" + formatearTiempo(tiempoJ1) + " vs " + formatearTiempo(tiempoFinalJ2) + ")";
+            } else if (tiempoFinalJ2 < tiempoJ1) {
+                ganador = ingles2
+                        ? nombreJ2 + " wins! (" + formatearTiempo(tiempoFinalJ2) + " vs " + formatearTiempo(tiempoJ1) + ")"
+                        : nombreJ2 + " gano! (" + formatearTiempo(tiempoFinalJ2) + " vs " + formatearTiempo(tiempoJ1) + ")";
+            } else {
+                ganador = ingles2 ? "It's a tie!" : "Empate!";
+            }
+
+            juego.setScreen(new PantallaFelicidades(juego, ganador));
         }
     }
 
@@ -274,13 +383,25 @@ public class PantallaJuego extends PantallaBase {
         }
 
         // Segunda pasada — jugador encima de todo
+        // Segunda pasada — jugador encima de todo
         for (int fila = 0; fila < filas; fila++) {
             for (int col = 0; col < columnas; col++) {
                 if (grid[fila][col] == Constantes.JUGADOR) {
                     float px = MAPA_X + col * tileAncho;
                     float py = mapaYlibGDX + (filas - 1 - fila) * tileAlto;
-                    if (texJugador != null) {
-                        batch.draw(texJugador, px, py, tileAncho, tileAlto);
+
+                    Texture spriteActual;
+                    if (!seMovio) {
+                        // Quieto → idle en la dirección que miraba
+                        spriteActual = spritesIdle[direccionActual];
+                    } else if (pieDerecho) {
+                        spriteActual = spritesRightF[direccionActual];
+                    } else {
+                        spriteActual = spritesLeftF[direccionActual];
+                    }
+
+                    if (spriteActual != null) {
+                        batch.draw(spriteActual, px, py, tileAncho, tileAlto);
                     }
                 }
             }
@@ -327,7 +448,17 @@ public class PantallaJuego extends PantallaBase {
         texRevert.dispose();
         fuenteNivel24.dispose();
         fuenteHUD.dispose();
-        texJugador.dispose();
+        for (int i = 0; i < 4; i++) {
+            if (spritesIdle[i] != null) {
+                spritesIdle[i].dispose();
+            }
+            if (spritesLeftF[i] != null) {
+                spritesLeftF[i].dispose();
+            }
+            if (spritesRightF[i] != null) {
+                spritesRightF[i].dispose();
+            }
+        }
         if (tiles != null) {
             for (Texture t : tiles) {
                 if (t != null) {

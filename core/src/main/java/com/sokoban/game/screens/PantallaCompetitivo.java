@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -46,13 +46,13 @@ public class PantallaCompetitivo extends PantallaBase {
     @Override
     public void show() {
         Gdx.graphics.setWindowedMode(
-            SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        texFondo           = new Texture("imagenes/fondos/FondoAzul.png");
-        texExit            = new Texture("imagenes/botones/exit_button.png");
+        texFondo = new Texture("imagenes/fondos/FondoAzul.png");
+        texExit = new Texture("imagenes/botones/exit_button.png");
         boolean ingles = juego.getUsuarioActual() != null && "en".equals(juego.getUsuarioActual().getIdioma());
         texPlayCompetitivo = new Texture(ingles ? "imagenes/botones/PlayCompetitivo.png" : "imagenes/botones/JugarCompetitivo.png");
-        texCandado         = new Texture("imagenes/botones/Candado.png");
+        texCandado = new Texture("imagenes/botones/Candado.png");
 
         texNivel1 = new Texture("imagenes/botones/Nivel1Bloque.png");
         texNivel2 = new Texture("imagenes/botones/Nivel2Bloque.png");
@@ -60,23 +60,23 @@ public class PantallaCompetitivo extends PantallaBase {
         texNivel4 = new Texture("imagenes/botones/Nivel4Bloque.png");
 
         fuenteTitulo = new BitmapFont(
-            Gdx.files.internal("fuentes/Pixellari100.fnt"));
+                Gdx.files.internal("fuentes/Pixellari100.fnt"));
         fuenteTitulo.getData().setScale(1f);
 
         fuente18 = new BitmapFont(
-            Gdx.files.internal("fuentes/Pixellari27.fnt"));
+                Gdx.files.internal("fuentes/Pixellari27.fnt"));
         fuente18.getData().setScale(1f);
 
         // Pixel para fondo del textfield
         com.badlogic.gdx.graphics.Pixmap pm = new com.badlogic.gdx.graphics.Pixmap(
-            1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+                1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         pm.setColor(Color.WHITE);
         pm.fill();
         texPixel = new Texture(pm);
         pm.dispose();
 
         stage = new Stage(new FitViewport(
-            SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
+                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
         // TextField amigo
@@ -87,7 +87,7 @@ public class PantallaCompetitivo extends PantallaBase {
 
         // Niveles
         int nivelesDesbloqueados = juego.getUsuarioActual() != null
-            ? juego.getUsuarioActual().getNivelesDesbloqueados() : 1;
+                ? juego.getUsuarioActual().getNivelesDesbloqueados() : 1;
 
         Texture[] texturas = {texNivel1, texNivel2, texNivel3, texNivel4, texNivel1};
 
@@ -95,7 +95,7 @@ public class PantallaCompetitivo extends PantallaBase {
             final int numeroNivel = i;
 
             ImageButton btnNivel = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texturas[i])));
+                    new TextureRegionDrawable(new TextureRegion(texturas[i])));
             btnNivel.setSize(ANCHO_BLOQUE, ALTO_BLOQUE);
             btnNivel.setPosition(XS[i], 550 - Y_NIVEL - ALTO_BLOQUE);
 
@@ -114,7 +114,7 @@ public class PantallaCompetitivo extends PantallaBase {
 
             if (!desbloqueado) {
                 ImageButton candado = new ImageButton(
-                    new TextureRegionDrawable(new TextureRegion(texCandado)));
+                        new TextureRegionDrawable(new TextureRegion(texCandado)));
                 candado.setSize(ANCHO_BLOQUE, ALTO_BLOQUE);
                 candado.setPosition(XS[i], 550 - Y_NIVEL - ALTO_BLOQUE);
                 candado.setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
@@ -124,7 +124,7 @@ public class PantallaCompetitivo extends PantallaBase {
 
         // Botón Play Competitivo
         ImageButton btnPlay = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texPlayCompetitivo)));
+                new TextureRegionDrawable(new TextureRegion(texPlayCompetitivo)));
         btnPlay.setSize(223.7f, 76.7f);
         btnPlay.setPosition(198.7f, 550 - 429.8f - 76.7f);
         btnPlay.addListener(new ClickListener() {
@@ -136,7 +136,7 @@ public class PantallaCompetitivo extends PantallaBase {
 
         // Botón Exit
         ImageButton btnExit = new ImageButton(
-            new TextureRegionDrawable(new TextureRegion(texExit)));
+                new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setSize(120.9f, 50.3f);
         btnExit.setPosition(41.2f, 550 - 468.2f - 50.3f);
         btnExit.addListener(new ClickListener() {
@@ -156,44 +156,54 @@ public class PantallaCompetitivo extends PantallaBase {
 
         if (amigoUsername.isEmpty() || nivelSeleccionado == -1) {
             juego.setScreen(new PantallaAdvertencia(juego,
-                "Selecciona un amigo y un nivel",
-                new PantallaCompetitivo(juego)));
+                    "Selecciona un amigo y un nivel",
+                    new PantallaCompetitivo(juego)));
             return;
         }
 
-        // Verifica que sea amigo
-        boolean esAmigo = juego.getUsuarioActual() != null &&
-            juego.getUsuarioActual().getAmigos().contains(amigoUsername);
+        boolean esAmigo = juego.getUsuarioActual() != null
+                && juego.getUsuarioActual().getAmigos().contains(amigoUsername);
 
         if (!esAmigo) {
             juego.setScreen(new PantallaAdvertencia(juego,
-                "Ese usuario no esta en tu lista de amigos",
-                new PantallaCompetitivo(juego)));
+                    "Ese usuario no esta en tu lista de amigos",
+                    new PantallaCompetitivo(juego)));
             return;
         }
 
-        // Inicia competencia — lo conectamos en el siguiente paso
-        juego.setScreen(new PantallaJuego(juego, nivelSeleccionado));
+        String nombreJ1 = juego.getUsuarioActual().getUsername();
+        String nombreJ2 = amigoUsername;
+
+        boolean ingles = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
+        String msg = ingles
+                ? "Player 1: " + nombreJ1 + "\nYour turn! Good luck."
+                : "Jugador 1: " + nombreJ1 + "\nEs tu turno! Buena suerte.";
+
+        // Muestra advertencia con turno antes de empezar
+        juego.setScreen(new PantallaAdvertencia(juego, msg,
+                new PantallaJuego(juego, nivelSeleccionado,
+                        nombreJ1, nombreJ2, 1, -1)));
     }
 
     private TextField.TextFieldStyle crearEstiloTextField() {
         TextField.TextFieldStyle estilo = new TextField.TextFieldStyle();
         estilo.font = fuente18;
-        Color colorTexto = new Color(87f/255f, 41f/255f, 35f/255f, 1f);
+        Color colorTexto = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
         estilo.fontColor = colorTexto;
         estilo.messageFontColor = colorTexto;
 
         // Fondo
         com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(
-            1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
-        pixmap.setColor(208f/255f, 104f/255f, 63f/255f, 1f);
+                1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+        pixmap.setColor(208f / 255f, 104f / 255f, 63f / 255f, 1f);
         pixmap.fill();
         estilo.background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
 
         // Cursor
         com.badlogic.gdx.graphics.Pixmap cursorMap = new com.badlogic.gdx.graphics.Pixmap(
-            2, 40, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+                2, 40, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         cursorMap.setColor(colorTexto);
         cursorMap.fill();
         estilo.cursor = new TextureRegionDrawable(new Texture(cursorMap));
@@ -204,7 +214,9 @@ public class PantallaCompetitivo extends PantallaBase {
 
     @Override
     public void render(float delta) {
-        if (texFondo == null) return;
+        if (texFondo == null) {
+            return;
+        }
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -216,7 +228,7 @@ public class PantallaCompetitivo extends PantallaBase {
         fuenteTitulo.draw(batch, obtenerTitulo(), 67.6f, 550 - 84.9f);
 
         // Borde del textfield 4px
-        Color colorBorde = new Color(87f/255f, 41f/255f, 35f/255f, 1f);
+        Color colorBorde = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
         batch.setColor(colorBorde);
         float fx = 64.8f, fy = 550 - 220f - 40f, fw = 520f, fh = 40f;
         batch.draw(texPixel, fx - 4, fy - 4, fw + 8, 4);          // abajo
@@ -236,16 +248,16 @@ public class PantallaCompetitivo extends PantallaBase {
     }
 
     private String obtenerTitulo() {
-        if (juego.getUsuarioActual() != null &&
-            "en".equals(juego.getUsuarioActual().getIdioma())) {
+        if (juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma())) {
             return "COMPETITIVE";
         }
         return "COMPETITIVO";
     }
 
     private String obtenerTextoSelecciona() {
-        if (juego.getUsuarioActual() != null &&
-            "en".equals(juego.getUsuarioActual().getIdioma())) {
+        if (juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma())) {
             return "SELECT THE AVAILABLE LEVEL:";
         }
         return "SELECCIONA EL NIVEL DISPONIBLE:";
@@ -254,7 +266,9 @@ public class PantallaCompetitivo extends PantallaBase {
     @Override
     public void resize(int w, int h) {
         viewport.update(w, h, true);
-        if (stage != null) stage.getViewport().update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
     }
 
     @Override
@@ -270,6 +284,8 @@ public class PantallaCompetitivo extends PantallaBase {
         texPixel.dispose();
         fuenteTitulo.dispose();
         fuente18.dispose();
-        if (stage != null) stage.dispose();
+        if (stage != null) {
+            stage.dispose();
+        }
     }
 }

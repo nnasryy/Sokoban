@@ -20,9 +20,16 @@ public class PantallaFelicidades extends PantallaBase {
     private BitmapFont fuenteTitulo;   // Pixellari60
     private BitmapFont fuenteSubtitulo; // Pixellari35
     private Stage stage;
+    private String mensajeGanador = null;
 
     public PantallaFelicidades(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+    }
+
+// Agrega este constructor adicional (deja el original):
+    public PantallaFelicidades(SokobanGame juego, String mensajeGanador) {
+        super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+        this.mensajeGanador = mensajeGanador;
     }
 
     @Override
@@ -106,7 +113,9 @@ public class PantallaFelicidades extends PantallaBase {
         String username = juego.getUsuarioActual() != null
                 ? juego.getUsuarioActual().getUsername().toUpperCase()
                 : "JUGADOR";
-        String subtitulo = obtenerSubtitulo(username);
+        String subtitulo = (mensajeGanador != null)
+                ? mensajeGanador // modo competitivo → muestra ganador
+                : obtenerSubtitulo(username);             // modo normal → texto habitual
         fuenteSubtitulo.setColor(Color.WHITE);
         layout.setText(fuenteSubtitulo, subtitulo, Color.WHITE, 650,
                 com.badlogic.gdx.utils.Align.center, true);

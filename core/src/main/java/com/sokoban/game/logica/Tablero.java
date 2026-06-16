@@ -5,17 +5,20 @@
 package com.sokoban.game.logica;
 
 import static com.sokoban.game.logica.Constantes.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class Tablero {
 
     private int[][] grid;
     private boolean[][] esMeta;
-    private int[][] historial; // para revert
     private int jugadorX, jugadorY;
     private int movimientos = 0;
     private int cajasEnMeta = 0;
     private int totalMetas;
     private int numeroNivel;
+    private Deque<int[][]> historial = new ArrayDeque<>();
+    private int[][] gridInicial;
 
     // Paredes por nivel
     private static final int[][] PAREDES_POR_NIVEL = {
@@ -80,7 +83,6 @@ public class Tablero {
     public boolean mover(int dx, int dy) {
         int nx = jugadorX + dx;
         int ny = jugadorY + dy;
-
         if (fueraDelGrid(nx, ny)) {
             return false;
         }
@@ -140,7 +142,7 @@ public class Tablero {
             cajasEnMeta--;
         }
 
-       grid[cy][cx] = esMeta[cy][cx] ? META : VACIO;
+        grid[cy][cx] = esMeta[cy][cx] ? META : VACIO;
 
         if (grid[ny][nx] == META) {
             grid[ny][nx] = CAJA_EN_META;
@@ -155,38 +157,42 @@ public class Tablero {
                 || x < 0 || x >= grid[y].length;
     }
 
-    // Guarda estado actual para revert
     private void guardarHistorial() {
-        historial = new int[grid.length][];
-        for (int i = 0; i < grid.length; i++) {
-            historial[i] = grid[i].clone();
-        }
+        historial.push(copiarGrid()); // CAMBIO — usa la Deque
     }
 
     // Revert — deshace el último movimiento
     public void revert() {
-        if (historial == null) {
+        if (historial.isEmpty()) {
             return;
         }
-        for (int i = 0; i < historial.length; i++) {
-            grid[i] = historial[i].clone();
+        int[][] estadoAnterior = historial.pop();
+        for (int i = 0; i < grid.length; i++) {
+            grid[i] = estadoAnterior[i].clone();
         }
         if (movimientos > 0) {
             movimientos--;
         }
-        inicializar();
+    }
+
+    private int[][] copiarGrid() {
+        int[][] copia = new int[grid.length][];
+        for (int i = 0; i < grid.length; i++) {
+            copia[i] = grid[i].clone();
+        }
+        return copia;
     }
 
     // Restart — reinicia el nivel completo
     public void reiniciar() {
+        historial.clear();
+        movimientos = 0;
+        cajasEnMeta = 0;
         int[][] original = NivelData.NIVELES[numeroNivel];
         for (int i = 0; i < original.length; i++) {
             grid[i] = original[i].clone();
         }
-        movimientos = 0;
-        cajasEnMeta = 0;
         inicializar();
-        guardarHistorial();
     }
 
     public boolean nivelCompleto() {
