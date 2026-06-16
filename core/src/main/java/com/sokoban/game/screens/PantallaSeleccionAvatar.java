@@ -77,7 +77,34 @@ public class PantallaSeleccionAvatar extends PantallaBase {
             public void clicked(InputEvent e, float x, float y) {
             }
         });
+// Botón GirlAvatar
+        Texture texGirl = new Texture("imagenes/botones/GirlAvatar.png");
+        ImageButton btnGirl = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texGirl)));
+        btnGirl.setSize(157f, 181f);
+        btnGirl.setPosition(252.4f, 550 - 232.7f - 181f);
+        btnGirl.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                juego.setScreen(new PantallaPersonalizarAvatar(juego, usuario, false));
+            }
+        });
 
+// Botón BoyAvatar
+        Texture texBoy = new Texture("imagenes/botones/BoyAvatar.png");
+        ImageButton btnBoy = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texBoy)));
+        btnBoy.setSize(157f, 181f);
+        btnBoy.setPosition(438.2f, 550 - 227.7f - 181f);
+        btnBoy.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                juego.setScreen(new PantallaPersonalizarAvatar(juego, usuario, true));
+            }
+        });
+
+        stage.addActor(btnGirl);
+        stage.addActor(btnBoy);
         stage.addActor(btnFoto);
         stage.addActor(btnListo);
         stage.addActor(btnVolumen);
