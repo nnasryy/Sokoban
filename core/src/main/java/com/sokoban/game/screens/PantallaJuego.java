@@ -145,7 +145,19 @@ public class PantallaJuego extends PantallaBase {
         btnExit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                juego.setScreen(new PantallaMenu(juego));
+                if (modoCompetitivo) {
+                    boolean ingles = juego.getUsuarioActual() != null
+                            && "en".equals(juego.getUsuarioActual().getIdioma());
+                    String ganador = turnoActual == 1
+                            ? (ingles ? nombreJ2 + " wins! " + nombreJ1 + " retired."
+                                    : nombreJ2 + " gano! " + nombreJ1 + " se retiro.")
+                            : (ingles ? nombreJ1 + " wins! " + nombreJ2 + " retired."
+                                    : nombreJ1 + " gano! " + nombreJ2 + " se retiro.");
+                    hiloTimer.pausar();
+                    juego.setScreen(new PantallaFelicidades(juego, ganador));
+                } else {
+                    juego.setScreen(new PantallaMenu(juego));
+                }
             }
         });
 
@@ -193,15 +205,15 @@ public class PantallaJuego extends PantallaBase {
 
         fuenteNivel24.setColor(Color.BLACK);
         fuenteNivel24.draw(batch,
-                (ingles ? "TRIES: " : "INTENTOS: ") + intentos,
-                21.3f, 628 - 30f);
-
-        fuenteNivel24.setColor(Color.BLACK);
-        fuenteNivel24.draw(batch,
                 (ingles ? "LEVEL: " : "NIVEL: ") + (numeroNivel + 1),
-                21.3f, 628 - 7.1f);
+                21.3f, 628 - 7.1f);  // se queda igual
 
-        fuenteHUD.setColor(Color.BLACK);
+// INTENTOS — debajo de NIVEL con más separación
+        fuenteNivel24.draw(batch,
+                (ingles ? "TRIES: " : "INTENTOS: ") + intentos,
+                21.3f, 628 - 55f);  // antes era 628-30f, ahora más abajo
+
+// MOVIMIENTOS — se queda igual
         fuenteHUD.draw(batch,
                 (ingles ? "MOVES: " : "MOVIMIENTOS: ") + tablero.getMovimientos(),
                 164.7f, 628 - 38.1f);
@@ -211,16 +223,13 @@ public class PantallaJuego extends PantallaBase {
                 formatearTiempo(hiloTimer.getSegundos()),
                 682.4f, 628 - 35f);
         if (modoCompetitivo) {
-            String textoTurno = ingles
-                    ? "TURN: " + (turnoActual == 1 ? nombreJ1 : nombreJ2)
-                    : "TURNO: " + (turnoActual == 1 ? nombreJ1 : nombreJ2);
+            String textoTurno = ingles ? "TURN:" : "TURNO:";
             fuenteHUD.setColor(Color.BLACK);
-            fuenteHUD.draw(batch, textoTurno, 854.2f, 628 - 157.1f);
-
+            fuenteHUD.draw(batch, textoTurno, 820f, 628 - 140f);
             fuenteNivel24.setColor(Color.BLACK);
             fuenteNivel24.draw(batch,
                     turnoActual == 1 ? nombreJ1 : nombreJ2,
-                    866f, 628 - 190.6f);
+                    820f, 628 - 170f);
         }
         dibujarMapa();
 

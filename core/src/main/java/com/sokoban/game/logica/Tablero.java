@@ -39,7 +39,6 @@ public class Tablero {
 
         this.totalMetas = NivelData.contarMetas(numeroNivel);
         inicializar();
-        guardarHistorial();
     }
 
     private void inicializar() {
@@ -86,8 +85,6 @@ public class Tablero {
         }
 
         int celdaDestino = grid[ny][nx];
-
-        // No puede moverse a paredes
         if (esPared(celdaDestino)) {
             return false;
         }
@@ -95,37 +92,32 @@ public class Tablero {
         if (celdaDestino == CAJA || celdaDestino == CAJA_EN_META) {
             int nx2 = nx + dx;
             int ny2 = ny + dy;
-
             if (fueraDelGrid(nx2, ny2)) {
                 return false;
             }
-
             int celdaSiguiente = grid[ny2][nx2];
-
             if (esPared(celdaSiguiente)) {
                 return false;
             }
-            if (celdaSiguiente == CAJA
-                    || celdaSiguiente == CAJA_EN_META) {
+            if (celdaSiguiente == CAJA || celdaSiguiente == CAJA_EN_META) {
                 return false;
             }
             if (!esCaminable(celdaSiguiente)) {
                 return false;
             }
 
-            guardarHistorial();
+            historial.push(copiarGrid()); // ← guarda SOLO si el mov es válido
             empujarCaja(nx, ny, nx2, ny2);
         } else if (!esCaminable(celdaDestino)) {
             return false;
         } else {
-            guardarHistorial();
+            historial.push(copiarGrid()); // ← guarda SOLO si el mov es válido
         }
 
         grid[jugadorY][jugadorX] = esMeta[jugadorY][jugadorX] ? META : VACIO;
         jugadorX = nx;
         jugadorY = ny;
         grid[jugadorY][jugadorX] = JUGADOR;
-
         movimientos++;
         return true;
     }
@@ -150,22 +142,34 @@ public class Tablero {
                 || x < 0 || x >= grid[y].length;
     }
 
-    private void guardarHistorial() {
-        historial.push(copiarGrid());
-    }
-
     public void revert() {
-        if (historial.isEmpty()) {
-            return;
-        }
-        int[][] estadoAnterior = historial.pop();
-        for (int i = 0; i < grid.length; i++) {
-            grid[i] = estadoAnterior[i].clone();
-        }
-        if (movimientos > 0) {
-            movimientos--;
+    if (historial.isEmpty()) return;
+    
+    int[][] estadoAnterior = historial.pop();
+    for (int i = 0; i < grid.length; i++) {
+        grid[i] = estadoAnterior[i].clone();
+    }
+    if (movimientos > 0) movimientos--;
+    
+    // Re-sincroniza toda la lógica con el grid restaurado
+    cajasEnMeta = 0;
+    esMeta = new boolean[grid.length][];
+    for (int y = 0; y < grid.length; y++) {
+        esMeta[y] = new boolean[grid[y].length];
+        for (int x = 0; x < grid[y].length; x++) {
+            if (grid[y][x] == JUGADOR) {
+                jugadorX = x;
+                jugadorY = y;
+            }
+            if (grid[y][x] == CAJA_EN_META) {
+                cajasEnMeta++;
+            }
+            if (grid[y][x] == META || grid[y][x] == CAJA_EN_META) {
+                esMeta[y][x] = true;
+            }
         }
     }
+}
 
     private int[][] copiarGrid() {
         int[][] copia = new int[grid.length][];

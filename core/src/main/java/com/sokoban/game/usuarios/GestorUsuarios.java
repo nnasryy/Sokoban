@@ -51,6 +51,9 @@ public class GestorUsuarios {
     public static Usuario login(String username, String password) {
         Usuario u = cargarUsuario(username);
         if (u != null && u.verificarPassword(password)) {
+            if (!u.isCuentaActiva()) {
+                return u;
+            }
             u.actualizarUltimaSesion();
             guardarUsuario(u);
             return u;
@@ -80,6 +83,7 @@ public class GestorUsuarios {
 
     public static List<Usuario> getRanking() {
         List<Usuario> todos = cargarTodos();
+        todos.removeIf(u -> !u.isCuentaActiva());
         todos.sort((a, b) -> {
             if (b.getNivelesCompletados() != a.getNivelesCompletados()) {
                 return b.getNivelesCompletados() - a.getNivelesCompletados();

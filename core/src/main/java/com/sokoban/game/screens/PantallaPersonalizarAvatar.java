@@ -49,7 +49,7 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
     private static final float CUAD_GAP = 27f;
     private static final float CUAD_Y = 421f;
     private static final float TAB_Y_CANVA = 354.4f;
-    private static final float[] TABS_X = {221.1f, 307.1f, 393.1f};
+    private static final float[] TABS_X = {210f, 330f, 430f};
 
     public PantallaPersonalizarAvatar(SokobanGame juego, Usuario usuario, boolean esBoy) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -132,17 +132,16 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         }
 
         String[] cabellosGirl = {"", "PinkHair", "YellowHair", "GreenHair", "BlueHair"};
-        String[] cabellosBoy = {"", "PinkHair", "YellowHair", "GreenHair", "BlueHair", "OrangeHair"};
+        String[] cabellosBoy = {"", "PinkHair", "YellowHair", "", "BlueHair", "OrangeHair"};
         String[] cabellos = esBoy ? cabellosBoy : cabellosGirl;
         if (texCapaCabello != null) {
             texCapaCabello.dispose();
             texCapaCabello = null;
         }
-        if (selCabello > 0) {
+        if (selCabello > 0 && !cabellos[selCabello].isEmpty()) {
             texCapaCabello = new Texture("imagenes/avatar/" + prefijo
                     + "/Hairs/" + prefijo + cabellos[selCabello] + ".png");
         }
-
         String[] vestsGirl = {"", "BlueVest", "PinkVest", "OrangeVest", "YellowVest"};
         String[] vestsBoy = {"", "GreenVest", "PinkVest", "OrangeVest", "YellowVest"};
         String[] vests = esBoy ? vestsBoy : vestsGirl;
@@ -245,10 +244,9 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
             case CABELLO:
                 Color[] coloresCab = esBoy
                         ? new Color[]{
-                            new Color(0f, 219f / 255f, 78f / 255f, 1f),
                             new Color(1f, 0f, 184f / 255f, 1f),
                             new Color(1f, 245f / 255f, 0f, 1f),
-                            new Color(0f, 219f / 255f, 78f / 255f, 1f),
+                            new Color(0f, 219f / 255f, 78f / 255f, 1f), 
                             new Color(0f, 72f / 255f, 1f, 1f),
                             new Color(1f, 142f / 255f, 0f, 1f)
                         }

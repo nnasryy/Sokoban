@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
 public class PantallaSeleccionAvatar extends PantallaBase {
 
@@ -26,6 +27,7 @@ public class PantallaSeleccionAvatar extends PantallaBase {
     private BitmapFont fuente;
     private Usuario usuario;
     private String rutaFotoElegida = null;
+    private BitmapFont fuente18;
 
     public PantallaSeleccionAvatar(SokobanGame juego, Usuario u) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -37,10 +39,12 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        texFondo = new Texture("imagenes/fondos/SeleccionFondo.png");
+        texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texBtnFoto = new Texture("imagenes/botones/pfp_button.png");
         texBtnListo = new Texture("imagenes/botones/listo_button.png");
         texVolumen = new Texture("imagenes/botones/volume_button.png");
+        fuente18 = new BitmapFont(Gdx.files.internal("fuentes/Pixellari18.fnt"));
+        fuente18.getData().setScale(1f);
 
         fuente = new BitmapFont(Gdx.files.internal("fuentes/Pixellari.fnt"));
         fuente.getData().setScale(1f);
@@ -48,6 +52,19 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
+
+        Texture texExit = new Texture("imagenes/botones/exit_button.png");
+        ImageButton btnExit = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texExit)));
+        btnExit.setSize(120.9f, 50.3f);
+        btnExit.setPosition(8.5f, 550 - 500f - 50.3f);
+        btnExit.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                juego.setScreen(new PantallaMenu(juego)); // o PantallaConfiguracion según flujo
+            }
+        });
+        stage.addActor(btnExit);
 
         ImageButton btnFoto = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnFoto)));
@@ -150,6 +167,18 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         batch.begin();
         batch.draw(texFondo, 0, 0, 650, 550);
 
+        // Después de dibujar el fondo:
+        fuente18.setColor(Color.WHITE);
+        GlyphLayout layout = new GlyphLayout();
+        boolean ingles = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
+        String textoSel = ingles
+                ? "SELECT PROFILE PHOTO OR AVATAR"
+                : "SELECCIONA FOTO DE PERFIL O AVATAR";
+        layout.setText(fuente18, textoSel, Color.WHITE, 650,
+                com.badlogic.gdx.utils.Align.center, false);
+        fuente18.draw(batch, layout, 0f, 550 - 60f);
+
         if (rutaFotoElegida != null) {
             fuente.setColor(Color.GREEN);
             fuente.draw(batch, "FOTO SELECCIONADA!",
@@ -175,6 +204,7 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         texBtnListo.dispose();
         texVolumen.dispose();
         fuente.dispose();
+        if (fuente18 != null) fuente18.dispose();
         if (stage != null) {
             stage.dispose();
         }

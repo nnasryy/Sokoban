@@ -33,6 +33,7 @@ public class Usuario implements Serializable {
     private int puntajeTotal;
     private List<String> amigos;
     private List<String> solicitudesPendientes;
+    private boolean cuentaActiva = true;
 
     public Usuario(String username, String password, String nombreCompleto) {
         this.username = username;
@@ -248,4 +249,17 @@ public class Usuario implements Serializable {
         }
 
     }
+
+    public boolean isCuentaActiva() {
+        return cuentaActiva;
+    }
+
+    public void desactivarCuenta() {
+      this.cuentaActiva = false;
+    }
+
+    public void reactivarCuenta() {
+        this.cuentaActiva = true;
+    }
+
 }

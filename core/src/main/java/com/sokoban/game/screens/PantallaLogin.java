@@ -131,9 +131,24 @@ public class PantallaLogin extends PantallaBase {
         }
 
         Usuario u = GestorUsuarios.login(username, password);
+        if (u != null && !u.isCuentaActiva()) {
+            // Reactivar y guardar
+            u.reactivarCuenta();
+            u.actualizarUltimaSesion();
+            GestorUsuarios.guardarUsuario(u);
+            juego.setUsuarioActual(u);
+            // Muestra advertencia de reactivación antes de entrar al menú
+            boolean ingles = "en".equals(u.getIdioma());
+            juego.setScreen(new PantallaAdvertencia(juego,
+                    ingles ? "Your account has been reactivated. Welcome back!"
+                            : "Tu cuenta ha sido reactivada. Bienvenido de nuevo!",
+                    new PantallaMenu(juego)));
+            return;
+        }
         if (u != null) {
             juego.setUsuarioActual(u);
             juego.setScreen(new PantallaMenu(juego));
+            // En iniciarSesion(), reemplaza el else final:
         } else {
             juego.setScreen(new PantallaAdvertencia(juego,
                     "Usuario o contrasena incorrectos",
