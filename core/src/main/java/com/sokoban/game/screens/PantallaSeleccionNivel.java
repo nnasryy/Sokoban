@@ -32,7 +32,7 @@ public class PantallaSeleccionNivel extends PantallaBase {
     private static final float ANCHO_BLOQUE = 90f;
     private static final float ALTO_BLOQUE = 100f;
     private BitmapFont fuenteNumeros;
-    boolean ingles = false;
+    boolean ingles; // ← solo declarado, sin valor por defecto
 
     public PantallaSeleccionNivel(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -42,6 +42,10 @@ public class PantallaSeleccionNivel extends PantallaBase {
     public void show() {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+
+        // ← Se evalúa PRIMERO antes de cargar cualquier textura
+        ingles = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
 
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
@@ -136,7 +140,6 @@ public class PantallaSeleccionNivel extends PantallaBase {
                 GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
             }
         });
-        stage.addActor(btnVolumen);
         stage.addActor(btnVolumen);
         stage.addActor(btnExit);
     }

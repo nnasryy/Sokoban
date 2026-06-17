@@ -417,7 +417,7 @@ public class PantallaStats extends PantallaBase {
 
             if (seleccionado) {
                 batch.setColor(COLOR_BORDE);
-                batch.draw(texPixel, xBtn - 3f, 550 - yBtn - 3f, 90f, 22f);
+                batch.draw(texPixel, xBtn - 3f, 550 - yBtn - 16f, 90f, 22f);
                 batch.setColor(Color.WHITE);
                 fuenteDatos.setColor(Color.WHITE);
             } else {

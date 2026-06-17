@@ -66,7 +66,11 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
         texVolumen = new Texture("imagenes/botones/volume_button.png");
-        texListo = new Texture("imagenes/botones/listo_button.png");
+        
+        boolean ingles = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
+        texListo = new Texture(ingles ? "imagenes/botones/Ready.png" : "imagenes/botones/Listo_button.png");
+        
         texVolumenOn = new Texture("imagenes/botones/volume_button.png");
         texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 

@@ -44,7 +44,11 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texBtnFoto = new Texture("imagenes/botones/pfp_button.png");
-        texBtnListo = new Texture("imagenes/botones/listo_button.png");
+        
+        boolean inglesAvatar = juego.getUsuarioActual() != null
+                && "en".equals(juego.getUsuarioActual().getIdioma());
+        texBtnListo = new Texture(inglesAvatar ? "imagenes/botones/Ready.png" : "imagenes/botones/Listo_button.png");
+        
         fuente18 = new BitmapFont(Gdx.files.internal("fuentes/Pixellari18.fnt"));
         fuente18.getData().setScale(1f);
 

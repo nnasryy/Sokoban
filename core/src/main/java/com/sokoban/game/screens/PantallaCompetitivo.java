@@ -50,7 +50,7 @@ public class PantallaCompetitivo extends PantallaBase {
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
         boolean ingles = juego.getUsuarioActual() != null && "en".equals(juego.getUsuarioActual().getIdioma());
-        texPlayCompetitivo = new Texture(ingles ? "imagenes/botones/Competitive.png" : "imagenes/botones/Competitivo.png");
+        texPlayCompetitivo = new Texture(ingles ? "imagenes/botones/PlayCompetitivo.png" : "imagenes/botones/JugarCompetitivo.png");
         texCandado = new Texture("imagenes/botones/Candado.png");
 
         texNivel1 = new Texture("imagenes/botones/Nivel1Bloque.png");
@@ -161,8 +161,12 @@ public class PantallaCompetitivo extends PantallaBase {
         String amigoUsername = campoAmigo.getText().trim();
 
         if (amigoUsername.isEmpty() || nivelSeleccionado == -1) {
-            juego.setScreen(new PantallaAdvertencia(juego,
-                    "Selecciona un amigo y un nivel",
+            boolean ingles2 = juego.getUsuarioActual() != null
+                    && "en".equals(juego.getUsuarioActual().getIdioma());
+            String msgAdv = ingles2
+                    ? "Select a friend and a level"
+                    : "Selecciona un amigo y un nivel";
+            juego.setScreen(new PantallaAdvertencia(juego, msgAdv,
                     new PantallaCompetitivo(juego)));
             return;
         }
@@ -171,8 +175,12 @@ public class PantallaCompetitivo extends PantallaBase {
                 && juego.getUsuarioActual().getAmigos().contains(amigoUsername);
 
         if (!esAmigo) {
-            juego.setScreen(new PantallaAdvertencia(juego,
-                    "Ese usuario no esta en tu lista de amigos",
+            boolean ingles3 = juego.getUsuarioActual() != null
+                    && "en".equals(juego.getUsuarioActual().getIdioma());
+            String msgAmigo = ingles3
+                    ? "That user is not in your friends list"
+                    : "Ese usuario no esta en tu lista de amigos";
+            juego.setScreen(new PantallaAdvertencia(juego, msgAmigo,
                     new PantallaCompetitivo(juego)));
             return;
         }
