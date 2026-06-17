@@ -40,7 +40,6 @@ public class PantallaMenu extends PantallaBase {
 
         texFondo = new Texture("imagenes/fondos/MenuPrincipal.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
-        // Agrégalas aquí, justo después de texExit = new Texture(...):
         texVolumenOn = new Texture("imagenes/botones/volume_button.png");
         texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
         texPlay = new Texture(ingles ? "imagenes/botones/play_button.png" : "imagenes/botones/Jugar.png");

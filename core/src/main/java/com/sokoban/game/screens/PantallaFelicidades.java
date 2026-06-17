@@ -21,8 +21,8 @@ public class PantallaFelicidades extends PantallaBase {
 
     private Texture texFondo;
     private Texture texBtnSeleccionar, texBtnMenu;
-    private BitmapFont fuenteTitulo;   // Pixellari60
-    private BitmapFont fuenteSubtitulo; // Pixellari35
+    private BitmapFont fuenteTitulo;
+    private BitmapFont fuenteSubtitulo;
     private Stage stage;
     private BitmapFont fuenteResumen;
     private String mensajeGanador = null;
@@ -37,13 +37,11 @@ public class PantallaFelicidades extends PantallaBase {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // Texturas
         texFondo = new Texture("imagenes/fondos/Fondodefault.png");
         boolean ingles = juego.getUsuarioActual() != null && "en".equals(juego.getUsuarioActual().getIdioma());
         texBtnSeleccionar = new Texture(ingles ? "imagenes/botones/PickLevel.png" : "imagenes/botones/SeleccionarNivel.png");
         texBtnMenu = new Texture(ingles ? "imagenes/botones/GoBackToMenu.png" : "imagenes/botones/RegresarAMenu.png");
 
-        // Fuentes
         fuenteTitulo = new BitmapFont(
                 Gdx.files.internal("fuentes/Pixellari60.fnt"));
         fuenteTitulo.getData().setScale(1f);
@@ -52,12 +50,10 @@ public class PantallaFelicidades extends PantallaBase {
                 Gdx.files.internal("fuentes/Pixellari35.fnt"));
         fuenteSubtitulo.getData().setScale(1f);
 
-        // Stage
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
-        // Botón Seleccionar Nivel
         ImageButton btnSeleccionar = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnSeleccionar)));
         btnSeleccionar.setSize(215.7f, 73.9f);
@@ -70,7 +66,6 @@ public class PantallaFelicidades extends PantallaBase {
         });
         fuenteResumen = new BitmapFont(Gdx.files.internal("fuentes/Pixellari24.fnt"));
         fuenteResumen.getData().setScale(1f);
-        // Botón Regresar al Menú
         ImageButton btnMenu = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnMenu)));
         btnMenu.setSize(215.7f, 73.9f);
@@ -96,22 +91,15 @@ public class PantallaFelicidades extends PantallaBase {
         batch.setProjectionMatrix(viewport.getCamera().combined);
 
         batch.begin();
-
-        // Fondo
         batch.draw(texFondo, 0, 0, 650, 550);
 
-        // Título — idioma dinámico
         com.badlogic.gdx.graphics.g2d.GlyphLayout layout
                 = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
-
-// Título centrado horizontalmente en 650px
         String titulo = obtenerTitulo();
         fuenteTitulo.setColor(Color.WHITE);
         layout.setText(fuenteTitulo, titulo, Color.WHITE, 650,
                 com.badlogic.gdx.utils.Align.center, false);
         fuenteTitulo.draw(batch, layout, 0f, 550 - 96.4f);
-
-// Subtítulo centrado
         String username = juego.getUsuarioActual() != null
                 ? juego.getUsuarioActual().getUsername().toUpperCase()
                 : "JUGADOR";
@@ -128,13 +116,12 @@ public class PantallaFelicidades extends PantallaBase {
             fuenteSubtitulo.draw(batch, layout, 0f, 550 - 179.2f);
         }
 
-        batch.end(); // ← FUERA del if/else
+        batch.end();
         stage.act(delta);
         stage.draw();
     }
 
-
-private String obtenerTitulo() {
+    private String obtenerTitulo() {
         if (juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma())) {
             return "!CONGRATULATIONS!";
@@ -151,7 +138,7 @@ private String obtenerTitulo() {
     }
 
     @Override
-public void resize(int w, int h) {
+    public void resize(int w, int h) {
         viewport.update(w, h, true);
         if (stage != null) {
             stage.getViewport().update(w, h, true);
@@ -159,12 +146,14 @@ public void resize(int w, int h) {
     }
 
     @Override
-public void dispose() {
+    public void dispose() {
         texFondo.dispose();
         texBtnSeleccionar.dispose();
         texBtnMenu.dispose();
         fuenteTitulo.dispose();
-if (fuenteResumen != null) fuenteResumen.dispose();
+        if (fuenteResumen != null) {
+            fuenteResumen.dispose();
+        }
         fuenteSubtitulo.dispose();
         if (stage != null) {
             stage.dispose();

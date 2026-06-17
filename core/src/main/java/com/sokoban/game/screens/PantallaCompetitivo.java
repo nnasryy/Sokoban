@@ -213,7 +213,6 @@ public class PantallaCompetitivo extends PantallaBase {
         estilo.background = new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();
 
-        // Cursor
         com.badlogic.gdx.graphics.Pixmap cursorMap = new com.badlogic.gdx.graphics.Pixmap(
                 2, 40, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         cursorMap.setColor(colorTexto);

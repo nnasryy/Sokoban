@@ -20,6 +20,7 @@ import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
 import com.sokoban.game.GestorMusica;
+
 public class PantallaLogin extends PantallaBase {
 
     private Texture texFondo, texBtnLogin, texExit;
@@ -134,7 +135,6 @@ public class PantallaLogin extends PantallaBase {
 
         Usuario u = GestorUsuarios.login(username, password);
         if (u != null && !u.isCuentaActiva()) {
-            // Reactivar y guardar
             u.reactivarCuenta();
             u.actualizarUltimaSesion();
             GestorUsuarios.guardarUsuario(u);

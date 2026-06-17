@@ -66,11 +66,11 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
         texVolumen = new Texture("imagenes/botones/volume_button.png");
-        
+
         boolean ingles = juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma());
         texListo = new Texture(ingles ? "imagenes/botones/Ready.png" : "imagenes/botones/Listo_button.png");
-        
+
         texVolumenOn = new Texture("imagenes/botones/volume_button.png");
         texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
@@ -91,7 +91,7 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         pm.dispose();
 
         if (esBoy) {
-            selCabello = 2; // verde ya es el color base del avatar boy
+            selCabello = 2;
         }
         cargarCapas();
 
@@ -262,11 +262,11 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
             case CABELLO:
                 Color[] coloresCab = esBoy
                         ? new Color[]{
-                            new Color(1f, 105f / 255f, 180f / 255f, 1f), // índice 1 - Pink
-                            new Color(1f, 245f / 255f, 0f, 1f), // índice 2 - Yellow
+                            new Color(1f, 105f / 255f, 180f / 255f, 1f),
+                            new Color(1f, 245f / 255f, 0f, 1f),
                             new Color(0f, 219f / 255f, 78f / 255f, 1f),
-                            new Color(0f, 72f / 255f, 1f, 1f), // índice 4 - Blue
-                            new Color(1f, 100f / 255f, 0f, 1f) // índice 5 - Orange
+                            new Color(0f, 72f / 255f, 1f, 1f),
+                            new Color(1f, 100f / 255f, 0f, 1f)
                         }
                         : new Color[]{
                             new Color(1f, 142f / 255f, 0f, 1f),

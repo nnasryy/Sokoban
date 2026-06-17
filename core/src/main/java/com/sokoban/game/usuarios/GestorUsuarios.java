@@ -1,4 +1,3 @@
-
  /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -62,11 +61,6 @@ public class GestorUsuarios {
         return new File(CARPETA_BASE + username).exists();
     }
 
-    /**
-     * Carga un usuario solo si su cuenta está activa (visible).
-     * Retorna null si la cuenta está desactivada, igual que si no existiera.
-     * Usado en Ranking y Comparar para ocultar cuentas desactivadas sin eliminarlas.
-     */
     public static Usuario cargarUsuarioVisible(String username) {
         Usuario u = cargarUsuario(username);
         if (u != null && u.isCuentaActiva()) {

@@ -84,7 +84,6 @@ public class PantallaControles extends PantallaBase {
                 ? juego.getUsuarioActual().getVolumen() : 0.8f;
         stage.addActor(btnExit);
         stage.addActor(btnVolumen);
-        // Botón WASD
         com.badlogic.gdx.graphics.Pixmap pmBtn = new com.badlogic.gdx.graphics.Pixmap(
                 1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         pmBtn.setColor(new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f));
@@ -126,7 +125,6 @@ public class PantallaControles extends PantallaBase {
 public void render(float delta) {
     if (texFondo == null) return;
 
-    // 1. Lógica del slider (NO dibuja, solo calcula) — va ANTES del batch
     float barX = 100f, barY = 80f, barW = 450f, barH = 20f;
     if (Gdx.input.isTouched()) {
         com.badlogic.gdx.math.Vector2 tp = new com.badlogic.gdx.math.Vector2(
@@ -144,24 +142,19 @@ public void render(float delta) {
         }
     }
 
-    // 2. Configurar viewport y cámara — ANTES del batch.begin()
     viewport.apply();
     batch.setProjectionMatrix(viewport.getCamera().combined);
 
-    // 3. Todo el dibujo va AQUÍ, entre begin() y end()
     batch.begin();
 
-        // Fondo
         batch.draw(texFondo, 0, 0, 650, 550);
 
-        // Título
         GlyphLayout layout = new GlyphLayout();
         fuenteTitulo.setColor(Color.WHITE);
         String titulo = ingles ? "CONTROLS" : "CONTROLES";
         layout.setText(fuenteTitulo, titulo, Color.WHITE, 650, Align.center, false);
         fuenteTitulo.draw(batch, layout, 0f, 550 - 18f);
 
-        // Lista de controles
         fuenteTexto.setColor(Color.WHITE);
         float startY = 550 - 110f;
         float lineH = 38f;
@@ -186,7 +179,6 @@ public void render(float delta) {
             fuenteTexto.draw(batch, lineas[i], 50f, startY - i * lineH);
         }
 
-        // Slider volumen
         fuenteTexto.setColor(Color.WHITE);
         fuenteTexto.draw(batch,
                 (ingles ? "VOLUME: " : "VOLUMEN: ") + (int)(volumenActual * 100) + "%",
@@ -197,7 +189,6 @@ public void render(float delta) {
         batch.draw(texPixel, barX, barY, barW * volumenActual, barH);
         batch.setColor(Color.WHITE);
 
-        // Botones WASD / Flechas con highlight
         String esquema = juego.getUsuarioActual() != null
                 ? juego.getUsuarioActual().getEsquemaControles() : "WASD";
         fuenteTexto.setColor(Color.WHITE);
@@ -214,7 +205,6 @@ public void render(float delta) {
 
     batch.end();
 
-    // 4. Stage SIEMPRE al final, fuera del batch
     stage.act(delta);
     stage.draw();
 }

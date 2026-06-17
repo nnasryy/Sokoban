@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -74,7 +78,9 @@ public class PantallaConfirmarDesactivar extends PantallaBase {
 
     @Override
     public void render(float delta) {
-        if (texFondo == null) return;
+        if (texFondo == null) {
+            return;
+        }
 
         if (pendienteDesactivar) {
             ejecutarDesactivacion();
@@ -102,7 +108,9 @@ public class PantallaConfirmarDesactivar extends PantallaBase {
     }
 
     private void ejecutarDesactivacion() {
-        if (juego.getUsuarioActual() == null) return;
+        if (juego.getUsuarioActual() == null) {
+            return;
+        }
         juego.getUsuarioActual().desactivarCuenta();
         GestorUsuarios.guardarUsuario(juego.getUsuarioActual());
         juego.setUsuarioActual(null);
@@ -119,10 +127,20 @@ public class PantallaConfirmarDesactivar extends PantallaBase {
 
     @Override
     public void dispose() {
-        if (texFondo != null) texFondo.dispose();
-        if (texBtnSi != null) texBtnSi.dispose();
-        if (texBtnNo != null) texBtnNo.dispose();
-        if (fuente != null) fuente.dispose();
-        if (stage != null) stage.dispose();
+        if (texFondo != null) {
+            texFondo.dispose();
+        }
+        if (texBtnSi != null) {
+            texBtnSi.dispose();
+        }
+        if (texBtnNo != null) {
+            texBtnNo.dispose();
+        }
+        if (fuente != null) {
+            fuente.dispose();
+        }
+        if (stage != null) {
+            stage.dispose();
+        }
     }
 }

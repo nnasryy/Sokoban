@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -28,8 +32,6 @@ public class PantallaInicio extends PantallaBase {
 
     @Override
     public void show() {
-        // ← setWindowedMode va al FINAL, no al inicio
-
         texFondo = new Texture("imagenes/fondos/Menuinicio.png");
         texSignUp = new Texture("imagenes/botones/signup_button.png");
         texLogin = new Texture("imagenes/botones/login_button.png");
@@ -85,7 +87,7 @@ public class PantallaInicio extends PantallaBase {
     @Override
     public void render(float delta) {
         if (texFondo == null) {
-            return; // ← guard por si render llega antes que show termine
+            return;
         }
         tiempo += delta;
 

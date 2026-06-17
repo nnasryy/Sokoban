@@ -43,7 +43,6 @@ public class PantallaSeleccionNivel extends PantallaBase {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
-        // ← Se evalúa PRIMERO antes de cargar cualquier textura
         ingles = juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma());
 

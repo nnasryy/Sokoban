@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.GestorMusica;
+
 public class PantallaIdioma extends PantallaBase {
 
     private Texture texFondo, texEnglish, texEspaniol;

@@ -21,6 +21,7 @@ import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.ValidadorContrasena;
 import com.sokoban.game.GestorMusica;
+
 public class PantallaMisDatos extends PantallaBase {
 
     private Texture texFondo, texExit;
@@ -30,9 +31,9 @@ public class PantallaMisDatos extends PantallaBase {
     private Texture texAvatarJugador;
     private Texture texVolumenOn, texVolumenOff;
 
-    private BitmapFont fuenteTitulo;   // Pixellari100
-    private BitmapFont fuenteLabel;    // Pixellari27
-    private BitmapFont fuente18;       // Pixellari18
+    private BitmapFont fuenteTitulo;
+    private BitmapFont fuenteLabel;
+    private BitmapFont fuente18;
 
     private Stage stage;
     private TextField campoNombre, campoPassword;
@@ -44,9 +45,8 @@ public class PantallaMisDatos extends PantallaBase {
     private Color colorCaract = Color.RED;
     private boolean ingles;
 
-    // Layout — columna izquierda (avatar) y derecha (campos)
     private static final float AV_X = 30f;
-    private static final float AV_Y_TOP = 120f;   // desde arriba en coordenadas Canva
+    private static final float AV_Y_TOP = 120f;
     private static final float AV_W = 160f;
     private static final float AV_H = 200f;
 
@@ -69,16 +69,11 @@ public class PantallaMisDatos extends PantallaBase {
         texExit = new Texture("imagenes/botones/exit_button.png");
         texOjoAbierto = new Texture("imagenes/botones/OpenedEye.png");
         texOjoCerrado = new Texture("imagenes/botones/ClosedEye.png");
-        texBtnGuardar = new Texture(ingles
-                ? "imagenes/botones/Save.png"
-                : "imagenes/botones/Guardar.png");
-        texBtnDesactivar = new Texture(ingles
-                ? "imagenes/botones/Deactivate.png"
-                : "imagenes/botones/Desactivar.png");
+        texBtnGuardar = new Texture(ingles ? "imagenes/botones/Save.png" : "imagenes/botones/Guardar.png");
+        texBtnDesactivar = new Texture(ingles ? "imagenes/botones/Deactivate.png" : "imagenes/botones/Desactivar.png");
         texVolumenOn = new Texture("imagenes/botones/volume_button.png");
         texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
-        // Pixel para bordes
         com.badlogic.gdx.graphics.Pixmap pm = new com.badlogic.gdx.graphics.Pixmap(
                 1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         pm.setColor(Color.WHITE);
@@ -86,10 +81,8 @@ public class PantallaMisDatos extends PantallaBase {
         texPixel = new Texture(pm);
         pm.dispose();
 
-        // Cargar avatar del jugador
         cargarAvatarJugador();
 
-        // Fuentes
         fuenteTitulo = new BitmapFont(Gdx.files.internal("fuentes/Pixellari100.fnt"));
         fuenteTitulo.getData().setScale(1f);
         fuenteLabel = new BitmapFont(Gdx.files.internal("fuentes/Pixellari27.fnt"));
@@ -103,16 +96,13 @@ public class PantallaMisDatos extends PantallaBase {
         TextField.TextFieldStyle estilo = crearEstiloTextField();
         var usuario = juego.getUsuarioActual();
 
-        // Campo nombre — Y: 185 desde arriba
         campoNombre = new TextField(usuario.getNombreCompleto(), estilo);
         campoNombre.setBounds(CAMPOS_X, 550 - 195f - CAMPO_H, CAMPO_W, CAMPO_H);
 
-        // Campo username — deshabilitado, Y: 255
         TextField campoUsername = new TextField(usuario.getUsername(), estilo);
         campoUsername.setBounds(CAMPOS_X, 550 - 265f - CAMPO_H, CAMPO_W, CAMPO_H);
         campoUsername.setDisabled(true);
 
-        // Campo password — Y: 325
         campoPassword = new TextField("", estilo);
         campoPassword.setMessageText("*****");
         campoPassword.setPasswordMode(true);
@@ -126,7 +116,6 @@ public class PantallaMisDatos extends PantallaBase {
                     && ValidadorContrasena.passwordLongitudValida(pass)) ? Color.GREEN : Color.RED;
         });
 
-        // Botón ojo
         btnOjo = new ImageButton(new TextureRegionDrawable(new TextureRegion(texOjoCerrado)));
         btnOjo.setSize(46f, CAMPO_H);
         btnOjo.setPosition(CAMPOS_X + CAMPO_W - 55f + 5f, 550 - 335f - CAMPO_H);
@@ -140,7 +129,6 @@ public class PantallaMisDatos extends PantallaBase {
             }
         });
 
-        // Botón Guardar
         ImageButton btnGuardar = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnGuardar)));
         btnGuardar.setSize(185f, 60f);
@@ -152,7 +140,6 @@ public class PantallaMisDatos extends PantallaBase {
             }
         });
 
-        // Botón Desactivar
         ImageButton btnDesactivar = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnDesactivar)));
         btnDesactivar.setSize(185f, 60f);
@@ -164,7 +151,6 @@ public class PantallaMisDatos extends PantallaBase {
             }
         });
 
-        // Botón Exit
         ImageButton btnExit = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texExit)));
         btnExit.setSize(120.9f, 50.3f);
@@ -197,7 +183,6 @@ public class PantallaMisDatos extends PantallaBase {
         stage.addActor(btnVolumen);
     }
 
-    // Carga el avatar según tipoAvatar y configAvatar del usuario
     private void cargarAvatarJugador() {
         if (juego.getUsuarioActual() == null) {
             return;
@@ -258,9 +243,7 @@ public class PantallaMisDatos extends PantallaBase {
         }
 
         GestorUsuarios.guardarUsuario(usuario);
-        juego.setScreen(new PantallaAdvertencia(juego,
-                ingles ? "Data saved successfully"
-                        : "Datos guardados correctamente",
+        juego.setScreen(new PantallaAdvertencia(juego, ingles ? "Data saved successfully" : "Datos guardados correctamente",
                 new PantallaConfiguracion(juego)));
     }
 
@@ -301,7 +284,6 @@ public class PantallaMisDatos extends PantallaBase {
 
         batch.draw(texFondo, 0, 0, 650, 550);
 
-        // Título centrado
         GlyphLayout layout = new GlyphLayout();
         fuenteTitulo.setColor(Color.WHITE);
         String titulo = ingles ? "MY INFO" : "MIS DATOS";
@@ -309,7 +291,6 @@ public class PantallaMisDatos extends PantallaBase {
                 com.badlogic.gdx.utils.Align.center, false);
         fuenteTitulo.draw(batch, layout, 0f, 550 - 18f);
 
-        // Avatar izquierda
         float avY = 550 - AV_Y_TOP - AV_H;
         if (texAvatarJugador != null) {
             Color colorBorde = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
@@ -328,20 +309,17 @@ public class PantallaMisDatos extends PantallaBase {
             }
         }
 
-        // Username debajo del avatar
         fuenteLabel.setColor(Color.WHITE);
         layout.setText(fuenteLabel, "@" + juego.getUsuarioActual().getUsername(),
                 Color.WHITE, AV_W, com.badlogic.gdx.utils.Align.center, false);
         fuenteLabel.draw(batch, layout, AV_X, avY - 8f);
 
-        // Labels columna derecha
         Color colorLabel = new Color(1f, 1f, 1f, 0.85f);
         fuenteLabel.setColor(colorLabel);
         fuenteLabel.draw(batch, ingles ? "NAME" : "NOMBRE", CAMPOS_X, 550 - 175f);
         fuenteLabel.draw(batch, ingles ? "USERNAME" : "USUARIO", CAMPOS_X, 550 - 245f);
         fuenteLabel.draw(batch, "PASSWORD", CAMPOS_X, 550 - 315f);
 
-        // Requisitos de password
         float yReq = 550 - 395f;
         fuente18.setColor(colorEspecial);
         fuente18.draw(batch, ingles ? "SPECIAL CHAR" : "CHAR. ESPECIAL", CAMPOS_X, yReq);
@@ -365,13 +343,13 @@ public class PantallaMisDatos extends PantallaBase {
             com.badlogic.gdx.files.FileHandle fh = Gdx.files.internal(ruta);
             if (fh.exists()) {
                 Texture capa = new Texture(fh);
-                batch.flush(); // fuerza el draw antes de crear nueva textura
+                batch.flush();
                 batch.draw(capa, AV_X, avY, AV_W, AV_H);
-                batch.flush(); // fuerza el draw antes de dispose
+                batch.flush();
                 capa.dispose();
             }
         } catch (Exception e) {
-            /* capa no existe */ }
+        }
     }
 
     private String obtenerNombrePiel(String p, int sel) {

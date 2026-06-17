@@ -2,10 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
- /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -338,7 +334,6 @@ public class PantallaStats extends PantallaBase {
 
         float yAm = ySol + esp * 4f;
         List<String> amigos = u.getAmigos();
-        // Solo mostrar amigos con cuenta activa (desactivados se ocultan)
         List<String> amigosVisibles = new ArrayList<>();
         for (String a : amigos) {
             Usuario uAmigo = GestorUsuarios.cargarUsuario(a);
@@ -384,7 +379,6 @@ public class PantallaStats extends PantallaBase {
         float esp = 26f;
 
         List<String> amigos = yo.getAmigos();
-        // Solo mostrar amigos con cuenta activa en la selección de comparar
         List<String> amigosVisibles = new ArrayList<>();
         for (String a : amigos) {
             Usuario uA = GestorUsuarios.cargarUsuario(a);

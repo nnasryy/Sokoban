@@ -21,6 +21,7 @@ import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
 import com.sokoban.game.usuarios.ValidadorContrasena;
 import com.sokoban.game.GestorMusica;
+
 public class PantallaRegistro extends PantallaBase {
 
     private Texture texFondo, texExit, texBotonSignUp;

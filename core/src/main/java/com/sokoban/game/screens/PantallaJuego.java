@@ -207,14 +207,12 @@ public class PantallaJuego extends PantallaBase {
         fuenteNivel24.setColor(Color.BLACK);
         fuenteNivel24.draw(batch,
                 (ingles ? "LEVEL: " : "NIVEL: ") + (numeroNivel + 1),
-                21.3f, 628 - 7.1f);  // se queda igual
+                21.3f, 628 - 7.1f);
 
-// INTENTOS — debajo de NIVEL con más separación
         fuenteNivel24.draw(batch,
                 (ingles ? "TRIES: " : "INTENTOS: ") + intentos,
-                21.3f, 628 - 55f);  // antes era 628-30f, ahora más abajo
+                21.3f, 628 - 55f);
 
-// MOVIMIENTOS — se queda igual
         fuenteHUD.draw(batch,
                 (ingles ? "MOVES: " : "MOVIMIENTOS: ") + tablero.getMovimientos(),
                 164.7f, 628 - 38.1f);

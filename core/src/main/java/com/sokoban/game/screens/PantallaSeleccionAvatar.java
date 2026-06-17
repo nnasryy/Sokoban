@@ -44,11 +44,11 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texBtnFoto = new Texture("imagenes/botones/pfp_button.png");
-        
+
         boolean inglesAvatar = juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma());
         texBtnListo = new Texture(inglesAvatar ? "imagenes/botones/Ready.png" : "imagenes/botones/Listo_button.png");
-        
+
         fuente18 = new BitmapFont(Gdx.files.internal("fuentes/Pixellari18.fnt"));
         fuente18.getData().setScale(1f);
 
@@ -67,7 +67,7 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         btnExit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                juego.setScreen(new PantallaMenu(juego)); // o PantallaConfiguracion según flujo
+                juego.setScreen(new PantallaMenu(juego)); 
             }
         });
         stage.addActor(btnExit);
@@ -174,7 +174,6 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         batch.begin();
         batch.draw(texFondo, 0, 0, 650, 550);
 
-        // Después de dibujar el fondo:
         fuente18.setColor(Color.WHITE);
         GlyphLayout layout = new GlyphLayout();
         boolean ingles = juego.getUsuarioActual() != null
