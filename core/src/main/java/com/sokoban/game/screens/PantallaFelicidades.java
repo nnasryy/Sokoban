@@ -1,3 +1,7 @@
+ /*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -17,18 +21,13 @@ public class PantallaFelicidades extends PantallaBase {
 
     private Texture texFondo;
     private Texture texBtnSeleccionar, texBtnMenu;
-    private BitmapFont fuenteTitulo;
-    private BitmapFont fuenteSubtitulo;
+    private BitmapFont fuenteTitulo;   // Pixellari60
+    private BitmapFont fuenteSubtitulo; // Pixellari35
     private Stage stage;
-    private String mensajeGanador = null;
 
-    public PantallaFelicidades(SokobanGame juego) {
+    public PantallaFelicidades(SokobanGame juego, String ganador) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
-    }
-
-    public PantallaFelicidades(SokobanGame juego, String mensajeGanador) {
-        super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
-        this.mensajeGanador = mensajeGanador;
+        ganador=juego.getUsuarioActual().getIdioma();
     }
 
     @Override
@@ -36,10 +35,13 @@ public class PantallaFelicidades extends PantallaBase {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
 
+        // Texturas
         texFondo = new Texture("imagenes/fondos/Fondodefault.png");
-        texBtnSeleccionar = new Texture("imagenes/botones/SeleccionarNivel.png");
-        texBtnMenu = new Texture("imagenes/botones/RegresarAMenu.png");
+        boolean ingles = juego.getUsuarioActual() != null && "en".equals(juego.getUsuarioActual().getIdioma());
+        texBtnSeleccionar = new Texture(ingles ? "imagenes/botones/PickLevel.png" : "imagenes/botones/SeleccionarNivel.png");
+        texBtnMenu = new Texture(ingles ? "imagenes/botones/GoBackToMenu.png" : "imagenes/botones/RegresarAMenu.png");
 
+        // Fuentes
         fuenteTitulo = new BitmapFont(
                 Gdx.files.internal("fuentes/Pixellari60.fnt"));
         fuenteTitulo.getData().setScale(1f);
@@ -48,10 +50,12 @@ public class PantallaFelicidades extends PantallaBase {
                 Gdx.files.internal("fuentes/Pixellari35.fnt"));
         fuenteSubtitulo.getData().setScale(1f);
 
+        // Stage
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
+        // Botón Seleccionar Nivel
         ImageButton btnSeleccionar = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnSeleccionar)));
         btnSeleccionar.setSize(215.7f, 73.9f);
@@ -63,6 +67,7 @@ public class PantallaFelicidades extends PantallaBase {
             }
         });
 
+        // Botón Regresar al Menú
         ImageButton btnMenu = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnMenu)));
         btnMenu.setSize(215.7f, 73.9f);
@@ -89,23 +94,25 @@ public class PantallaFelicidades extends PantallaBase {
 
         batch.begin();
 
+        // Fondo
         batch.draw(texFondo, 0, 0, 650, 550);
 
+        // Título — idioma dinámico
         com.badlogic.gdx.graphics.g2d.GlyphLayout layout
                 = new com.badlogic.gdx.graphics.g2d.GlyphLayout();
 
+// Título centrado horizontalmente en 650px
         String titulo = obtenerTitulo();
         fuenteTitulo.setColor(Color.WHITE);
         layout.setText(fuenteTitulo, titulo, Color.WHITE, 650,
                 com.badlogic.gdx.utils.Align.center, false);
         fuenteTitulo.draw(batch, layout, 0f, 550 - 96.4f);
 
+// Subtítulo centrado
         String username = juego.getUsuarioActual() != null
                 ? juego.getUsuarioActual().getUsername().toUpperCase()
                 : "JUGADOR";
-        String subtitulo = (mensajeGanador != null)
-                ? mensajeGanador // modo competitivo → muestra ganador
-                : obtenerSubtitulo(username);             // modo normal → texto habitual
+        String subtitulo = obtenerSubtitulo(username);
         fuenteSubtitulo.setColor(Color.WHITE);
         layout.setText(fuenteSubtitulo, subtitulo, Color.WHITE, 650,
                 com.badlogic.gdx.utils.Align.center, true);

@@ -390,7 +390,9 @@ public class PantallaJuego extends PantallaBase {
 
     private void irSiguienteNivel() {
         if (GestorNiveles.esUltimoNivel(numeroNivel)) {
-            juego.setScreen(new PantallaFelicidades(juego));
+            String ganador;
+            ganador=juego.getUsuarioActual().getIdioma();
+            juego.setScreen(new PantallaFelicidades(juego,ganador));
         } else {
             juego.setScreen(new PantallaJuego(juego, numeroNivel + 1));
         }
