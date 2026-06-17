@@ -2,6 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+ /*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -22,6 +26,7 @@ import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import com.sokoban.game.GestorMusica;
 
@@ -333,27 +338,35 @@ public class PantallaStats extends PantallaBase {
 
         float yAm = ySol + esp * 4f;
         List<String> amigos = u.getAmigos();
+        // Solo mostrar amigos con cuenta activa (desactivados se ocultan)
+        List<String> amigosVisibles = new ArrayList<>();
+        for (String a : amigos) {
+            Usuario uAmigo = GestorUsuarios.cargarUsuario(a);
+            if (uAmigo != null && uAmigo.isCuentaActiva()) {
+                amigosVisibles.add(a);
+            }
+        }
 
         fuenteDatos.setColor(COLOR_BORDE);
         fuenteDatos.draw(batch,
-                (ingles ? "FRIENDS (" : "AMIGOS (") + amigos.size() + "):",
+                (ingles ? "FRIENDS (" : "AMIGOS (") + amigosVisibles.size() + "):",
                 x, 550 - yAm);
 
-        if (amigos.isEmpty()) {
+        if (amigosVisibles.isEmpty()) {
             fuenteDatos.setColor(COLOR_DATOS);
             fuenteDatos.draw(batch,
                     ingles ? "  No friends yet." : "  Sin amigos aun.",
                     x, 550 - (yAm + esp));
         } else {
             fuenteDatos.setColor(COLOR_DATOS);
-            int maxAm = Math.min(amigos.size(), 3);
+            int maxAm = Math.min(amigosVisibles.size(), 3);
             for (int i = 0; i < maxAm; i++) {
-                fuenteDatos.draw(batch, "  @" + amigos.get(i),
+                fuenteDatos.draw(batch, "  @" + amigosVisibles.get(i),
                         x, 550 - (yAm + esp * (i + 1)));
             }
-            if (amigos.size() > 3) {
+            if (amigosVisibles.size() > 3) {
                 fuenteDatos.draw(batch,
-                        "  ... " + (ingles ? "and " : "y ") + (amigos.size() - 3)
+                        "  ... " + (ingles ? "and " : "y ") + (amigosVisibles.size() - 3)
                         + (ingles ? " more." : " mas."),
                         x, 550 - (yAm + esp * 4));
             }
@@ -371,13 +384,21 @@ public class PantallaStats extends PantallaBase {
         float esp = 26f;
 
         List<String> amigos = yo.getAmigos();
+        // Solo mostrar amigos con cuenta activa en la selección de comparar
+        List<String> amigosVisibles = new ArrayList<>();
+        for (String a : amigos) {
+            Usuario uA = GestorUsuarios.cargarUsuario(a);
+            if (uA != null && uA.isCuentaActiva()) {
+                amigosVisibles.add(a);
+            }
+        }
 
         fuenteDatos.setColor(COLOR_BORDE);
         fuenteDatos.draw(batch,
                 ingles ? "SELECT A FRIEND:" : "SELECCIONA UN AMIGO:",
                 x, 550 - yIni);
 
-        if (amigos.isEmpty()) {
+        if (amigosVisibles.isEmpty()) {
             fuenteDatos.setColor(COLOR_DATOS);
             fuenteDatos.draw(batch,
                     ingles ? "No friends yet. Add from REQUESTS tab."
@@ -388,10 +409,10 @@ public class PantallaStats extends PantallaBase {
 
         float xBtn = x;
         float yBtn = yIni + esp;
-        int maxAmigos = Math.min(amigos.size(), 4);
+        int maxAmigos = Math.min(amigosVisibles.size(), 4);
 
         for (int i = 0; i < maxAmigos; i++) {
-            String amigo = amigos.get(i);
+            String amigo = amigosVisibles.get(i);
             boolean seleccionado = amigo.equals(amigoSeleccionado);
 
             if (seleccionado) {
@@ -426,12 +447,13 @@ public class PantallaStats extends PantallaBase {
             return;
         }
 
-        Usuario ellos = GestorUsuarios.cargarUsuario(amigoSeleccionado);
+        Usuario ellos = GestorUsuarios.cargarUsuarioVisible(amigoSeleccionado);
         if (ellos == null) {
-            fuenteDatos.setColor(COLOR_ROJO);
+            fuenteDatos.setColor(COLOR_DATOS);
             fuenteDatos.draw(batch,
-                    (ingles ? "Could not load data for @" : "No se pudo cargar datos de @")
-                    + amigoSeleccionado,
+                    ingles
+                            ? "@" + truncar(amigoSeleccionado, 12) + " has deactivated their account."
+                            : "@" + truncar(amigoSeleccionado, 12) + " ha desactivado su cuenta.",
                     x, 550 - (yIni + esp * 2.5f));
             return;
         }

@@ -86,6 +86,9 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         texPixel = new Texture(pm);
         pm.dispose();
 
+        if (esBoy) {
+            selCabello = 2; // verde ya es el color base del avatar boy
+        }
         cargarCapas();
 
         stage = new Stage(new FitViewport(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
@@ -143,13 +146,13 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         }
 
         String[] cabellosGirl = {"", "PinkHair", "YellowHair", "GreenHair", "BlueHair"};
-        String[] cabellosBoy = {"", "PinkHair", "YellowHair", "", "BlueHair", "OrangeHair"};
+        String[] cabellosBoy = {"PinkHair", "YellowHair", "", "BlueHair", "OrangeHair"};
         String[] cabellos = esBoy ? cabellosBoy : cabellosGirl;
         if (texCapaCabello != null) {
             texCapaCabello.dispose();
             texCapaCabello = null;
         }
-        if (selCabello > 0 && !cabellos[selCabello].isEmpty()) {
+        if (!cabellos[selCabello].isEmpty()) {
             texCapaCabello = new Texture("imagenes/avatar/" + prefijo
                     + "/Hairs/" + prefijo + cabellos[selCabello] + ".png");
         }
@@ -345,7 +348,7 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
                 startX = 201.5f;
                 break;
             case CABELLO:
-                maxOpciones = esBoy ? 6 : 5;
+                maxOpciones = 5;
                 break;
             case VEST:
                 maxOpciones = 5;
