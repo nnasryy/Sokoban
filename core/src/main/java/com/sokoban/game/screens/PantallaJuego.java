@@ -257,26 +257,32 @@ public class PantallaJuego extends PantallaBase {
         }
 
         seMovio = false;
+        boolean wasd = juego.getUsuarioActual() != null
+                && "WASD".equals(juego.getUsuarioActual().getEsquemaControles());
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+        if (wasd ? Gdx.input.isKeyJustPressed(Input.Keys.W)
+                : Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             if (tablero.mover(0, -1)) {
                 direccionActual = 3;
                 seMovio = true;
             }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+        if (wasd ? Gdx.input.isKeyJustPressed(Input.Keys.S)
+                : Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
             if (tablero.mover(0, 1)) {
                 direccionActual = 0;
                 seMovio = true;
             }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+        if (wasd ? Gdx.input.isKeyJustPressed(Input.Keys.A)
+                : Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
             if (tablero.mover(-1, 0)) {
                 direccionActual = 1;
                 seMovio = true;
             }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+        if (wasd ? Gdx.input.isKeyJustPressed(Input.Keys.D)
+                : Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
             if (tablero.mover(1, 0)) {
                 direccionActual = 2;
                 seMovio = true;
@@ -391,8 +397,8 @@ public class PantallaJuego extends PantallaBase {
     private void irSiguienteNivel() {
         if (GestorNiveles.esUltimoNivel(numeroNivel)) {
             String ganador;
-            ganador=juego.getUsuarioActual().getIdioma();
-            juego.setScreen(new PantallaFelicidades(juego,ganador));
+            ganador = juego.getUsuarioActual().getIdioma();
+            juego.setScreen(new PantallaFelicidades(juego, ganador));
         } else {
             juego.setScreen(new PantallaJuego(juego, numeroNivel + 1));
         }

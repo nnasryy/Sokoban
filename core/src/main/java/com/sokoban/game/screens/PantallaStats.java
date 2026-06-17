@@ -23,10 +23,10 @@ import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
+import com.sokoban.game.GestorMusica;
 public class PantallaStats extends PantallaBase {
 
-    private Texture texFondo, texExit, texVolumen, texPixel;
+    private Texture texFondo, texExit, texPixel;
     private BitmapFont fuenteTab;
     private BitmapFont fuenteDatos;
     private Stage stage;
@@ -55,6 +55,7 @@ public class PantallaStats extends PantallaBase {
     private String amigoSeleccionado = null;
     private boolean ingles;
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private Texture texVolumenOn, texVolumenOff;
 
     public PantallaStats(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -69,7 +70,8 @@ public class PantallaStats extends PantallaBase {
 
         texFondo = new Texture("imagenes/fondos/FondoStats.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pm.setColor(Color.WHITE);
@@ -103,12 +105,17 @@ public class PantallaStats extends PantallaBase {
                 juego.setScreen(new PantallaMenu(juego));
             }
         });
-
-        ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
-        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
-
         stage.addActor(btnExit);
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
+        ImageButton btnVolumen = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texActual)));
+        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
+        btnVolumen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
+            }
+        });
         stage.addActor(btnVolumen);
     }
 
@@ -562,19 +569,16 @@ public class PantallaStats extends PantallaBase {
         return String.format("%02d:%02d", min, seg);
     }
 
-    private String formatearIntentos(int[] arr) {
-        if (arr == null) {
-            return "N/D";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i < arr.length; i++) {
-            sb.append("N").append(i).append(":").append(arr[i]);
-            if (i < arr.length - 1) {
-                sb.append("  ");
-            }
-        }
-        return sb.toString();
+   private String formatearIntentos(int[] arr) {
+    if (arr == null) return ingles ? "N/A" : "N/D";
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < Math.min(arr.length, 5); i++) {
+        sb.append(ingles ? "L" : "N").append(i + 1)
+          .append(":").append(arr[i]);
+        if (i < 4) sb.append("  ");
     }
+    return sb.toString();
+}
 
     private String truncar(String s, int max) {
         return s != null && s.length() > max ? s.substring(0, max) : s;
@@ -617,8 +621,11 @@ public class PantallaStats extends PantallaBase {
         if (texExit != null) {
             texExit.dispose();
         }
-        if (texVolumen != null) {
-            texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
         }
         if (texPixel != null) {
             texPixel.dispose();

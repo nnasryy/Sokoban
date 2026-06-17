@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
-
+import com.sokoban.game.GestorMusica;
 public class PantallaIdioma extends PantallaBase {
 
     private Texture texFondo, texEnglish, texEspaniol;
@@ -25,6 +25,7 @@ public class PantallaIdioma extends PantallaBase {
     private BitmapFont fuenteTitulo;
     private Stage stage;
     private boolean ingles;
+    private Texture texVolumenOn, texVolumenOff;
 
     public PantallaIdioma(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -41,7 +42,8 @@ public class PantallaIdioma extends PantallaBase {
         texEnglish = new Texture("imagenes/botones/BotonEnglish.png");
         texEspaniol = new Texture("imagenes/botones/BotonEspaniol.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         fuenteTitulo = new BitmapFont(Gdx.files.internal("fuentes/Pixellari100.fnt"));
         fuenteTitulo.getData().setScale(1f);
@@ -79,14 +81,20 @@ public class PantallaIdioma extends PantallaBase {
             }
         });
 
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
         ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
+                new TextureRegionDrawable(new TextureRegion(texActual)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
-
+        btnVolumen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
+            }
+        });
+        stage.addActor(btnVolumen);
         stage.addActor(btnEnglish);
         stage.addActor(btnEspaniol);
         stage.addActor(btnExit);
-        stage.addActor(btnVolumen);
     }
 
     private void cambiarIdioma(String idioma) {
@@ -151,6 +159,12 @@ public class PantallaIdioma extends PantallaBase {
         }
         if (fuenteTitulo != null) {
             fuenteTitulo.dispose();
+        }
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
         }
         if (stage != null) {
             stage.dispose();

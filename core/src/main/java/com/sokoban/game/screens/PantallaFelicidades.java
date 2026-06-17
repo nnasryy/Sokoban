@@ -1,4 +1,4 @@
- /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -24,10 +24,12 @@ public class PantallaFelicidades extends PantallaBase {
     private BitmapFont fuenteTitulo;   // Pixellari60
     private BitmapFont fuenteSubtitulo; // Pixellari35
     private Stage stage;
+    private BitmapFont fuenteResumen;
+    private String mensajeGanador = null;
 
     public PantallaFelicidades(SokobanGame juego, String ganador) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
-        ganador=juego.getUsuarioActual().getIdioma();
+        this.mensajeGanador = ganador;
     }
 
     @Override
@@ -66,7 +68,8 @@ public class PantallaFelicidades extends PantallaBase {
                 juego.setScreen(new PantallaSeleccionNivel(juego));
             }
         });
-
+        fuenteResumen = new BitmapFont(Gdx.files.internal("fuentes/Pixellari24.fnt"));
+        fuenteResumen.getData().setScale(1f);
         // Botón Regresar al Menú
         ImageButton btnMenu = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnMenu)));
@@ -112,18 +115,26 @@ public class PantallaFelicidades extends PantallaBase {
         String username = juego.getUsuarioActual() != null
                 ? juego.getUsuarioActual().getUsername().toUpperCase()
                 : "JUGADOR";
-        String subtitulo = obtenerSubtitulo(username);
-        fuenteSubtitulo.setColor(Color.WHITE);
-        layout.setText(fuenteSubtitulo, subtitulo, Color.WHITE, 650,
-                com.badlogic.gdx.utils.Align.center, true);
-        fuenteSubtitulo.draw(batch, layout, 0f, 550 - 179.2f);
-        batch.end();
+        if (mensajeGanador != null) {
+            fuenteResumen.setColor(Color.WHITE);
+            layout.setText(fuenteResumen, mensajeGanador, Color.WHITE, 650,
+                    com.badlogic.gdx.utils.Align.center, true);
+            fuenteResumen.draw(batch, layout, 0f, 550 - 179.2f);
+        } else {
+            String subtitulo = obtenerSubtitulo(username);
+            fuenteSubtitulo.setColor(Color.WHITE);
+            layout.setText(fuenteSubtitulo, subtitulo, Color.WHITE, 650,
+                    com.badlogic.gdx.utils.Align.center, true);
+            fuenteSubtitulo.draw(batch, layout, 0f, 550 - 179.2f);
+        }
 
+        batch.end(); // ← FUERA del if/else
         stage.act(delta);
         stage.draw();
     }
 
-    private String obtenerTitulo() {
+
+private String obtenerTitulo() {
         if (juego.getUsuarioActual() != null
                 && "en".equals(juego.getUsuarioActual().getIdioma())) {
             return "!CONGRATULATIONS!";
@@ -140,7 +151,7 @@ public class PantallaFelicidades extends PantallaBase {
     }
 
     @Override
-    public void resize(int w, int h) {
+public void resize(int w, int h) {
         viewport.update(w, h, true);
         if (stage != null) {
             stage.getViewport().update(w, h, true);
@@ -148,11 +159,12 @@ public class PantallaFelicidades extends PantallaBase {
     }
 
     @Override
-    public void dispose() {
+public void dispose() {
         texFondo.dispose();
         texBtnSeleccionar.dispose();
         texBtnMenu.dispose();
         fuenteTitulo.dispose();
+if (fuenteResumen != null) fuenteResumen.dispose();
         fuenteSubtitulo.dispose();
         if (stage != null) {
             stage.dispose();

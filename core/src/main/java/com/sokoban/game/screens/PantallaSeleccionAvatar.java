@@ -19,15 +19,17 @@ import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.sokoban.game.GestorMusica;
 
 public class PantallaSeleccionAvatar extends PantallaBase {
 
-    private Texture texFondo, texBtnFoto, texBtnListo, texVolumen;
+    private Texture texFondo, texBtnFoto, texBtnListo;
     private Stage stage;
     private BitmapFont fuente;
     private Usuario usuario;
     private String rutaFotoElegida = null;
     private BitmapFont fuente18;
+    private Texture texVolumenOn, texVolumenOff;
 
     public PantallaSeleccionAvatar(SokobanGame juego, Usuario u) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -38,11 +40,11 @@ public class PantallaSeleccionAvatar extends PantallaBase {
     public void show() {
         Gdx.graphics.setWindowedMode(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
-
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texBtnFoto = new Texture("imagenes/botones/pfp_button.png");
         texBtnListo = new Texture("imagenes/botones/listo_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
         fuente18 = new BitmapFont(Gdx.files.internal("fuentes/Pixellari18.fnt"));
         fuente18.getData().setScale(1f);
 
@@ -86,15 +88,6 @@ public class PantallaSeleccionAvatar extends PantallaBase {
             }
         });
 
-        ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
-        btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
-        btnVolumen.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent e, float x, float y) {
-            }
-        });
-
         Texture texGirl = new Texture("imagenes/botones/GirlAvatar.png");
         ImageButton btnGirl = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texGirl)));
@@ -119,6 +112,16 @@ public class PantallaSeleccionAvatar extends PantallaBase {
             }
         });
 
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
+        ImageButton btnVolumen = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texActual)));
+        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
+        btnVolumen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
+            }
+        });
         stage.addActor(btnGirl);
         stage.addActor(btnBoy);
         stage.addActor(btnFoto);
@@ -202,9 +205,16 @@ public class PantallaSeleccionAvatar extends PantallaBase {
         texFondo.dispose();
         texBtnFoto.dispose();
         texBtnListo.dispose();
-        texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
+        }
         fuente.dispose();
-        if (fuente18 != null) fuente18.dispose();
+        if (fuente18 != null) {
+            fuente18.dispose();
+        }
         if (stage != null) {
             stage.dispose();
         }

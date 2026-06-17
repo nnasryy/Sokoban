@@ -17,13 +17,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
+import com.sokoban.game.GestorMusica;
 
 public class PantallaMenu extends PantallaBase {
 
     private Texture texFondo, texPlay, texStats, texSettings;
-    private Texture texExit, texVolumen;
+    private Texture texExit;
     private Stage stage;
     private boolean ingles;
+    private Texture texVolumenOn, texVolumenOff;
 
     public PantallaMenu(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -38,8 +40,9 @@ public class PantallaMenu extends PantallaBase {
 
         texFondo = new Texture("imagenes/fondos/MenuPrincipal.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
-
+        // Agrégalas aquí, justo después de texExit = new Texture(...):
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
         texPlay = new Texture(ingles ? "imagenes/botones/play_button.png" : "imagenes/botones/Jugar.png");
         texStats = new Texture("imagenes/botones/stats_button.png");
         texSettings = new Texture(ingles ? "imagenes/botones/settings_button.png" : "imagenes/botones/Ajustes.png");
@@ -88,10 +91,16 @@ public class PantallaMenu extends PantallaBase {
             }
         });
 
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
         ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
-        btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
-
+                new TextureRegionDrawable(new TextureRegion(texActual)));
+        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
+        btnVolumen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
+            }
+        });
         stage.addActor(btnPlay);
         stage.addActor(btnStats);
         stage.addActor(btnSettings);
@@ -141,8 +150,11 @@ public class PantallaMenu extends PantallaBase {
         if (texExit != null) {
             texExit.dispose();
         }
-        if (texVolumen != null) {
-            texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
         }
         if (stage != null) {
             stage.dispose();

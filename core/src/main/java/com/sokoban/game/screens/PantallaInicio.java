@@ -10,15 +10,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
-
+import com.sokoban.game.GestorMusica;
 public class PantallaInicio extends PantallaBase {
 
     private Texture texFondo;
     private Texture texNube1, texNube2;
-    private Texture texSignUp, texLogin, texExit, texVolumen;
+    private Texture texSignUp, texLogin, texExit;
     private Stage stage;
     private float tiempo = 0f;
     private boolean musicaActiva = true;
+    private Texture texVolumenOn, texVolumenOff;
 
     public PantallaInicio(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -32,7 +33,8 @@ public class PantallaInicio extends PantallaBase {
         texSignUp = new Texture("imagenes/botones/signup_button.png");
         texLogin = new Texture("imagenes/botones/login_button.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
@@ -41,7 +43,7 @@ public class PantallaInicio extends PantallaBase {
         ImageButton btnSignUp = crearBoton(texSignUp, 126, 210);
         ImageButton btnLogin = crearBoton(texLogin, 339, 210);
         ImageButton btnExit = crearBoton(texExit, 265, 135);
-        ImageButton btnVolumen = crearBoton(texVolumen, 589, 490);
+
 
         btnSignUp.addListener(new ClickListener() {
             @Override
@@ -64,13 +66,17 @@ public class PantallaInicio extends PantallaBase {
             }
         });
 
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
+        ImageButton btnVolumen = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texActual)));
+        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                musicaActiva = !musicaActiva;
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
             }
         });
-
+        stage.addActor(btnVolumen);
         stage.addActor(btnSignUp);
         stage.addActor(btnLogin);
         stage.addActor(btnExit);
@@ -113,7 +119,12 @@ public class PantallaInicio extends PantallaBase {
         texSignUp.dispose();
         texLogin.dispose();
         texExit.dispose();
-        texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
+        }
         stage.dispose();
     }
 }

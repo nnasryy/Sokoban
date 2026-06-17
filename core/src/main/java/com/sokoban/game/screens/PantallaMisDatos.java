@@ -20,14 +20,15 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.ValidadorContrasena;
-
+import com.sokoban.game.GestorMusica;
 public class PantallaMisDatos extends PantallaBase {
 
-    private Texture texFondo, texExit, texVolumen;
+    private Texture texFondo, texExit;
     private Texture texBtnGuardar, texBtnDesactivar;
     private Texture texOjoAbierto, texOjoCerrado;
     private Texture texPixel;
-    private Texture texAvatarJugador;  // avatar renderizado
+    private Texture texAvatarJugador;
+    private Texture texVolumenOn, texVolumenOff;
 
     private BitmapFont fuenteTitulo;   // Pixellari100
     private BitmapFont fuenteLabel;    // Pixellari27
@@ -66,7 +67,6 @@ public class PantallaMisDatos extends PantallaBase {
 
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
         texOjoAbierto = new Texture("imagenes/botones/OpenedEye.png");
         texOjoCerrado = new Texture("imagenes/botones/ClosedEye.png");
         texBtnGuardar = new Texture(ingles
@@ -75,6 +75,8 @@ public class PantallaMisDatos extends PantallaBase {
         texBtnDesactivar = new Texture(ingles
                 ? "imagenes/botones/Deactivate.png"
                 : "imagenes/botones/Desactivar.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         // Pixel para bordes
         com.badlogic.gdx.graphics.Pixmap pm = new com.badlogic.gdx.graphics.Pixmap(
@@ -173,12 +175,18 @@ public class PantallaMisDatos extends PantallaBase {
                 juego.setScreen(new PantallaConfiguracion(juego));
             }
         });
-
-        // Botón Volumen
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
         ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
+                new TextureRegionDrawable(new TextureRegion(texActual)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
+        btnVolumen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
+            }
+        });
 
+        stage.addActor(btnVolumen);
         stage.addActor(campoNombre);
         stage.addActor(campoUsername);
         stage.addActor(campoPassword);
@@ -209,7 +217,6 @@ public class PantallaMisDatos extends PantallaBase {
                 texAvatarJugador = new Texture("imagenes/avatar/Boy/BoyDefaultAvatar.png");
             }
         } else {
-            // Renderiza avatar con capas usando FrameBuffer
             String prefijo = (tipo == 1) ? "Girl" : "Boy";
             texAvatarJugador = new Texture(
                     "imagenes/avatar/" + prefijo + "/" + prefijo + "DefaultAvatar.png");
@@ -403,9 +410,6 @@ public class PantallaMisDatos extends PantallaBase {
         if (texExit != null) {
             texExit.dispose();
         }
-        if (texVolumen != null) {
-            texVolumen.dispose();
-        }
         if (texBtnGuardar != null) {
             texBtnGuardar.dispose();
         }
@@ -429,6 +433,12 @@ public class PantallaMisDatos extends PantallaBase {
         }
         if (fuenteLabel != null) {
             fuenteLabel.dispose();
+        }
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
         }
         if (fuente18 != null) {
             fuente18.dispose();

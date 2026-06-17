@@ -18,14 +18,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
-
+import com.sokoban.game.GestorMusica;
 public class PantallaConfiguracion extends PantallaBase {
 
     private Texture texFondo, texMisDatos, texIdioma, texCambiarAvatar;
-    private Texture texExit, texVolumen;
+    private Texture texExit;
     private Stage stage;
     private BitmapFont fuenteTitulo;
     private boolean ingles;
+    private Texture texVolumenOn, texVolumenOff;
 
     public PantallaConfiguracion(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -44,7 +45,8 @@ public class PantallaConfiguracion extends PantallaBase {
         texIdioma = new Texture("imagenes/botones/" + (ingles ? "Language.png" : "Idioma.png"));
         texCambiarAvatar = new Texture("imagenes/botones/" + (ingles ? "ChangeAvatar.png" : "CambiarAvatar.png"));
         texExit = new Texture("imagenes/botones/exit_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         fuenteTitulo = new BitmapFont(Gdx.files.internal("fuentes/Pixellari100.fnt"));
         fuenteTitulo.getData().setScale(1f);
@@ -61,6 +63,19 @@ public class PantallaConfiguracion extends PantallaBase {
                 juego.setScreen(new PantallaMisDatos(juego));
             }
         });
+
+        Texture texControles = new Texture(
+                ingles ? "imagenes/botones/Controls.png" : "imagenes/botones/Controles.png");
+        ImageButton btnControles = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texControles)));
+        btnControles.setBounds(189.5f, 550 - 456f - 93f, 271f, 93f);
+        btnControles.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                juego.setScreen(new PantallaControles(juego));
+            }
+        });
+        stage.addActor(btnControles);
 
         ImageButton btnIdioma = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texIdioma)));
@@ -91,16 +106,21 @@ public class PantallaConfiguracion extends PantallaBase {
                 juego.setScreen(new PantallaMenu(juego));
             }
         });
-
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
         ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
+                new TextureRegionDrawable(new TextureRegion(texActual)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
-
+        btnVolumen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
+            }
+        });
+        stage.addActor(btnVolumen);
         stage.addActor(btnMisDatos);
         stage.addActor(btnIdioma);
         stage.addActor(btnCambiarAvatar);
         stage.addActor(btnExit);
-        stage.addActor(btnVolumen);
     }
 
     @Override
@@ -152,8 +172,11 @@ public class PantallaConfiguracion extends PantallaBase {
         if (texExit != null) {
             texExit.dispose();
         }
-        if (texVolumen != null) {
-            texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
         }
         if (fuenteTitulo != null) {
             fuenteTitulo.dispose();

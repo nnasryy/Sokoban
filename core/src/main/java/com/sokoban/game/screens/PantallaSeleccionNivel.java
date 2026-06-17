@@ -16,14 +16,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
-
+import com.sokoban.game.GestorMusica;
 public class PantallaSeleccionNivel extends PantallaBase {
 
     private Texture texFondo, texExit, texCompetitivo;
     private Texture texNivel1, texNivel2, texNivel3, texNivel4, texCandado;
     private BitmapFont fuenteTitulo;
     private Stage stage;
-    private Texture texVolumen;
+    private Texture texVolumenOn, texVolumenOff;
     private static final float[] XS = {36f, 148.4f, 271.4f, 400.1f, 523.9f};
     private static final float Y_NIVEL = 216.5f;
     private static final float ANCHO_BLOQUE = 90f;
@@ -43,7 +43,8 @@ public class PantallaSeleccionNivel extends PantallaBase {
         texExit = new Texture("imagenes/botones/exit_button.png");
         texCompetitivo = new Texture("imagenes/botones/Competitivo.png");
         texCandado = new Texture("imagenes/botones/Candado.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
         texNivel1 = new Texture("imagenes/botones/Nivel1Bloque.png");
         texNivel2 = new Texture("imagenes/botones/Nivel2Bloque.png");
         texNivel3 = new Texture("imagenes/botones/Nivel3Bloque.png");
@@ -120,14 +121,18 @@ public class PantallaSeleccionNivel extends PantallaBase {
         });
 
         stage.addActor(btnCompetitivo);
+     
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
         ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
+                new TextureRegionDrawable(new TextureRegion(texActual)));
         btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
             }
         });
+        stage.addActor(btnVolumen);
         stage.addActor(btnVolumen);
         stage.addActor(btnExit);
     }
@@ -186,7 +191,12 @@ public class PantallaSeleccionNivel extends PantallaBase {
         texNivel4.dispose();
         fuenteTitulo.dispose();
         fuenteNumeros.dispose();
-        texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
+        }
         if (stage != null) {
             stage.dispose();
         }

@@ -34,6 +34,7 @@ public class Usuario implements Serializable {
     private List<String> amigos;
     private List<String> solicitudesPendientes;
     private boolean cuentaActiva = true;
+    private String esquemaControles = "WASD";
 
     public Usuario(String username, String password, String nombreCompleto) {
         this.username = username;
@@ -58,6 +59,14 @@ public class Usuario implements Serializable {
 
     private String hashPassword(String password) {
         return Integer.toHexString(password.hashCode());
+    }
+
+    public String getEsquemaControles() {
+        return esquemaControles;
+    }
+
+    public void setEsquemaControles(String e) {
+        this.esquemaControles = e;
     }
 
     public boolean verificarPassword(String password) {
@@ -255,7 +264,7 @@ public class Usuario implements Serializable {
     }
 
     public void desactivarCuenta() {
-      this.cuentaActiva = false;
+        this.cuentaActiva = false;
     }
 
     public void reactivarCuenta() {

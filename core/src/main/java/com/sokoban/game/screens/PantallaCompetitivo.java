@@ -1,4 +1,4 @@
- /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
+import com.sokoban.game.GestorMusica;
 
 public class PantallaCompetitivo extends PantallaBase {
 
@@ -27,6 +28,7 @@ public class PantallaCompetitivo extends PantallaBase {
     private BitmapFont fuente18;
     private Stage stage;
     private TextField campoAmigo;
+    private Texture texVolumenOn, texVolumenOff;
 
     private int nivelSeleccionado = -1;
 
@@ -47,13 +49,15 @@ public class PantallaCompetitivo extends PantallaBase {
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
         boolean ingles = juego.getUsuarioActual() != null && "en".equals(juego.getUsuarioActual().getIdioma());
-        texPlayCompetitivo = new Texture(ingles ? "imagenes/botones/PlayCompetitivo.png" : "imagenes/botones/JugarCompetitivo.png");
+        texPlayCompetitivo = new Texture(ingles ? "imagenes/botones/Competitive.png" : "imagenes/botones/Competitivo.png");
         texCandado = new Texture("imagenes/botones/Candado.png");
 
         texNivel1 = new Texture("imagenes/botones/Nivel1Bloque.png");
         texNivel2 = new Texture("imagenes/botones/Nivel2Bloque.png");
         texNivel3 = new Texture("imagenes/botones/Nivel3Bloque.png");
         texNivel4 = new Texture("imagenes/botones/Nivel4Bloque.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         fuenteTitulo = new BitmapFont(
                 Gdx.files.internal("fuentes/Pixellari100.fnt"));
@@ -76,7 +80,7 @@ public class PantallaCompetitivo extends PantallaBase {
 
         TextField.TextFieldStyle estilo = crearEstiloTextField();
         campoAmigo = new TextField("", estilo);
-        campoAmigo.setMessageText("USER DE AMIGO A COMPETIR");
+        campoAmigo.setMessageText(ingles ? "FRIEND'S USERNAME" : "USER DE AMIGO A COMPETIR");
         campoAmigo.setBounds(64.8f, 550 - 220f - 40f, 520f, 40f);
 
         int nivelesDesbloqueados = juego.getUsuarioActual() != null
@@ -136,7 +140,17 @@ public class PantallaCompetitivo extends PantallaBase {
                 juego.setScreen(new PantallaSeleccionNivel(juego));
             }
         });
-
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
+        ImageButton btnVolumen = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texActual)));
+        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
+        btnVolumen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
+            }
+        });
+        stage.addActor(btnVolumen);
         stage.addActor(campoAmigo);
         stage.addActor(btnPlay);
         stage.addActor(btnExit);
@@ -269,6 +283,12 @@ public class PantallaCompetitivo extends PantallaBase {
         texNivel3.dispose();
         texNivel4.dispose();
         texPixel.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
+        }
         fuenteTitulo.dispose();
         fuente18.dispose();
         if (stage != null) {

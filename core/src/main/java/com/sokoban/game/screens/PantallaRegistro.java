@@ -20,10 +20,10 @@ import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
 import com.sokoban.game.usuarios.ValidadorContrasena;
-
+import com.sokoban.game.GestorMusica;
 public class PantallaRegistro extends PantallaBase {
 
-    private Texture texFondo, texExit, texBotonSignUp, texVolumen;
+    private Texture texFondo, texExit, texBotonSignUp;
     private Texture texOjoAbierto, texOjoCerrado;
     private Stage stage;
     private TextField campoNombre, campoUsername, campoPassword;
@@ -34,6 +34,7 @@ public class PantallaRegistro extends PantallaBase {
     private Color colorEspecial = Color.RED;
     private Color colorNumero = Color.RED;
     private Color colorCaract = Color.RED;
+    private Texture texVolumenOn, texVolumenOff;
 
     public PantallaRegistro(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -48,9 +49,10 @@ public class PantallaRegistro extends PantallaBase {
         texFondo = new Texture("imagenes/fondos/SignUp.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
         texBotonSignUp = new Texture("imagenes/botones/signup_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
         texOjoAbierto = new Texture("imagenes/botones/OpenedEye.png");
         texOjoCerrado = new Texture("imagenes/botones/ClosedEye.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
@@ -117,16 +119,17 @@ public class PantallaRegistro extends PantallaBase {
             }
         });
 
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
         ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
-        btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
+                new TextureRegionDrawable(new TextureRegion(texActual)));
+        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                musicaActiva = !musicaActiva;
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
             }
         });
-
+        stage.addActor(btnVolumen);
         stage.addActor(campoNombre);
         stage.addActor(campoUsername);
         stage.addActor(campoPassword);
@@ -251,7 +254,12 @@ public class PantallaRegistro extends PantallaBase {
         texFondo.dispose();
         texExit.dispose();
         texBotonSignUp.dispose();
-        texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
+        }
         texOjoAbierto.dispose();
         texOjoCerrado.dispose();
         stage.dispose();

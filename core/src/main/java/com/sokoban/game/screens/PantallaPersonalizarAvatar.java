@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
+import com.sokoban.game.GestorMusica;
 
 public class PantallaPersonalizarAvatar extends PantallaBase {
 
@@ -50,6 +51,7 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
     private static final float CUAD_Y = 421f;
     private static final float TAB_Y_CANVA = 354.4f;
     private static final float[] TABS_X = {210f, 330f, 430f};
+    private Texture texVolumenOn, texVolumenOff;
 
     public PantallaPersonalizarAvatar(SokobanGame juego, Usuario usuario, boolean esBoy) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -65,6 +67,8 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
         texExit = new Texture("imagenes/botones/exit_button.png");
         texVolumen = new Texture("imagenes/botones/volume_button.png");
         texListo = new Texture("imagenes/botones/listo_button.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         String prefijo = esBoy ? "Boy" : "Girl";
         texDefault = new Texture("imagenes/avatar/" + prefijo
@@ -98,10 +102,6 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
             }
         });
 
-        ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
-        btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
-
         ImageButton btnListo = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texListo)));
         btnListo.setSize(182f, 62f);
@@ -113,6 +113,17 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
             }
         });
 
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
+        ImageButton btnVolumen = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(texActual)));
+        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
+        btnVolumen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
+            }
+        });
+        stage.addActor(btnVolumen);
         stage.addActor(btnExit);
         stage.addActor(btnVolumen);
         stage.addActor(btnListo);
@@ -244,11 +255,11 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
             case CABELLO:
                 Color[] coloresCab = esBoy
                         ? new Color[]{
-                            new Color(1f, 0f, 184f / 255f, 1f),
-                            new Color(1f, 245f / 255f, 0f, 1f),
-                            new Color(0f, 219f / 255f, 78f / 255f, 1f), 
-                            new Color(0f, 72f / 255f, 1f, 1f),
-                            new Color(1f, 142f / 255f, 0f, 1f)
+                            new Color(1f, 0f, 184f / 255f, 1f), // 1 - Pink
+                            new Color(1f, 245f / 255f, 0f, 1f), // 2 - Yellow
+                            new Color(0f, 150f / 255f, 0f, 0f), // 3 - Green (invisible/default)
+                            new Color(0f, 72f / 255f, 1f, 1f), // 4 - Blue
+                            new Color(1f, 142f / 255f, 0f, 1f) // 5 - Orange
                         }
                         : new Color[]{
                             new Color(1f, 142f / 255f, 0f, 1f),
@@ -376,7 +387,12 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
     public void dispose() {
         texFondo.dispose();
         texExit.dispose();
-        texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
+        }
         texListo.dispose();
         texDefault.dispose();
         texPixel.dispose();

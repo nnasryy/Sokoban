@@ -19,10 +19,11 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.usuarios.GestorUsuarios;
 import com.sokoban.game.usuarios.Usuario;
-
+import com.sokoban.game.GestorMusica;
 public class PantallaLogin extends PantallaBase {
 
-    private Texture texFondo, texBtnLogin, texExit, texVolumen;
+    private Texture texFondo, texBtnLogin, texExit;
+    private Texture texVolumenOn, texVolumenOff;
     private Texture texOjoAbierto, texOjoCerrado;
     private Stage stage;
     private TextField campoUsername, campoPassword;
@@ -47,9 +48,10 @@ public class PantallaLogin extends PantallaBase {
         texFondo = new Texture("imagenes/fondos/LogIn.png");
         texBtnLogin = new Texture("imagenes/botones/login_button.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
-        texVolumen = new Texture("imagenes/botones/volume_button.png");
         texOjoAbierto = new Texture("imagenes/botones/OpenedEye.png");
         texOjoCerrado = new Texture("imagenes/botones/ClosedEye.png");
+        texVolumenOn = new Texture("imagenes/botones/volume_button.png");
+        texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
         stage = new Stage(new FitViewport(
                 SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
@@ -101,22 +103,22 @@ public class PantallaLogin extends PantallaBase {
             }
         });
 
+        Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
         ImageButton btnVolumen = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(texVolumen)));
-        btnVolumen.setBounds(589.7f, 550 - 10.8f - 50f, 46f, 50f);
+                new TextureRegionDrawable(new TextureRegion(texActual)));
+        btnVolumen.setBounds(595f, 550 - 10.8f - 50f, 46f, 50f);
         btnVolumen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                musicaActiva = !musicaActiva;
+                GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
             }
         });
-
+        stage.addActor(btnVolumen);
         stage.addActor(campoUsername);
         stage.addActor(campoPassword);
         stage.addActor(btnOjo);
         stage.addActor(btnLogin);
         stage.addActor(btnExit);
-        stage.addActor(btnVolumen);
     }
 
     private void iniciarSesion() {
@@ -137,7 +139,7 @@ public class PantallaLogin extends PantallaBase {
             u.actualizarUltimaSesion();
             GestorUsuarios.guardarUsuario(u);
             juego.setUsuarioActual(u);
-            // Muestra advertencia de reactivación antes de entrar al menú
+            GestorMusica.setVolumen(u.getVolumen());
             boolean ingles = "en".equals(u.getIdioma());
             juego.setScreen(new PantallaAdvertencia(juego,
                     ingles ? "Your account has been reactivated. Welcome back!"
@@ -148,7 +150,6 @@ public class PantallaLogin extends PantallaBase {
         if (u != null) {
             juego.setUsuarioActual(u);
             juego.setScreen(new PantallaMenu(juego));
-            // En iniciarSesion(), reemplaza el else final:
         } else {
             juego.setScreen(new PantallaAdvertencia(juego,
                     "Usuario o contrasena incorrectos",
@@ -184,7 +185,7 @@ public class PantallaLogin extends PantallaBase {
     @Override
     public void render(float delta) {
         if (texFondo == null || fuentePixel == null) {
-            return; // ← agrega esto
+            return;
         }
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -214,7 +215,12 @@ public class PantallaLogin extends PantallaBase {
         texFondo.dispose();
         texBtnLogin.dispose();
         texExit.dispose();
-        texVolumen.dispose();
+        if (texVolumenOn != null) {
+            texVolumenOn.dispose();
+        }
+        if (texVolumenOff != null) {
+            texVolumenOff.dispose();
+        }
         texOjoAbierto.dispose();
         texOjoCerrado.dispose();
         stage.dispose();

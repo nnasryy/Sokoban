@@ -20,8 +20,14 @@ public class SokobanGame extends Game {
         this.usuarioActual = u;
     }
 
-    @Override
-    public void create() {
-        setScreen(new PantallaInicio(this));
-    }
+   @Override
+public void create() {
+    setScreen(new PantallaInicio(this));
+    GestorMusica.iniciar(0.8f); 
+}
+
+@Override
+public void dispose() {
+    GestorMusica.dispose();
+}
 }
