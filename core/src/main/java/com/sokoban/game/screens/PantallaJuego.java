@@ -21,6 +21,7 @@ import com.sokoban.game.logica.Constantes;
 import com.sokoban.game.logica.Tablero;
 import com.sokoban.game.niveles.GestorNiveles;
 import com.sokoban.game.hilos.HiloTimer;
+import com.sokoban.game.usuarios.GestorUsuarios;
 
 public class PantallaJuego extends PantallaBase {
 
@@ -330,7 +331,12 @@ public class PantallaJuego extends PantallaBase {
             } else {
                 ganador = ingles2 ? "It's a tie!" : "Empate!";
             }
-
+            if (juego.getUsuarioActual() != null) {
+                boolean j1gano = tiempoJ1 < tiempoFinalJ2;
+                juego.getUsuarioActual().registrarPartidaCompetitiva(j1gano);
+                com.sokoban.game.usuarios.GestorUsuarios
+                        .guardarUsuario(juego.getUsuarioActual());
+            }
             juego.setScreen(new PantallaFelicidades(juego, ganador));
         }
     }

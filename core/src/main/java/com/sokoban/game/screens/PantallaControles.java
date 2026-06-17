@@ -84,37 +84,74 @@ public class PantallaControles extends PantallaBase {
                 ? juego.getUsuarioActual().getVolumen() : 0.8f;
         stage.addActor(btnExit);
         stage.addActor(btnVolumen);
-    }
+        // Botón WASD
+        com.badlogic.gdx.graphics.Pixmap pmBtn = new com.badlogic.gdx.graphics.Pixmap(
+                1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+        pmBtn.setColor(new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f));
+        pmBtn.fill();
+        Texture texBtn = new Texture(pmBtn);
+        pmBtn.dispose();
 
-    @Override
-    public void render(float delta) {
-        if (texFondo == null) {
-            return;
-        }
-
-        // Slider input — ANTES del batch
-        float barX = 100f, barY = 80f, barW = 450f, barH = 20f;
-        if (Gdx.input.isTouched()) {
-            com.badlogic.gdx.math.Vector2 tp = new com.badlogic.gdx.math.Vector2(
-                    Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(tp);
-            if (tp.x >= barX && tp.x <= barX + barW
-                    && tp.y >= barY && tp.y <= barY + barH) {
-                volumenActual = (tp.x - barX) / barW;
-                volumenActual = Math.max(0f, Math.min(1f, volumenActual));
-                GestorMusica.setVolumen(volumenActual);
+        ImageButton btnWASD = new ImageButton(new TextureRegionDrawable(new TextureRegion(texBtn)));
+        btnWASD.setSize(140f, 45f);
+        btnWASD.setPosition(100f, 40f);
+        btnWASD.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
                 if (juego.getUsuarioActual() != null) {
-                    juego.getUsuarioActual().setVolumen(volumenActual);
-                    com.sokoban.game.usuarios.GestorUsuarios
-                            .guardarUsuario(juego.getUsuarioActual());
+                    juego.getUsuarioActual().setEsquemaControles("WASD");
+                    GestorUsuarios.guardarUsuario(juego.getUsuarioActual());
                 }
             }
+        });
+
+        ImageButton btnFlechas = new ImageButton(new TextureRegionDrawable(new TextureRegion(texBtn)));
+        btnFlechas.setSize(140f, 45f);
+        btnFlechas.setPosition(260f, 40f);
+        btnFlechas.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent e, float x, float y) {
+                if (juego.getUsuarioActual() != null) {
+                    juego.getUsuarioActual().setEsquemaControles("ARROWS");
+                    GestorUsuarios.guardarUsuario(juego.getUsuarioActual());
+                }
+            }
+        });
+
+        stage.addActor(btnWASD);
+        stage.addActor(btnFlechas);
+    }
+
+@Override
+public void render(float delta) {
+    if (texFondo == null) return;
+
+    // 1. Lógica del slider (NO dibuja, solo calcula) — va ANTES del batch
+    float barX = 100f, barY = 80f, barW = 450f, barH = 20f;
+    if (Gdx.input.isTouched()) {
+        com.badlogic.gdx.math.Vector2 tp = new com.badlogic.gdx.math.Vector2(
+                Gdx.input.getX(), Gdx.input.getY());
+        viewport.unproject(tp);
+        if (tp.x >= barX && tp.x <= barX + barW
+                && tp.y >= barY && tp.y <= barY + barH) {
+            volumenActual = Math.max(0f, Math.min(1f, (tp.x - barX) / barW));
+            GestorMusica.setVolumen(volumenActual);
+            if (juego.getUsuarioActual() != null) {
+                juego.getUsuarioActual().setVolumen(volumenActual);
+                com.sokoban.game.usuarios.GestorUsuarios
+                        .guardarUsuario(juego.getUsuarioActual());
+            }
         }
+    }
 
-        viewport.apply();
-        batch.setProjectionMatrix(viewport.getCamera().combined);
-        batch.begin();
+    // 2. Configurar viewport y cámara — ANTES del batch.begin()
+    viewport.apply();
+    batch.setProjectionMatrix(viewport.getCamera().combined);
 
+    // 3. Todo el dibujo va AQUÍ, entre begin() y end()
+    batch.begin();
+
+        // Fondo
         batch.draw(texFondo, 0, 0, 650, 550);
 
         // Título
@@ -149,17 +186,38 @@ public class PantallaControles extends PantallaBase {
             fuenteTexto.draw(batch, lineas[i], 50f, startY - i * lineH);
         }
 
-        // Slider volumen — necesitas texPixel, agrégala como variable de clase
-        // y cárgala en show() igual que en otras pantallas
+        // Slider volumen
         fuenteTexto.setColor(Color.WHITE);
         fuenteTexto.draw(batch,
-                (ingles ? "VOLUME: " : "VOLUMEN: ") + (int) (volumenActual * 100) + "%",
+                (ingles ? "VOLUME: " : "VOLUMEN: ") + (int)(volumenActual * 100) + "%",
                 barX, barY + 40f);
+        batch.setColor(0.3f, 0.3f, 0.3f, 1f);
+        batch.draw(texPixel, barX, barY, barW, barH);
+        batch.setColor(Color.WHITE);
+        batch.draw(texPixel, barX, barY, barW * volumenActual, barH);
+        batch.setColor(Color.WHITE);
 
-        batch.end();
-        stage.act(delta);
-        stage.draw();
-    }
+        // Botones WASD / Flechas con highlight
+        String esquema = juego.getUsuarioActual() != null
+                ? juego.getUsuarioActual().getEsquemaControles() : "WASD";
+        fuenteTexto.setColor(Color.WHITE);
+        fuenteTexto.draw(batch, "WASD", 130f, 72f);
+        fuenteTexto.draw(batch, ingles ? "ARROWS" : "FLECHAS", 285f, 72f);
+
+        batch.setColor(new Color(1f, 1f, 0f, 0.3f));
+        if ("WASD".equals(esquema)) {
+            batch.draw(texPixel, 100f, 40f, 140f, 45f);
+        } else {
+            batch.draw(texPixel, 260f, 40f, 140f, 45f);
+        }
+        batch.setColor(Color.WHITE);
+
+    batch.end();
+
+    // 4. Stage SIEMPRE al final, fuera del batch
+    stage.act(delta);
+    stage.draw();
+}
 
     @Override
     public void resize(int w, int h) {

@@ -255,11 +255,11 @@ public class PantallaPersonalizarAvatar extends PantallaBase {
             case CABELLO:
                 Color[] coloresCab = esBoy
                         ? new Color[]{
-                            new Color(1f, 0f, 184f / 255f, 1f), // 1 - Pink
-                            new Color(1f, 245f / 255f, 0f, 1f), // 2 - Yellow
-                            new Color(0f, 150f / 255f, 0f, 0f), // 3 - Green (invisible/default)
-                            new Color(0f, 72f / 255f, 1f, 1f), // 4 - Blue
-                            new Color(1f, 142f / 255f, 0f, 1f) // 5 - Orange
+                            new Color(1f, 105f / 255f, 180f / 255f, 1f), // índice 1 - Pink
+                            new Color(1f, 245f / 255f, 0f, 1f), // índice 2 - Yellow
+                            new Color(0f, 219f / 255f, 78f / 255f, 1f),
+                            new Color(0f, 72f / 255f, 1f, 1f), // índice 4 - Blue
+                            new Color(1f, 100f / 255f, 0f, 1f) // índice 5 - Orange
                         }
                         : new Color[]{
                             new Color(1f, 142f / 255f, 0f, 1f),

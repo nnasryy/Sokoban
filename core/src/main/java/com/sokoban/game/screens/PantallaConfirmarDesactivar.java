@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.sokoban.game.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -25,6 +21,7 @@ public class PantallaConfirmarDesactivar extends PantallaBase {
     private BitmapFont fuente;
     private Stage stage;
     private boolean ingles;
+    private boolean pendienteDesactivar = false;
 
     public PantallaConfirmarDesactivar(SokobanGame juego) {
         super(juego, 650, 350);
@@ -49,7 +46,6 @@ public class PantallaConfirmarDesactivar extends PantallaBase {
         stage = new Stage(new FitViewport(650, 350));
         Gdx.input.setInputProcessor(stage);
 
-        // Botón confirmar desactivar
         ImageButton btnSi = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnSi)));
         btnSi.setSize(185f, 55f);
@@ -57,11 +53,10 @@ public class PantallaConfirmarDesactivar extends PantallaBase {
         btnSi.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
-                ejecutarDesactivacion();
+                pendienteDesactivar = true;
             }
         });
 
-        // Botón cancelar
         ImageButton btnNo = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texBtnNo)));
         btnNo.setSize(120f, 55f);
@@ -77,43 +72,41 @@ public class PantallaConfirmarDesactivar extends PantallaBase {
         stage.addActor(btnNo);
     }
 
-    private void ejecutarDesactivacion() {
-        if (juego.getUsuarioActual() == null) {
-            return;
-        }
-        juego.getUsuarioActual().desactivarCuenta();
-        GestorUsuarios.guardarUsuario(juego.getUsuarioActual());
-        juego.setUsuarioActual(null);
-        juego.setScreen(new PantallaInicio(juego)); // va al login
-    }
-
     @Override
     public void render(float delta) {
-        if (texFondo == null) {
+        if (texFondo == null) return;
+
+        if (pendienteDesactivar) {
+            ejecutarDesactivacion();
             return;
         }
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
-
         batch.begin();
         batch.draw(texFondo, 0, 0, 650, 350);
 
-        // En render(), REEMPLAZA el bloque del texto:
         fuente.setColor(Color.BLACK);
         GlyphLayout layout = new GlyphLayout();
         String msg = ingles
-                ? "THIS WILL DELETE YOUR RANKING,\nFRIENDS AND STATS.\nARE YOU SURE?"
-                : "ESTO BORRARA TU RANKING,\nAMIGOS Y ESTADISTICAS.\nESTAS SEGURO?";
+                ? "THIS WILL HIDE YOUR RANKING,\nFRIENDS AND STATS.\nARE YOU SURE?"
+                : "ESTO OCULTARA TU RANKING,\nAMIGOS Y ESTADISTICAS.\nESTAS SEGURO?";
         layout.setText(fuente, msg, Color.BLACK, 580,
                 com.badlogic.gdx.utils.Align.center, true);
-// Centrado vertical: área de texto ~200px alto, pantalla 350px
         float textY = 350f - (350f - layout.height - 100f) / 2f - 10f;
         fuente.draw(batch, layout, 35f, textY);
         batch.end();
 
         stage.act(delta);
         stage.draw();
+    }
+
+    private void ejecutarDesactivacion() {
+        if (juego.getUsuarioActual() == null) return;
+        juego.getUsuarioActual().desactivarCuenta();
+        GestorUsuarios.guardarUsuario(juego.getUsuarioActual());
+        juego.setUsuarioActual(null);
+        juego.setScreen(new PantallaInicio(juego));
     }
 
     @Override
@@ -126,20 +119,10 @@ public class PantallaConfirmarDesactivar extends PantallaBase {
 
     @Override
     public void dispose() {
-        if (texFondo != null) {
-            texFondo.dispose();
-        }
-        if (texBtnSi != null) {
-            texBtnSi.dispose();
-        }
-        if (texBtnNo != null) {
-            texBtnNo.dispose();
-        }
-        if (fuente != null) {
-            fuente.dispose();
-        }
-        if (stage != null) {
-            stage.dispose();
-        }
+        if (texFondo != null) texFondo.dispose();
+        if (texBtnSi != null) texBtnSi.dispose();
+        if (texBtnNo != null) texBtnNo.dispose();
+        if (fuente != null) fuente.dispose();
+        if (stage != null) stage.dispose();
     }
 }

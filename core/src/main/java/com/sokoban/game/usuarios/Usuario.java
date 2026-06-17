@@ -35,6 +35,8 @@ public class Usuario implements Serializable {
     private List<String> solicitudesPendientes;
     private boolean cuentaActiva = true;
     private String esquemaControles = "WASD";
+    private int partidasCompetitivasJugadas = 0;
+    private int partidasCompetitivasGanadas = 0;
 
     public Usuario(String username, String password, String nombreCompleto) {
         this.username = username;
@@ -63,6 +65,21 @@ public class Usuario implements Serializable {
 
     public String getEsquemaControles() {
         return esquemaControles;
+    }
+
+    public void registrarPartidaCompetitiva(boolean gano) {
+        partidasCompetitivasJugadas++;
+        if (gano) {
+            partidasCompetitivasGanadas++;
+        }
+    }
+
+    public int getPartidasCompetitivasJugadas() {
+        return partidasCompetitivasJugadas;
+    }
+
+    public int getPartidasCompetitivasGanadas() {
+        return partidasCompetitivasGanadas;
     }
 
     public void setEsquemaControles(String e) {

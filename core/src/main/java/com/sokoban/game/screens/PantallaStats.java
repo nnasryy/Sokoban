@@ -24,6 +24,7 @@ import com.sokoban.game.usuarios.Usuario;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import com.sokoban.game.GestorMusica;
+
 public class PantallaStats extends PantallaBase {
 
     private Texture texFondo, texExit, texPixel;
@@ -191,7 +192,10 @@ public class PantallaStats extends PantallaBase {
             "LEVELS COMPLETED:      " + u.getNivelesCompletados(),
             "TOTAL TIME PLAYED:     " + formatearTiempo(u.getTiempoTotalJugado()),
             "AVG TIME/LEVEL:        " + formatearTiempo(u.getTiempoPromedioPorNivel()),
-            "ATTEMPTS/LEVEL:        " + formatearIntentos(u.getIntentosPorNivel())
+            "ATTEMPTS/LEVEL:        " + formatearIntentos(u.getIntentosPorNivel()),
+            "COMPETITIVE MATCHES:   " + u.getPartidasCompetitivasJugadas(),
+            "COMPETITIVE WINS:      " + u.getPartidasCompetitivasGanadas()
+
         } : new String[]{
             "PARTIDAS JUGADAS:      " + u.getPartidasJugadas(),
             "FECHA DE REGISTRO:     " + sdf.format(u.getFechaRegistro()),
@@ -199,7 +203,9 @@ public class PantallaStats extends PantallaBase {
             "NIVELES COMPLETADOS:   " + u.getNivelesCompletados(),
             "TIEMPO TOTAL JUGADO:   " + formatearTiempo(u.getTiempoTotalJugado()),
             "TIEMPO PROMEDIO/NIVEL: " + formatearTiempo(u.getTiempoPromedioPorNivel()),
-            "INTENTOS POR NIVEL:    " + formatearIntentos(u.getIntentosPorNivel())
+            "INTENTOS POR NIVEL:    " + formatearIntentos(u.getIntentosPorNivel()),
+            "PARTIDAS COMPETITIVAS: " + u.getPartidasCompetitivasJugadas(),
+            "VICTORIAS COMPETIT.:   " + u.getPartidasCompetitivasGanadas()
         };
 
         for (int i = 0; i < lineas.length; i++) {
@@ -569,16 +575,20 @@ public class PantallaStats extends PantallaBase {
         return String.format("%02d:%02d", min, seg);
     }
 
-   private String formatearIntentos(int[] arr) {
-    if (arr == null) return ingles ? "N/A" : "N/D";
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < Math.min(arr.length, 5); i++) {
-        sb.append(ingles ? "L" : "N").append(i + 1)
-          .append(":").append(arr[i]);
-        if (i < 4) sb.append("  ");
+    private String formatearIntentos(int[] arr) {
+        if (arr == null) {
+            return ingles ? "N/A" : "N/D";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < Math.min(arr.length, 5); i++) {
+            sb.append(ingles ? "L" : "N").append(i + 1)
+                    .append(":").append(arr[i]);
+            if (i < 4) {
+                sb.append("  ");
+            }
+        }
+        return sb.toString();
     }
-    return sb.toString();
-}
 
     private String truncar(String s, int max) {
         return s != null && s.length() > max ? s.substring(0, max) : s;

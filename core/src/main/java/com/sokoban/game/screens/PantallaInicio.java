@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.GestorMusica;
+
 public class PantallaInicio extends PantallaBase {
 
     private Texture texFondo;
@@ -27,7 +28,7 @@ public class PantallaInicio extends PantallaBase {
 
     @Override
     public void show() {
-        Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
+        // ← setWindowedMode va al FINAL, no al inicio
 
         texFondo = new Texture("imagenes/fondos/Menuinicio.png");
         texSignUp = new Texture("imagenes/botones/signup_button.png");
@@ -36,14 +37,12 @@ public class PantallaInicio extends PantallaBase {
         texVolumenOn = new Texture("imagenes/botones/volume_button.png");
         texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
 
-        stage = new Stage(new FitViewport(
-                SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
+        stage = new Stage(new FitViewport(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI));
         Gdx.input.setInputProcessor(stage);
 
         ImageButton btnSignUp = crearBoton(texSignUp, 126, 210);
         ImageButton btnLogin = crearBoton(texLogin, 339, 210);
         ImageButton btnExit = crearBoton(texExit, 265, 135);
-
 
         btnSignUp.addListener(new ClickListener() {
             @Override
@@ -51,14 +50,12 @@ public class PantallaInicio extends PantallaBase {
                 juego.setScreen(new PantallaRegistro(juego));
             }
         });
-
         btnLogin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
                 juego.setScreen(new PantallaLogin(juego));
             }
         });
-
         btnExit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
@@ -76,41 +73,38 @@ public class PantallaInicio extends PantallaBase {
                 GestorMusica.toggleMusica(btnVolumen, texVolumenOn, texVolumenOff);
             }
         });
-        stage.addActor(btnVolumen);
+
         stage.addActor(btnSignUp);
         stage.addActor(btnLogin);
         stage.addActor(btnExit);
         stage.addActor(btnVolumen);
-    }
 
-    private ImageButton crearBoton(Texture tex, float x, float y) {
-        ImageButton btn = new ImageButton(
-                new TextureRegionDrawable(new TextureRegion(tex))
-        );
-        btn.setPosition(x, y);
-        return btn;
+        Gdx.graphics.setWindowedMode(SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI); // ← al final
     }
 
     @Override
     public void render(float delta) {
+        if (texFondo == null) {
+            return; // ← guard por si render llega antes que show termine
+        }
         tiempo += delta;
-
-        float offsetNube1 = (float) Math.sin(tiempo * 1.2f) * 6f;
-        float offsetNube2 = (float) Math.sin(tiempo * 1.2f + 1.5f) * 6f;
 
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
         batch.draw(texFondo, 0, 0, 650, 550);
         batch.end();
+
         stage.act(delta);
         stage.draw();
     }
 
     @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        stage.getViewport().update(width, height, true);
+    public void resize(int w, int h) {
+        viewport.update(w, h, true);
+        if (stage != null) {
+            stage.getViewport().update(w, h, true);
+        }
     }
 
     @Override
@@ -126,5 +120,13 @@ public class PantallaInicio extends PantallaBase {
             texVolumenOff.dispose();
         }
         stage.dispose();
+    }
+
+    private ImageButton crearBoton(Texture tex, float x, float y) {
+        ImageButton btn = new ImageButton(
+                new TextureRegionDrawable(new TextureRegion(tex))
+        );
+        btn.setPosition(x, y);
+        return btn;
     }
 }

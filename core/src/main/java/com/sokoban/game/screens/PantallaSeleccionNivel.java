@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.GestorMusica;
+import com.sokoban.game.usuarios.GestorUsuarios;
 public class PantallaSeleccionNivel extends PantallaBase {
 
     private Texture texFondo, texExit, texCompetitivo;
@@ -29,6 +30,7 @@ public class PantallaSeleccionNivel extends PantallaBase {
     private static final float ANCHO_BLOQUE = 90f;
     private static final float ALTO_BLOQUE = 100f;
     private BitmapFont fuenteNumeros;
+    boolean ingles = false;
 
     public PantallaSeleccionNivel(SokobanGame juego) {
         super(juego, SokobanGame.ANCHO_UI, SokobanGame.ALTO_UI);
@@ -41,7 +43,7 @@ public class PantallaSeleccionNivel extends PantallaBase {
 
         texFondo = new Texture("imagenes/fondos/FondoAzul.png");
         texExit = new Texture("imagenes/botones/exit_button.png");
-        texCompetitivo = new Texture("imagenes/botones/Competitivo.png");
+        texCompetitivo = new Texture(ingles ? "imagenes/botones/Competitive.png" : "imagenes/botones/Competitivo.png");
         texCandado = new Texture("imagenes/botones/Candado.png");
         texVolumenOn = new Texture("imagenes/botones/volume_button.png");
         texVolumenOff = new Texture("imagenes/botones/novolume_button.png");
@@ -121,7 +123,7 @@ public class PantallaSeleccionNivel extends PantallaBase {
         });
 
         stage.addActor(btnCompetitivo);
-     
+
         Texture texActual = GestorMusica.isActiva() ? texVolumenOn : texVolumenOff;
         ImageButton btnVolumen = new ImageButton(
                 new TextureRegionDrawable(new TextureRegion(texActual)));
