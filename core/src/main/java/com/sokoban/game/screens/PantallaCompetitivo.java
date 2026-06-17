@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -228,7 +229,10 @@ public class PantallaCompetitivo extends PantallaBase {
         batch.draw(texFondo, 0, 0, 650, 550);
 
         fuenteTitulo.setColor(Color.WHITE);
-        fuenteTitulo.draw(batch, obtenerTitulo(), 67.6f, 550 - 84.9f);
+        String titulo = obtenerTitulo();
+        GlyphLayout layoutTitulo = new GlyphLayout(fuenteTitulo, titulo);
+        float xTitulo = (650f - layoutTitulo.width) / 2f;
+        fuenteTitulo.draw(batch, titulo, xTitulo, 550 - 84.9f);
 
         Color colorBorde = new Color(87f / 255f, 41f / 255f, 35f / 255f, 1f);
         batch.setColor(colorBorde);
@@ -240,7 +244,10 @@ public class PantallaCompetitivo extends PantallaBase {
         batch.setColor(Color.WHITE);
 
         fuente18.setColor(colorBorde);
-        fuente18.draw(batch, obtenerTextoSelecciona(), 64.8f, 550 - 290f);
+        String textoSel = obtenerTextoSelecciona();
+        GlyphLayout layoutSel = new GlyphLayout(fuente18, textoSel);
+        float xSel = (650f - layoutSel.width) / 2f;
+        fuente18.draw(batch, textoSel, xSel, 550 - 290f);
 
         batch.end();
 

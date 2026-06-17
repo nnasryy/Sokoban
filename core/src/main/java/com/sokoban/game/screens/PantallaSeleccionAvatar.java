@@ -184,8 +184,10 @@ public class PantallaSeleccionAvatar extends PantallaBase {
 
         if (rutaFotoElegida != null) {
             fuente.setColor(Color.GREEN);
-            fuente.draw(batch, "FOTO SELECCIONADA!",
-                    62.5f, 550 - 232.7f - 181f - 10f);
+            String textoFoto = ingles ? "PHOTO SELECTED!" : "FOTO SELECCIONADA!";
+            GlyphLayout layoutFoto = new GlyphLayout(fuente, textoFoto);
+            float xFoto = (650f - layoutFoto.width) / 2f;
+            fuente.draw(batch, textoFoto, xFoto, 550 - 232.7f - 181f - 10f);
         }
         batch.end();
         stage.act(delta);

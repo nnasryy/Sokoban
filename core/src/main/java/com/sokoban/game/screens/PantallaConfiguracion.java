@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.GestorMusica;
+
 public class PantallaConfiguracion extends PantallaBase {
 
     private Texture texFondo, texMisDatos, texIdioma, texCambiarAvatar;

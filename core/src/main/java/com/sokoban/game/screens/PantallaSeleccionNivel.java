@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.sokoban.game.SokobanGame;
 import com.sokoban.game.GestorMusica;
 import com.sokoban.game.usuarios.GestorUsuarios;
+
 public class PantallaSeleccionNivel extends PantallaBase {
 
     private Texture texFondo, texExit, texCompetitivo;
@@ -152,7 +154,10 @@ public class PantallaSeleccionNivel extends PantallaBase {
         batch.draw(texFondo, 0, 0, 650, 550);
 
         fuenteTitulo.setColor(Color.WHITE);
-        fuenteTitulo.draw(batch, obtenerTitulo(), 144.4f, 550 - 89.5f);
+        String titulo = obtenerTitulo();
+        GlyphLayout layoutTitulo = new GlyphLayout(fuenteTitulo, titulo);
+        float xTitulo = (650f - layoutTitulo.width) / 2f;
+        fuenteTitulo.draw(batch, titulo, xTitulo, 550 - 89.5f);
         fuenteNumeros.setColor(Color.WHITE);
         fuenteNumeros.draw(batch, "1", 62.8f, 550 - 328f);
         fuenteNumeros.draw(batch, "2", 178.5f, 550 - 328f);

@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -124,7 +125,10 @@ public class PantallaIdioma extends PantallaBase {
         batch.draw(texFondo, 0, 0, 650, 550);
 
         fuenteTitulo.setColor(Color.WHITE);
-        fuenteTitulo.draw(batch, ingles ? "LANGUAGE" : "IDIOMA", 201f, 550 - 55f);
+        String titulo = ingles ? "LANGUAGE" : "IDIOMA";
+        GlyphLayout layoutTitulo = new GlyphLayout(fuenteTitulo, titulo);
+        float xTitulo = (650f - layoutTitulo.width) / 2f;
+        fuenteTitulo.draw(batch, titulo, xTitulo, 550 - 55f);
 
         batch.end();
 
